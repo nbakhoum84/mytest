@@ -378,8 +378,10 @@ function HomeScreen({ goTo, openWeb }) {
 
       {/* Hero */}
       <View style={homeStyles.hero}>
-        <Image source={{ uri: HERO_IMAGE }} style={homeStyles.heroImage} resizeMode="cover" blurRadius={2} />
-        <View style={homeStyles.heroTint} pointerEvents="none" />
+        <View style={homeStyles.heroLayer} pointerEvents="none">
+          <Image source={{ uri: HERO_IMAGE }} style={homeStyles.heroImage} resizeMode="cover" blurRadius={2} />
+          <View style={homeStyles.heroTint} />
+        </View>
         <View style={homeStyles.heroContent}>
         <Text style={homeStyles.eyebrow}>METRO VANCOUVER REAL ESTATE</Text>
         <Text style={homeStyles.h1}>Find your dream home</Text>
@@ -471,8 +473,11 @@ const homeStyles = StyleSheet.create({
   name: { fontSize: 24, fontWeight: '700', color: COLORS.text, letterSpacing: 0.3 },
 
   hero: { backgroundColor: COLORS.primary, borderRadius: 20, marginBottom: 8, overflow: 'hidden' },
-  heroImage: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
-  heroTint: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(11,20,40,0.90)' },
+  // Explicit offsets (not StyleSheet.absoluteFillObject, which is missing in newer React Native).
+  // The layer is positioned, so the photo never affects the banner's height.
+  heroLayer: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+  heroImage: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' },
+  heroTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(11,20,40,0.90)' },
   heroContent: { padding: 18 },
   eyebrow: { color: '#f0c98f', fontSize: 11, fontWeight: '700', letterSpacing: 1.2, marginBottom: 6 },
   h1: { color: '#fff', fontSize: 26, fontWeight: '700', lineHeight: 30, textShadowColor: 'rgba(0,0,0,0.45)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
