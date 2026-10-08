@@ -4,10 +4,10 @@ Native Expo (React Native) app for https://home-nader.com/ (Nader Bakhoum, eXp R
 
 - **Home**: hero plus quick actions (call, WhatsApp, book a consultation)
 - **Browse**: pick Residential / Commercial / Presales / Sold, then a city. The site page opens in the in-app browser (Safari View Controller on iPhone) with a Done button
-- **Calculator**: native mortgage payment calculator (Canadian semi-annual compounding)
+- **Calculators**: the five calculators from the website: mortgage payment (with payment schedule), affordability, rate comparison, CMHC insurance and BC land transfer tax. Math is in `src/calc.js`
 - **More**: guides, FAQ, blog, PDFs and a contact form (opens your mail app)
 
-Site data lives in `src/config.js` (contact info, cities, URL patterns, colours).
+Site data lives in `src/config.js`. Insurance and tax rules (CMHC tiers, BC transfer-tax thresholds, lender ratios) are constants at the top of the relevant sections of `src/calc.js`; update them when the rules change (contact info, cities, URL patterns, colours).
 
 ## Run it on your phone
 1. `npm install`

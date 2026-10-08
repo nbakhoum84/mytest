@@ -5,14 +5,14 @@ import * as WebBrowser from 'expo-web-browser';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import HomeScreen from './src/screens/HomeScreen';
 import BrowseScreen from './src/screens/BrowseScreen';
-import CalculatorScreen from './src/screens/CalculatorScreen';
+import CalculatorsScreen from './src/screens/CalculatorsScreen';
 import MoreScreen from './src/screens/MoreScreen';
 import { COLORS } from './src/config';
 
 const TABS = [
   { key: 'home', label: 'Home' },
   { key: 'browse', label: 'Browse' },
-  { key: 'calc', label: 'Calculator' },
+  { key: 'calc', label: 'Calculators' },
   { key: 'more', label: 'More' },
 ];
 
@@ -29,7 +29,7 @@ export default function App() {
   };
 
   const props = { goTo: setTab, openWeb };
-  const Screen = { home: HomeScreen, browse: BrowseScreen, calc: CalculatorScreen, more: MoreScreen }[tab];
+  const Screen = { home: HomeScreen, browse: BrowseScreen, calc: CalculatorsScreen, more: MoreScreen }[tab];
 
   return (
     <SafeAreaProvider>

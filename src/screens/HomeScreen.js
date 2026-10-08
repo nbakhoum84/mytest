@@ -14,7 +14,7 @@ export default function HomeScreen({ goTo, openWeb }) {
       </View>
 
       <Text style={styles.h2}>Quick actions</Text>
-      <Tile label="Mortgage calculator" desc="Estimate your monthly payment" onPress={() => goTo('calc')} />
+      <Tile label="Mortgage calculators" desc="Payment, affordability, rates, CMHC, land transfer tax" onPress={() => goTo('calc')} />
       <Tile label="Book a free consultation" desc="Investment & ROI analysis" onPress={() => openWeb(AGENT.calendly, 'Book a consultation')} />
       <Tile label="Call Nader" desc={AGENT.phoneDisplay} onPress={() => Linking.openURL(`tel:${AGENT.phone}`)} />
       <Tile label="WhatsApp" desc="Chat directly" onPress={() => Linking.openURL(AGENT.whatsapp)} />
