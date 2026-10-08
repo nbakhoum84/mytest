@@ -1,13 +1,18 @@
 # Home Nader mobile app
 
-Expo (React Native) app that shows https://home-nader.com/ in a native shell
-with back navigation, pull-to-refresh, an offline/error screen, and external
-links opening in the system browser.
+Native Expo (React Native) app for https://home-nader.com/ (Nader Bakhoum, eXp Realty).
+
+- **Home**: hero plus quick actions (call, WhatsApp, book a consultation)
+- **Browse**: pick Residential / Commercial / Presales / Sold, then a city. The site page opens in an in-app browser
+- **Calculator**: native mortgage payment calculator (Canadian semi-annual compounding)
+- **More**: guides, FAQ, blog, PDFs and a contact form (opens your mail app)
+
+Site data lives in `src/config.js` (contact info, cities, URL patterns, colours).
 
 ## Run it on your phone
-1. Install Node.js, then run `npm install`
-2. Run `npx expo start`
-3. Install **Expo Go** on your phone and scan the QR code
+1. `npm install`
+2. `npx expo start`
+3. Scan the QR code with **Expo Go**
 
 ## Build store apps
 ```
@@ -17,4 +22,6 @@ eas build --platform android   # or ios
 ```
 iOS needs an Apple Developer account ($99/yr), Android a Google Play account ($25 once).
 
-To change the site, edit `SITE_URL` and `SITE_HOST` in `App.js`.
+## Notes
+- Listings come from the site's Lofty/IDX pages (no public API), so listing pages are shown via WebView rather than rebuilt natively.
+- City URL patterns are confirmed for Burnaby only; check the other cities in `src/config.js`.
