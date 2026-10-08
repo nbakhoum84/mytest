@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { COLORS } from '../config';
+import * as WebBrowser from 'expo-web-browser';
+import { CALCULATORS_PAGE, COLORS, RATEHUB } from '../config';
+import RatehubWidget from '../components/RatehubWidget';
 import { AFFORD, BC_PTT, affordability, balanceAfter, bcTransferTax, cmhcInsurance, downInDollars, num, pmt, yearlySchedule } from '../calc';
 import { Breakdown, Chips, DownField, Field, Note, Pick, Result, Toggle, money } from '../components/Inputs';
 
@@ -16,28 +18,44 @@ const LIST = [
 
 export default function CalculatorsScreen({ goTo }) {
   const [active, setActive] = useState(null);
+  const [mode, setMode] = useState('Ratehub');
   const item = LIST.find((l) => l.key === active);
 
   if (!item) {
     return (
       <ScrollView contentContainerStyle={styles.pad}>
         {LIST.map((l) => (
-          <TouchableOpacity key={l.key} style={styles.tile} onPress={() => setActive(l.key)}>
+          <TouchableOpacity key={l.key} style={styles.tile} onPress={() => { setMode('Ratehub'); setActive(l.key); }}>
             <Text style={styles.tileTitle}>{l.title}</Text>
             <Text style={styles.tileDesc}>{l.desc}</Text>
           </TouchableOpacity>
         ))}
-        <Note>Estimates only. Rates, limits and tax rules change, so confirm figures with your lender.</Note>
+        <Note>Calculators by Ratehub.ca. Estimates only; confirm figures with your lender.</Note>
       </ScrollView>
     );
   }
   const { Comp } = item;
+  const widget = RATEHUB[item.key];
   return (
-    <ScrollView contentContainerStyle={styles.pad} keyboardShouldPersistTaps="handled">
-      <TouchableOpacity onPress={() => setActive(null)} hitSlop={10}><Text style={styles.back}>‹ All calculators</Text></TouchableOpacity>
-      <Text style={styles.h1}>{item.title}</Text>
-      <Comp goTo={goTo} />
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <View style={styles.head}>
+        <TouchableOpacity onPress={() => setActive(null)} hitSlop={10}><Text style={styles.back}>‹ All calculators</Text></TouchableOpacity>
+        <Chips options={['Ratehub', 'Quick']} value={mode} onChange={setMode} />
+      </View>
+      {mode === 'Ratehub' ? (
+        <View style={{ flex: 1 }}>
+          <RatehubWidget widget={widget} />
+          <TouchableOpacity style={styles.siteLink} onPress={() => WebBrowser.openBrowserAsync(`${CALCULATORS_PAGE}#${widget.slug}`)}>
+            <Text style={styles.linkText}>Not loading? Open on the website</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.pad} keyboardShouldPersistTaps="handled">
+          <Text style={styles.h1}>{item.title}</Text>
+          <Comp goTo={goTo} />
+        </ScrollView>
+      )}
+    </View>
   );
 }
 
@@ -251,7 +269,9 @@ function TRow({ cells, head, highlight }) {
 
 const styles = StyleSheet.create({
   pad: { padding: 16 },
-  back: { color: COLORS.primary, fontSize: 16, marginBottom: 8 },
+  head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 6 },
+  back: { color: COLORS.primary, fontSize: 16, marginBottom: 6 },
+  siteLink: { alignItems: 'center', paddingVertical: 10, borderTopWidth: 1, borderTopColor: COLORS.border },
   h1: { fontSize: 22, fontWeight: '700', color: COLORS.text, marginBottom: 14 },
   tile: { backgroundColor: COLORS.card, borderRadius: 12, padding: 16, marginBottom: 10 },
   tileTitle: { fontSize: 16, fontWeight: '600', color: COLORS.text },

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Alert, FlatList, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { WebView } from 'react-native-webview';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -48,6 +49,17 @@ const COLORS = {
   bg: '#ffffff', text: '#111827', muted: '#6b7280', primary: '#0f4c81',
   card: '#f3f4f6', border: '#e5e7eb',
 };
+
+// Ratehub.ca widgets, same loader and keys as the website's calculators page.
+const RATEHUB_LOADER = 'https://www.ratehub.ca/scripts/rh-widget-loader.js';
+const RATEHUB = {
+  payment: { slug: 'mortgage-payment-calculator', title: 'Mortgage Calculator', frameTitle: 'Ratehub.ca mortgage calculator', key: 'PaymentCalculator' },
+  rates: { slug: 'mortgage-rate-comparison-table', title: '', frameTitle: "Ratehub.ca's mortgage comparison table - compare today's best mortgage rates", key: 'ProductTableMortgages' },
+  afford: { slug: 'mortgage-affordability-calculator', title: 'Mortgage Affordability Calculator', frameTitle: 'Ratehub.ca mortgage affordability calculator', key: 'AffordabilityCalculator' },
+  cmhc: { slug: 'mortgage-cmhc-insurance-calculator', title: 'Mortgage CMHC Calculator', frameTitle: 'Ratehub.ca mortgage cmhc calculator', key: 'DownPaymentCalculator' },
+  ptt: { slug: 'mortgage-land-transfer-tax-calculator', title: 'Mortgage Land Transfer Tax Calculator', frameTitle: 'Ratehub.ca land transfer tax calculator', key: 'LandTransferTaxCalculator' },
+};
+const CALCULATORS_PAGE = `${SITE_URL}/mortgage-calculators`;
 
 // ---- src/calc.js
 // Pure calculator math (no React). Canadian fixed-rate mortgages compound semi-annually.
@@ -291,6 +303,59 @@ const inputsStyles = StyleSheet.create({
   note: { color: COLORS.muted, fontSize: 12, marginTop: 4, marginBottom: 12 },
 });
 
+// ---- src/components/RatehubWidget.js
+
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+// Same script tag the website uses, loaded from the website's origin so Ratehub
+// sees the same domain as on home-nader.com.
+const widgetHtml = (w) => `<!doctype html><html><head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>html,body{margin:0;padding:8px;font-family:-apple-system,Roboto,sans-serif;background:#fff}</style>
+</head><body>
+<script src="${RATEHUB_LOADER}" rh-title="${esc(w.title)}" rh-frame-title="${esc(w.frameTitle)}" rh-widget-key="${esc(w.key)}" async></script>
+</body></html>`;
+
+function RatehubWidget({ widget }) {
+  const [loading, setLoading] = useState(true);
+  const source = useMemo(() => ({ html: widgetHtml(widget), baseUrl: SITE_URL }), [widget]);
+
+  // Widget iframes load inside the page; anything that tries to navigate the whole
+  // page elsewhere (e.g. a "compare rates" link) opens in the in-app browser instead.
+  const onShouldStart = (req) => {
+    if (req.isTopFrame === false) return true;
+    const url = req.url || '';
+    if (url === 'about:blank' || url === SITE_URL || url === SITE_URL + '/') return true;
+    WebBrowser.openBrowserAsync(url).catch(() => Linking.openURL(url).catch(() => Alert.alert('Could not open the page', url)));
+    return false;
+  };
+
+  return (
+    <View style={rhStyles.root}>
+      <WebView
+        key={widget.key}
+        source={source}
+        originWhitelist={['*']}
+        javaScriptEnabled
+        domStorageEnabled
+        thirdPartyCookiesEnabled
+        sharedCookiesEnabled
+        setSupportMultipleWindows={false}
+        onShouldStartLoadWithRequest={onShouldStart}
+        onLoadEnd={() => setLoading(false)}
+        style={rhStyles.web}
+      />
+      {loading && <ActivityIndicator style={rhStyles.loader} size="large" />}
+    </View>
+  );
+}
+
+const rhStyles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: COLORS.bg },
+  web: { flex: 1, backgroundColor: COLORS.bg },
+  loader: { position: 'absolute', top: '40%', alignSelf: 'center' },
+});
+
 // ---- src/screens/HomeScreen.js
 
 function HomeScreen({ goTo, openWeb }) {
@@ -397,28 +462,44 @@ const LIST = [
 
 function CalculatorsScreen({ goTo }) {
   const [active, setActive] = useState(null);
+  const [mode, setMode] = useState('Ratehub');
   const item = LIST.find((l) => l.key === active);
 
   if (!item) {
     return (
       <ScrollView contentContainerStyle={calcsStyles.pad}>
         {LIST.map((l) => (
-          <TouchableOpacity key={l.key} style={calcsStyles.tile} onPress={() => setActive(l.key)}>
+          <TouchableOpacity key={l.key} style={calcsStyles.tile} onPress={() => { setMode('Ratehub'); setActive(l.key); }}>
             <Text style={calcsStyles.tileTitle}>{l.title}</Text>
             <Text style={calcsStyles.tileDesc}>{l.desc}</Text>
           </TouchableOpacity>
         ))}
-        <Note>Estimates only. Rates, limits and tax rules change, so confirm figures with your lender.</Note>
+        <Note>Calculators by Ratehub.ca. Estimates only; confirm figures with your lender.</Note>
       </ScrollView>
     );
   }
   const { Comp } = item;
+  const widget = RATEHUB[item.key];
   return (
-    <ScrollView contentContainerStyle={calcsStyles.pad} keyboardShouldPersistTaps="handled">
-      <TouchableOpacity onPress={() => setActive(null)} hitSlop={10}><Text style={calcsStyles.back}>‹ All calculators</Text></TouchableOpacity>
-      <Text style={calcsStyles.h1}>{item.title}</Text>
-      <Comp goTo={goTo} />
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <View style={calcsStyles.head}>
+        <TouchableOpacity onPress={() => setActive(null)} hitSlop={10}><Text style={calcsStyles.back}>‹ All calculators</Text></TouchableOpacity>
+        <Chips options={['Ratehub', 'Quick']} value={mode} onChange={setMode} />
+      </View>
+      {mode === 'Ratehub' ? (
+        <View style={{ flex: 1 }}>
+          <RatehubWidget widget={widget} />
+          <TouchableOpacity style={calcsStyles.siteLink} onPress={() => WebBrowser.openBrowserAsync(`${CALCULATORS_PAGE}#${widget.slug}`)}>
+            <Text style={calcsStyles.linkText}>Not loading? Open on the website</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={calcsStyles.pad} keyboardShouldPersistTaps="handled">
+          <Text style={calcsStyles.h1}>{item.title}</Text>
+          <Comp goTo={goTo} />
+        </ScrollView>
+      )}
+    </View>
   );
 }
 
@@ -632,7 +713,9 @@ function TRow({ cells, head, highlight }) {
 
 const calcsStyles = StyleSheet.create({
   pad: { padding: 16 },
-  back: { color: COLORS.primary, fontSize: 16, marginBottom: 8 },
+  head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 6 },
+  back: { color: COLORS.primary, fontSize: 16, marginBottom: 6 },
+  siteLink: { alignItems: 'center', paddingVertical: 10, borderTopWidth: 1, borderTopColor: COLORS.border },
   h1: { fontSize: 22, fontWeight: '700', color: COLORS.text, marginBottom: 14 },
   tile: { backgroundColor: COLORS.card, borderRadius: 12, padding: 16, marginBottom: 10 },
   tileTitle: { fontSize: 16, fontWeight: '600', color: COLORS.text },

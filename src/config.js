@@ -41,3 +41,14 @@ export const COLORS = {
   bg: '#ffffff', text: '#111827', muted: '#6b7280', primary: '#0f4c81',
   card: '#f3f4f6', border: '#e5e7eb',
 };
+
+// Ratehub.ca widgets, same loader and keys as the website's calculators page.
+export const RATEHUB_LOADER = 'https://www.ratehub.ca/scripts/rh-widget-loader.js';
+export const RATEHUB = {
+  payment: { slug: 'mortgage-payment-calculator', title: 'Mortgage Calculator', frameTitle: 'Ratehub.ca mortgage calculator', key: 'PaymentCalculator' },
+  rates: { slug: 'mortgage-rate-comparison-table', title: '', frameTitle: "Ratehub.ca's mortgage comparison table - compare today's best mortgage rates", key: 'ProductTableMortgages' },
+  afford: { slug: 'mortgage-affordability-calculator', title: 'Mortgage Affordability Calculator', frameTitle: 'Ratehub.ca mortgage affordability calculator', key: 'AffordabilityCalculator' },
+  cmhc: { slug: 'mortgage-cmhc-insurance-calculator', title: 'Mortgage CMHC Calculator', frameTitle: 'Ratehub.ca mortgage cmhc calculator', key: 'DownPaymentCalculator' },
+  ptt: { slug: 'mortgage-land-transfer-tax-calculator', title: 'Mortgage Land Transfer Tax Calculator', frameTitle: 'Ratehub.ca land transfer tax calculator', key: 'LandTransferTaxCalculator' },
+};
+export const CALCULATORS_PAGE = `${SITE_URL}/mortgage-calculators`;
