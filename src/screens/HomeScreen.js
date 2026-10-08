@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, ImageBackground, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AGENT, CATEGORIES, COLORS, HERO_IMAGE } from '../config';
 import { LOGO } from '../logo';
 
@@ -16,8 +16,10 @@ export default function HomeScreen({ goTo, openWeb }) {
       </View>
 
       {/* Hero */}
-      <ImageBackground source={{ uri: HERO_IMAGE }} style={styles.hero} imageStyle={styles.heroImage} resizeMode="cover">
-        <View style={styles.heroTint} />
+      <View style={styles.hero}>
+        <Image source={{ uri: HERO_IMAGE }} style={styles.heroImage} resizeMode="cover" blurRadius={2} />
+        <View style={styles.heroTint} pointerEvents="none" />
+        <View style={styles.heroContent}>
         <Text style={styles.eyebrow}>METRO VANCOUVER REAL ESTATE</Text>
         <Text style={styles.h1}>Discover your dream home</Text>
         <Text style={styles.sub}>Residential, commercial and presale properties, with expert guidance from search to keys.</Text>
@@ -29,7 +31,8 @@ export default function HomeScreen({ goTo, openWeb }) {
             <Text style={styles.btnGhostText}>Book a consultation</Text>
           </TouchableOpacity>
         </View>
-      </ImageBackground>
+        </View>
+      </View>
 
       {/* Popular cities */}
       <Text style={styles.h2}>Popular areas</Text>
@@ -106,10 +109,11 @@ const styles = StyleSheet.create({
   logo: { width: 56, height: 56, marginRight: 12 },
   name: { fontSize: 24, fontWeight: '700', color: COLORS.text, letterSpacing: 0.3 },
 
-  hero: { backgroundColor: COLORS.primary, borderRadius: 20, padding: 24, marginBottom: 8, overflow: 'hidden' },
-  heroImage: { borderRadius: 20 },
-  heroTint: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(20,33,61,0.85)' },
-  eyebrow: { color: COLORS.accent, fontSize: 12, fontWeight: '700', letterSpacing: 1.5, marginBottom: 10 },
+  hero: { backgroundColor: COLORS.primary, borderRadius: 20, marginBottom: 8, overflow: 'hidden' },
+  heroImage: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
+  heroTint: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(11,20,40,0.90)' },
+  heroContent: { padding: 24 },
+  eyebrow: { color: '#f0c98f', fontSize: 12, fontWeight: '700', letterSpacing: 1.5, marginBottom: 10 },
   h1: { color: '#fff', fontSize: 30, fontWeight: '700', lineHeight: 36, textShadowColor: 'rgba(0,0,0,0.45)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
   sub: { color: '#ffffff', fontSize: 15, lineHeight: 22, marginTop: 12 },
   heroBtns: { marginTop: 22 },
