@@ -50,13 +50,18 @@ const COLORS = {
 };
 
 // ---- src/components/WebScreen.js
-const WebSafe = SafeAreaView;
 
 // Full-screen in-app browser for pages on the website.
+// The Modal gets its own SafeAreaProvider (insets are not shared across modals on iOS),
+// and the main "Back to app" button sits at the bottom, away from the notch.
 function WebScreen({ url, title, onClose }) {
   const ref = useRef(null);
   const [canGoBack, setCanGoBack] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (url) { setLoading(true); setCanGoBack(false); }
+  }, [url]);
 
   useEffect(() => {
     if (!url) return;
@@ -70,24 +75,36 @@ function WebScreen({ url, title, onClose }) {
 
   return (
     <Modal visible={!!url} animationType="slide" onRequestClose={onClose}>
-      <WebSafe style={webStyles.root}>
-        <View style={webStyles.bar}>
-          <TouchableOpacity onPress={onClose}><Text style={webStyles.link}>Close</Text></TouchableOpacity>
-          <Text style={webStyles.title} numberOfLines={1}>{title}</Text>
-          <TouchableOpacity onPress={() => Linking.openURL(url)}><Text style={webStyles.link}>Browser</Text></TouchableOpacity>
-        </View>
-        {url ? (
-          <WebView
-            ref={ref}
-            source={{ uri: url }}
-            onNavigationStateChange={(s) => setCanGoBack(s.canGoBack)}
-            onLoadEnd={() => setLoading(false)}
-            domStorageEnabled
-            allowsBackForwardNavigationGestures
-          />
-        ) : null}
-        {loading && <ActivityIndicator style={webStyles.loader} size="large" />}
-      </WebSafe>
+      <SafeAreaProvider>
+        <SafeAreaView style={webStyles.root}>
+          <View style={webStyles.bar}>
+            <TouchableOpacity onPress={onClose} hitSlop={12}><Text style={webStyles.link}>✕ Close</Text></TouchableOpacity>
+            <Text style={webStyles.title} numberOfLines={1}>{title}</Text>
+            <TouchableOpacity onPress={() => Linking.openURL(url)} hitSlop={12}><Text style={webStyles.link}>Browser</Text></TouchableOpacity>
+          </View>
+          <View style={{ flex: 1 }}>
+            {url ? (
+              <WebView
+                ref={ref}
+                source={{ uri: url }}
+                onNavigationStateChange={(s) => setCanGoBack(s.canGoBack)}
+                onLoadEnd={() => setLoading(false)}
+                domStorageEnabled
+                allowsBackForwardNavigationGestures
+              />
+            ) : null}
+            {loading && <ActivityIndicator style={webStyles.loader} size="large" />}
+          </View>
+          <View style={webStyles.footer}>
+            <TouchableOpacity style={[webStyles.footBtn, !canGoBack && webStyles.disabled]} disabled={!canGoBack} onPress={() => ref.current?.goBack()}>
+              <Text style={webStyles.footText}>‹ Page back</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[webStyles.footBtn, webStyles.primary]} onPress={onClose}>
+              <Text style={[webStyles.footText, { color: '#fff' }]}>Back to app</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </SafeAreaProvider>
     </Modal>
   );
 }
@@ -98,6 +115,11 @@ const webStyles = StyleSheet.create({
   title: { flex: 1, textAlign: 'center', fontWeight: '600', color: COLORS.text, marginHorizontal: 8 },
   link: { color: COLORS.primary, fontSize: 16 },
   loader: { position: 'absolute', top: '50%', alignSelf: 'center' },
+  footer: { flexDirection: 'row', padding: 10, borderTopWidth: 1, borderTopColor: COLORS.border },
+  footBtn: { flex: 1, alignItems: 'center', paddingVertical: 12, borderRadius: 8, marginHorizontal: 4, backgroundColor: COLORS.card },
+  primary: { backgroundColor: COLORS.primary },
+  disabled: { opacity: 0.4 },
+  footText: { fontSize: 16, fontWeight: '600', color: COLORS.text },
 });
 
 // ---- src/screens/HomeScreen.js
