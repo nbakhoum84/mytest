@@ -346,3 +346,5 @@ const appStyles = StyleSheet.create({
   tabText: { color: COLORS.muted, fontSize: 13 },
   tabOn: { color: COLORS.primary, fontWeight: '700' },
 });
+
+export default App;
