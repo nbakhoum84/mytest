@@ -1,6 +1,5 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { ActivityIndicator, Alert, BackHandler, FlatList, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { WebView } from 'react-native-webview';
+import React, { useState } from 'react';
+import { Alert, FlatList, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
@@ -48,77 +47,6 @@ const COLORS = {
   bg: '#ffffff', text: '#111827', muted: '#6b7280', primary: '#0f4c81',
   card: '#f3f4f6', border: '#e5e7eb',
 };
-
-// ---- src/components/WebScreen.js
-
-// Full-screen in-app browser for pages on the website.
-// Takes over the screen in place of the tabs (no Modal or absolute overlay, both
-// unreliable on iOS Expo Go). The parent already applies safe-area padding.
-function WebScreen({ url, title, onClose }) {
-  const ref = useRef(null);
-  const [canGoBack, setCanGoBack] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (url) { setLoading(true); setCanGoBack(false); }
-  }, [url]);
-
-  useEffect(() => {
-    if (!url) return;
-    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (canGoBack) ref.current?.goBack();
-      else onClose();
-      return true;
-    });
-    return () => sub.remove();
-  }, [url, canGoBack, onClose]);
-
-  if (!url) return null;
-
-  return (
-    <View style={webStyles.root}>
-          <View style={webStyles.bar}>
-            <TouchableOpacity onPress={onClose} hitSlop={12}><Text style={webStyles.link}>✕ Close</Text></TouchableOpacity>
-            <Text style={webStyles.title} numberOfLines={1}>{title}</Text>
-            <TouchableOpacity onPress={() => Linking.openURL(url)} hitSlop={12}><Text style={webStyles.link}>Browser</Text></TouchableOpacity>
-          </View>
-          <View style={{ flex: 1 }}>
-            {url ? (
-              <WebView
-                ref={ref}
-                source={{ uri: url }}
-                onNavigationStateChange={(s) => setCanGoBack(s.canGoBack)}
-                onLoadEnd={() => setLoading(false)}
-                domStorageEnabled
-                allowsBackForwardNavigationGestures
-              />
-            ) : null}
-            {loading && <ActivityIndicator style={webStyles.loader} size="large" />}
-          </View>
-          <View style={webStyles.footer}>
-            <TouchableOpacity style={[webStyles.footBtn, !canGoBack && webStyles.disabled]} disabled={!canGoBack} onPress={() => ref.current?.goBack()}>
-              <Text style={webStyles.footText}>‹ Page back</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[webStyles.footBtn, webStyles.primary]} onPress={onClose}>
-              <Text style={[webStyles.footText, { color: '#fff' }]}>Back to app</Text>
-            </TouchableOpacity>
-          </View>
-    </View>
-  );
-}
-
-const webStyles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: COLORS.bg },
-  bar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderBottomWidth: 1, borderBottomColor: COLORS.border },
-  title: { flex: 1, textAlign: 'center', fontWeight: '600', color: COLORS.text, marginHorizontal: 8 },
-  link: { color: COLORS.primary, fontSize: 16 },
-  loader: { position: 'absolute', top: '50%', alignSelf: 'center' },
-  footer: { flexDirection: 'row', padding: 10, borderTopWidth: 1, borderTopColor: COLORS.border },
-  footBtn: { flex: 1, alignItems: 'center', paddingVertical: 12, borderRadius: 8, marginHorizontal: 4, backgroundColor: COLORS.card },
-  primary: { backgroundColor: COLORS.primary },
-  disabled: { opacity: 0.4 },
-  footText: { fontSize: 16, fontWeight: '600', color: COLORS.text },
-});
 
 // ---- src/screens/HomeScreen.js
 
@@ -334,9 +262,9 @@ const TABS = [
 
 function App() {
   const [tab, setTab] = useState('home');
-  const [web, setWeb] = useState(null); // { url, title }
-  const openWeb = useCallback((url, title) => setWeb({ url, title }), []);
-  const closeWeb = useCallback(() => setWeb(null), []);
+  // Website pages open in the phone's browser (Safari on iPhone).
+  const openWeb = (url) =>
+    Linking.openURL(url).catch(() => Alert.alert('Could not open the page', url));
 
   const props = { goTo: setTab, openWeb };
   const Screen = { home: HomeScreen, browse: BrowseScreen, calc: CalculatorScreen, more: MoreScreen }[tab];
@@ -345,18 +273,14 @@ function App() {
     <SafeAreaProvider>
       <SafeAreaView style={appStyles.root}>
         <StatusBar style="auto" />
-        {/* Hidden (not unmounted) while a web page is open, so tab state is kept. */}
-        <View style={{ flex: 1, display: web ? 'none' : 'flex' }}>
-          <View style={{ flex: 1 }}><Screen {...props} /></View>
-          <View style={appStyles.tabs}>
-            {TABS.map((t) => (
-              <TouchableOpacity key={t.key} style={appStyles.tab} onPress={() => setTab(t.key)}>
-                <Text style={[appStyles.tabText, tab === t.key && appStyles.tabOn]}>{t.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+        <View style={{ flex: 1 }}><Screen {...props} /></View>
+        <View style={appStyles.tabs}>
+          {TABS.map((t) => (
+            <TouchableOpacity key={t.key} style={appStyles.tab} onPress={() => setTab(t.key)}>
+              <Text style={[appStyles.tabText, tab === t.key && appStyles.tabOn]}>{t.label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
-        <WebScreen url={web?.url} title={web?.title} onClose={closeWeb} />
       </SafeAreaView>
     </SafeAreaProvider>
   );
