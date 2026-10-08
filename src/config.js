@@ -53,8 +53,6 @@ export const RATEHUB = {
 };
 export const CALCULATORS_PAGE = `${SITE_URL}/mortgage-calculators`;
 
-// Banner photo on the Home tab (loaded from the web; replace with a bundled file for production).
-export const HERO_IMAGE = 'https://www.bucketlistpublications.com/wp-content/uploads/2012/08/Downtown-Vancouver.jpg';
 
 // Header logo (loaded from the web; falls back to the bundled logo if it can't load).
 export const LOGO_URL = 'https://cdn.lofty.com/image/fs/400919269340348/website/135866/cmsbuild/2026923_d682dca9df114f5a.jpeg';
