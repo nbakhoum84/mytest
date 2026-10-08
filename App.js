@@ -29,13 +29,16 @@ export default function App() {
     <SafeAreaProvider>
       <SafeAreaView style={styles.root}>
         <StatusBar style="auto" />
-        <View style={{ flex: 1 }}><Screen {...props} /></View>
-        <View style={styles.tabs}>
-          {TABS.map((t) => (
-            <TouchableOpacity key={t.key} style={styles.tab} onPress={() => setTab(t.key)}>
-              <Text style={[styles.tabText, tab === t.key && styles.tabOn]}>{t.label}</Text>
-            </TouchableOpacity>
-          ))}
+        {/* Hidden (not unmounted) while a web page is open, so tab state is kept. */}
+        <View style={{ flex: 1, display: web ? 'none' : 'flex' }}>
+          <View style={{ flex: 1 }}><Screen {...props} /></View>
+          <View style={styles.tabs}>
+            {TABS.map((t) => (
+              <TouchableOpacity key={t.key} style={styles.tab} onPress={() => setTab(t.key)}>
+                <Text style={[styles.tabText, tab === t.key && styles.tabOn]}>{t.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
         <WebScreen url={web?.url} title={web?.title} onClose={closeWeb} />
       </SafeAreaView>
