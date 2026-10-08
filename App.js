@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import * as WebBrowser from 'expo-web-browser';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import HomeScreen from './src/screens/HomeScreen';
 import BrowseScreen from './src/screens/BrowseScreen';
@@ -17,9 +18,15 @@ const TABS = [
 
 export default function App() {
   const [tab, setTab] = useState('home');
-  // Website pages open in the phone's browser (Safari on iPhone).
-  const openWeb = (url) =>
-    Linking.openURL(url).catch(() => Alert.alert('Could not open the page', url));
+  // Website pages open in the system in-app browser (Safari View Controller on iPhone,
+  // Chrome Custom Tabs on Android); its Done/Close button returns to the app.
+  const openWeb = async (url) => {
+    try {
+      await WebBrowser.openBrowserAsync(url, { toolbarColor: COLORS.bg, controlsColor: COLORS.primary });
+    } catch {
+      Linking.openURL(url).catch(() => Alert.alert('Could not open the page', url));
+    }
+  };
 
   const props = { goTo: setTab, openWeb };
   const Screen = { home: HomeScreen, browse: BrowseScreen, calc: CalculatorScreen, more: MoreScreen }[tab];
