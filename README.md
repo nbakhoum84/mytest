@@ -7,7 +7,7 @@ Native Expo (React Native) app for https://home-nader.com/ (Nader Bakhoum, eXp R
 - **Calculators**: the five calculators from the website: mortgage payment (with payment schedule), affordability, rate comparison, CMHC insurance and BC land transfer tax. Math is in `src/calc.js`
 - **More**: guides, FAQ, blog, PDFs and a contact form (opens your mail app)
 
-Site data lives in `src/config.js`. Insurance and tax rules (CMHC tiers, BC transfer-tax thresholds, lender ratios) are constants at the top of the relevant sections of `src/calc.js`; update them when the rules change (contact info, cities, URL patterns, colours).
+Site data (contact info, cities, URL patterns, colours) lives in `src/config.js`. Insurance and tax rules (CMHC tiers, BC transfer-tax thresholds, lender ratios) are constants in `src/calc.js`; update them when the rules change.
 
 ## Run it on your phone
 1. `npm install`
