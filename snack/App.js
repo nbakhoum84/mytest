@@ -469,10 +469,10 @@ const homeStyles = StyleSheet.create({
 
   hero: { backgroundColor: COLORS.primary, borderRadius: 20, padding: 24, marginBottom: 8, overflow: 'hidden' },
   heroImage: { borderRadius: 20 },
-  heroTint: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(20,33,61,0.62)' },
+  heroTint: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(20,33,61,0.85)' },
   eyebrow: { color: COLORS.accent, fontSize: 12, fontWeight: '700', letterSpacing: 1.5, marginBottom: 10 },
-  h1: { color: '#fff', fontSize: 30, fontWeight: '700', lineHeight: 36 },
-  sub: { color: '#cbd5e1', fontSize: 15, lineHeight: 22, marginTop: 12 },
+  h1: { color: '#fff', fontSize: 30, fontWeight: '700', lineHeight: 36, textShadowColor: 'rgba(0,0,0,0.45)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
+  sub: { color: '#ffffff', fontSize: 15, lineHeight: 22, marginTop: 12 },
   heroBtns: { marginTop: 22 },
   btnGold: { backgroundColor: COLORS.accent, borderRadius: 10, paddingVertical: 14, alignItems: 'center' },
   btnGoldText: { color: COLORS.primary, fontWeight: '700', fontSize: 16 },
