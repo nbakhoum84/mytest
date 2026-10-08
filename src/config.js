@@ -52,3 +52,6 @@ export const RATEHUB = {
   ptt: { slug: 'mortgage-land-transfer-tax-calculator', title: 'Mortgage Land Transfer Tax Calculator', frameTitle: 'Ratehub.ca land transfer tax calculator', key: 'LandTransferTaxCalculator' },
 };
 export const CALCULATORS_PAGE = `${SITE_URL}/mortgage-calculators`;
+
+// Banner photo on the Home tab (loaded from the web; replace with a bundled file for production).
+export const HERO_IMAGE = 'https://www.bucketlistpublications.com/wp-content/uploads/2012/08/Downtown-Vancouver.jpg';

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { AGENT, CATEGORIES, COLORS } from '../config';
+import { Image, ImageBackground, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { AGENT, CATEGORIES, COLORS, HERO_IMAGE } from '../config';
 import { LOGO } from '../logo';
 
 const POPULAR = ['Vancouver', 'Burnaby', 'Surrey', 'Richmond', 'Coquitlam', 'White Rock', 'Langley', 'Delta'];
@@ -16,7 +16,8 @@ export default function HomeScreen({ goTo, openWeb }) {
       </View>
 
       {/* Hero */}
-      <View style={styles.hero}>
+      <ImageBackground source={{ uri: HERO_IMAGE }} style={styles.hero} imageStyle={styles.heroImage} resizeMode="cover">
+        <View style={styles.heroTint} />
         <Text style={styles.eyebrow}>METRO VANCOUVER REAL ESTATE</Text>
         <Text style={styles.h1}>Discover your dream home</Text>
         <Text style={styles.sub}>Residential, commercial and presale properties, with expert guidance from search to keys.</Text>
@@ -28,7 +29,7 @@ export default function HomeScreen({ goTo, openWeb }) {
             <Text style={styles.btnGhostText}>Book a consultation</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ImageBackground>
 
       {/* Popular cities */}
       <Text style={styles.h2}>Popular areas</Text>
@@ -105,7 +106,9 @@ const styles = StyleSheet.create({
   logo: { width: 56, height: 56, marginRight: 12 },
   name: { fontSize: 24, fontWeight: '700', color: COLORS.text, letterSpacing: 0.3 },
 
-  hero: { backgroundColor: COLORS.primary, borderRadius: 20, padding: 24, marginBottom: 8 },
+  hero: { backgroundColor: COLORS.primary, borderRadius: 20, padding: 24, marginBottom: 8, overflow: 'hidden' },
+  heroImage: { borderRadius: 20 },
+  heroTint: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(20,33,61,0.62)' },
   eyebrow: { color: COLORS.accent, fontSize: 12, fontWeight: '700', letterSpacing: 1.5, marginBottom: 10 },
   h1: { color: '#fff', fontSize: 30, fontWeight: '700', lineHeight: 36 },
   sub: { color: '#cbd5e1', fontSize: 15, lineHeight: 22, marginTop: 12 },
