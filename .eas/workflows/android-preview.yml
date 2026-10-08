@@ -1,0 +1,16 @@
+# Builds an installable Android .apk on Expo's servers whenever this branch is pushed.
+# Needs the GitHub repo connected to the project on expo.dev.
+name: Android preview
+
+on:
+  push:
+    branches:
+      - claude/home-nader-app-code-qq450r
+
+jobs:
+  build_android_preview:
+    name: Build Android (preview)
+    type: build
+    params:
+      platform: android
+      profile: preview
