@@ -383,7 +383,7 @@ function HomeScreen({ goTo, openWeb }) {
       {/* Hero */}
       <View style={homeStyles.hero}>
         <View style={homeStyles.heroLayer} pointerEvents="none">
-          <Image source={HERO} style={homeStyles.heroImage} resizeMode="cover" blurRadius={2} />
+          <Image source={HERO} style={homeStyles.heroImage} resizeMode="cover" />
           <View style={homeStyles.heroTint} />
         </View>
         <View style={homeStyles.heroContent}>
@@ -500,15 +500,15 @@ const homeStyles = StyleSheet.create({
   // The layer is positioned, so the photo never affects the banner's height.
   heroLayer: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   heroImage: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' },
-  heroTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(11,20,40,0.85)' },
+  heroTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(11,20,40,0.45)' },
   heroContent: { padding: 18 },
-  eyebrow: { color: '#f0c98f', fontSize: 11, fontWeight: '700', letterSpacing: 1.2, marginBottom: 6 },
-  h1: { color: '#fff', fontSize: 26, fontWeight: '700', lineHeight: 30, textShadowColor: 'rgba(0,0,0,0.45)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
-  sub: { color: '#ffffff', fontSize: 14, lineHeight: 20, marginTop: 6 },
+  eyebrow: { color: '#f0c98f', fontSize: 11, fontWeight: '700', letterSpacing: 1.2, marginBottom: 6, textShadowColor: 'rgba(0,0,0,0.85)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6 },
+  h1: { color: '#fff', fontSize: 26, fontWeight: '700', lineHeight: 30, textShadowColor: 'rgba(0,0,0,0.85)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6 },
+  sub: { color: '#ffffff', fontSize: 14, lineHeight: 20, marginTop: 6, fontWeight: '500', textShadowColor: 'rgba(0,0,0,0.85)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6 },
   heroBtns: { flexDirection: 'row', marginTop: 14 },
   btnGold: { flex: 1, backgroundColor: COLORS.accent, borderRadius: 10, paddingVertical: 11, alignItems: 'center', marginRight: 8 },
   btnGoldText: { color: COLORS.primary, fontWeight: '700', fontSize: 15 },
-  btnGhost: { flex: 1, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)', borderRadius: 10, paddingVertical: 11, alignItems: 'center' },
+  btnGhost: { flex: 1, borderWidth: 1.5, borderColor: '#fff', backgroundColor: 'rgba(11,20,40,0.55)', borderRadius: 10, paddingVertical: 11, alignItems: 'center' },
   btnGhostText: { color: '#fff', fontWeight: '600', fontSize: 15 },
 
   h2: { fontSize: 18, fontWeight: '700', color: COLORS.text, marginTop: 26, marginBottom: 12 },
