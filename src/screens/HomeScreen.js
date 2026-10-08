@@ -1,6 +1,7 @@
 import React from 'react';
-import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AGENT, CATEGORIES, COLORS } from '../config';
+import { LOGO } from '../logo';
 
 const POPULAR = ['Vancouver', 'Burnaby', 'Surrey', 'Richmond', 'Coquitlam', 'White Rock', 'Langley', 'Delta'];
 const residential = CATEGORIES[0];
@@ -10,11 +11,8 @@ export default function HomeScreen({ goTo, openWeb }) {
     <ScrollView contentContainerStyle={styles.pad} showsVerticalScrollIndicator={false}>
       {/* Top bar */}
       <View style={styles.topBar}>
-        <View style={styles.avatar}><Text style={styles.avatarText}>NB</Text></View>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.name}>Nader Bakhoum</Text>
-          <Text style={styles.creds}>PMP, P.Eng. · {AGENT.brokerage}</Text>
-        </View>
+        <Image source={LOGO} style={styles.logo} resizeMode="contain" />
+        <Text style={styles.name}>Home-Nader</Text>
       </View>
 
       {/* Hero */}
@@ -104,10 +102,8 @@ function ContactBtn({ label, onPress }) {
 const styles = StyleSheet.create({
   pad: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 32 },
   topBar: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
-  avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
-  avatarText: { color: COLORS.accent, fontWeight: '700', letterSpacing: 1 },
-  name: { fontSize: 17, fontWeight: '700', color: COLORS.text },
-  creds: { fontSize: 13, color: COLORS.muted, marginTop: 1 },
+  logo: { width: 56, height: 56, marginRight: 12 },
+  name: { fontSize: 24, fontWeight: '700', color: COLORS.text, letterSpacing: 0.3 },
 
   hero: { backgroundColor: COLORS.primary, borderRadius: 20, padding: 24, marginBottom: 8 },
   eyebrow: { color: COLORS.accent, fontSize: 12, fontWeight: '700', letterSpacing: 1.5, marginBottom: 10 },
