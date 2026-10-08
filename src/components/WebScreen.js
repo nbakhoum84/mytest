@@ -1,12 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { ActivityIndicator, BackHandler, Linking, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, BackHandler, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../config';
 
 // Full-screen in-app browser for pages on the website.
-// The Modal gets its own SafeAreaProvider (insets are not shared across modals on iOS),
-// and the main "Back to app" button sits at the bottom, away from the notch.
+// Rendered as an overlay inside the app (not a Modal, which is unreliable with
+// touches on iOS Expo Go). "Back to app" sits at the bottom, away from the notch.
 export default function WebScreen({ url, title, onClose }) {
   const ref = useRef(null);
   const [canGoBack, setCanGoBack] = useState(false);
@@ -26,9 +26,10 @@ export default function WebScreen({ url, title, onClose }) {
     return () => sub.remove();
   }, [url, canGoBack, onClose]);
 
+  if (!url) return null;
+
   return (
-    <Modal visible={!!url} animationType="slide" onRequestClose={onClose}>
-      <SafeAreaProvider>
+    <View style={styles.overlay}>
         <SafeAreaView style={styles.root}>
           <View style={styles.bar}>
             <TouchableOpacity onPress={onClose} hitSlop={12}><Text style={styles.link}>✕ Close</Text></TouchableOpacity>
@@ -57,12 +58,12 @@ export default function WebScreen({ url, title, onClose }) {
             </TouchableOpacity>
           </View>
         </SafeAreaView>
-      </SafeAreaProvider>
-    </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  overlay: { ...StyleSheet.absoluteFillObject, zIndex: 100, elevation: 100, backgroundColor: COLORS.bg },
   root: { flex: 1, backgroundColor: COLORS.bg },
   bar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 14, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   title: { flex: 1, textAlign: 'center', fontWeight: '600', color: COLORS.text, marginHorizontal: 8 },
