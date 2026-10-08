@@ -53,5 +53,5 @@ const styles = StyleSheet.create({
   tabs: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: COLORS.border },
   tab: { flex: 1, alignItems: 'center', paddingVertical: 14 },
   tabText: { color: COLORS.muted, fontSize: 13 },
-  tabOn: { color: COLORS.primary, fontWeight: '700' },
+  tabOn: { color: COLORS.accentDark, fontWeight: '700' },
 });

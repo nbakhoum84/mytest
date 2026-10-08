@@ -38,8 +38,8 @@ export const RESOURCES = [
 ];
 
 export const COLORS = {
-  bg: '#ffffff', text: '#111827', muted: '#6b7280', primary: '#0f4c81',
-  card: '#f3f4f6', border: '#e5e7eb',
+  bg: '#ffffff', text: '#14213d', muted: '#6b7280', primary: '#14213d',
+  accent: '#dbae77', accentDark: '#b8894f', card: '#f5f3ef', border: '#e7e2d9',
 };
 
 // Ratehub.ca widgets, same loader and keys as the website's calculators page.
