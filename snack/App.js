@@ -382,14 +382,14 @@ function HomeScreen({ goTo, openWeb }) {
         <View style={homeStyles.heroTint} pointerEvents="none" />
         <View style={homeStyles.heroContent}>
         <Text style={homeStyles.eyebrow}>METRO VANCOUVER REAL ESTATE</Text>
-        <Text style={homeStyles.h1}>Discover your dream home</Text>
-        <Text style={homeStyles.sub}>Residential, commercial and presale properties, with expert guidance from search to keys.</Text>
+        <Text style={homeStyles.h1}>Find your dream home</Text>
+        <Text style={homeStyles.sub}>Homes, condos and presales across Metro Vancouver.</Text>
         <View style={homeStyles.heroBtns}>
           <TouchableOpacity style={homeStyles.btnGold} onPress={() => goTo('browse')}>
-            <Text style={homeStyles.btnGoldText}>Browse listings</Text>
+            <Text style={homeStyles.btnGoldText}>Browse</Text>
           </TouchableOpacity>
           <TouchableOpacity style={homeStyles.btnGhost} onPress={() => openWeb(AGENT.calendly)}>
-            <Text style={homeStyles.btnGhostText}>Book a consultation</Text>
+            <Text style={homeStyles.btnGhostText}>Book a call</Text>
           </TouchableOpacity>
         </View>
         </View>
@@ -473,15 +473,15 @@ const homeStyles = StyleSheet.create({
   hero: { backgroundColor: COLORS.primary, borderRadius: 20, marginBottom: 8, overflow: 'hidden' },
   heroImage: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
   heroTint: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(11,20,40,0.90)' },
-  heroContent: { padding: 24 },
-  eyebrow: { color: '#f0c98f', fontSize: 12, fontWeight: '700', letterSpacing: 1.5, marginBottom: 10 },
-  h1: { color: '#fff', fontSize: 30, fontWeight: '700', lineHeight: 36, textShadowColor: 'rgba(0,0,0,0.45)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
-  sub: { color: '#ffffff', fontSize: 15, lineHeight: 22, marginTop: 12 },
-  heroBtns: { marginTop: 22 },
-  btnGold: { backgroundColor: COLORS.accent, borderRadius: 10, paddingVertical: 14, alignItems: 'center' },
-  btnGoldText: { color: COLORS.primary, fontWeight: '700', fontSize: 16 },
-  btnGhost: { borderWidth: 1, borderColor: 'rgba(255,255,255,0.4)', borderRadius: 10, paddingVertical: 14, alignItems: 'center', marginTop: 10 },
-  btnGhostText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  heroContent: { padding: 18 },
+  eyebrow: { color: '#f0c98f', fontSize: 11, fontWeight: '700', letterSpacing: 1.2, marginBottom: 6 },
+  h1: { color: '#fff', fontSize: 26, fontWeight: '700', lineHeight: 30, textShadowColor: 'rgba(0,0,0,0.45)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
+  sub: { color: '#ffffff', fontSize: 14, lineHeight: 20, marginTop: 6 },
+  heroBtns: { flexDirection: 'row', marginTop: 14 },
+  btnGold: { flex: 1, backgroundColor: COLORS.accent, borderRadius: 10, paddingVertical: 11, alignItems: 'center', marginRight: 8 },
+  btnGoldText: { color: COLORS.primary, fontWeight: '700', fontSize: 15 },
+  btnGhost: { flex: 1, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)', borderRadius: 10, paddingVertical: 11, alignItems: 'center' },
+  btnGhostText: { color: '#fff', fontWeight: '600', fontSize: 15 },
 
   h2: { fontSize: 18, fontWeight: '700', color: COLORS.text, marginTop: 26, marginBottom: 12 },
   pill: { borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.card, borderRadius: 22, paddingHorizontal: 16, paddingVertical: 10, marginRight: 8 },
