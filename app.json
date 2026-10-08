@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Home Nader",
+    "slug": "home-nader",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.homenader.app" },
+    "android": { "package": "com.homenader.app" }
+  }
+}
