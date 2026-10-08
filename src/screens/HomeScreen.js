@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { AGENT, CATEGORIES, COLORS, HERO_IMAGE } from '../config';
+import { AGENT, CATEGORIES, COLORS, HERO_IMAGE, LOGO_URL } from '../config';
 import { LOGO } from '../logo';
 
 const POPULAR = ['Vancouver', 'Burnaby', 'Surrey', 'Richmond', 'Coquitlam', 'White Rock', 'Langley', 'Delta'];
@@ -11,7 +11,7 @@ export default function HomeScreen({ goTo, openWeb }) {
     <ScrollView contentContainerStyle={styles.pad} showsVerticalScrollIndicator={false}>
       {/* Top bar */}
       <View style={styles.topBar}>
-        <Image source={LOGO} style={styles.logo} resizeMode="contain" />
+        <HeaderLogo />
         <Text style={styles.name}>Home-Nader</Text>
       </View>
 
@@ -94,6 +94,25 @@ export default function HomeScreen({ goTo, openWeb }) {
       <Text style={styles.footer}>{AGENT.brokerage} · {AGENT.address}</Text>
       <Text style={styles.footer}>Listing information is deemed reliable but not guaranteed.</Text>
     </ScrollView>
+  );
+}
+
+// Remote logo sized to its own shape; falls back to the bundled logo if it can't load.
+function HeaderLogo() {
+  const [failed, setFailed] = useState(false);
+  const [ratio, setRatio] = useState(1);
+  useEffect(() => {
+    Image.getSize(LOGO_URL, (w, h) => { if (w && h) setRatio(w / h); }, () => setFailed(true));
+  }, []);
+  const height = 56;
+  const width = Math.min(height * ratio, 160);
+  return (
+    <Image
+      source={failed ? LOGO : { uri: LOGO_URL }}
+      style={{ width: failed ? height : width, height, marginRight: 12 }}
+      resizeMode="contain"
+      onError={() => setFailed(true)}
+    />
   );
 }
 
