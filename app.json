@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Home-Nader",
-    "slug": "home-nader",
+    "slug": "real-home-van",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -24,6 +24,12 @@
     },
     "plugins": [
       "expo-web-browser"
-    ]
+    ],
+    "owner": "homenader",
+    "extra": {
+      "eas": {
+        "projectId": "ef147604-5085-4817-b2bd-8224da9edab7"
+      }
+    }
   }
 }
