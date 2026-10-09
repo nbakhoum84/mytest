@@ -30,7 +30,8 @@ eas build --platform android --profile preview
 The Android build finishes in the cloud (about 10-20 minutes) and gives you a download link for an
 **.apk** file. Open the link on an Android phone and install it (allow "install unknown apps" when asked).
 
-### iPhone
+### iPhone (TestFlight)
+Bundle ID `com.homenader.app`. Run these on a computer, in the project folder (the first run asks you to sign in with your Apple ID and a verification code):
 iPhone apps can only be installed through Apple (TestFlight or the App Store), which needs an
 **Apple Developer account ($99/year)**:
 ```
