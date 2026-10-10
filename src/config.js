@@ -61,6 +61,6 @@ export const LOGO_URL = 'https://cdn.lofty.com/image/fs/400919269340348/website/
 // Paste the Android .apk build link and the iPhone link (TestFlight or Expo Go/Snack) here.
 // A button with an empty link shows as "Link coming soon".
 export const APP_LINKS = {
-  android: '',
+  android: 'https://expo.dev/accounts/homenader/projects/real-home-van/builds/38d4dcc5-1076-4253-8a08-d6452c29e525',
   ios: '',
 };
