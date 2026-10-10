@@ -6,6 +6,10 @@ branch `claude/home-nader-app-code-qq450r`. The web app is published from a seco
 
 ## Rules
 - Only change what the website clearly shows has changed. Never invent values. If something is unclear, leave it and say so in the report.
+- WebFetch returns a summary, which can misread or reformat text (phone numbers, spacing, quotes, link paths). Treat a difference as real only if it is
+  substantive (a different number, address, city, link or key, not just formatting) AND a second WebFetch with a prompt asking for the exact
+  text/URL verbatim shows the same new value. When in doubt, change nothing and mention it in the report.
+- Never remove a working city, link or calculator because it was missing from one fetch; only remove it if the site clearly no longer has it on two fetches.
 - No design changes, no new features, no pull requests, no force pushes. Touch only the two repositories above.
 - If nothing changed: make no commit and no push. Just report "No website changes found".
 - If the build or any check fails: do not push or publish anything. Report the error.
