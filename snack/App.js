@@ -388,7 +388,7 @@ function HomeScreen({ goTo, openWeb }) {
       {/* Top bar */}
       <View style={homeStyles.topBar}>
         <HeaderLogo />
-        <Text style={homeStyles.name}>Home-Nader</Text>
+        <Text style={homeStyles.name}>home-nader</Text>
       </View>
 
       {/* Hero */}

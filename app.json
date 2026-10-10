@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Home-Nader",
+    "name": "home-nader",
     "slug": "real-home-van",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -38,8 +38,8 @@
       "bundler": "metro",
       "output": "single",
       "favicon": "./assets/icon.png",
-      "name": "Home-Nader",
-      "shortName": "Home-Nader",
+      "name": "home-nader",
+      "shortName": "home-nader",
       "backgroundColor": "#ffffff",
       "themeColor": "#14213d"
     }

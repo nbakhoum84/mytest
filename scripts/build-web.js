@@ -39,11 +39,11 @@ const tags = `
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 ${themeColor}<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Home-Nader">
+<meta name="apple-mobile-web-app-title" content="home-nader">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 `;
 const sw = `<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>`;
-html = html.replace(/<title>[\s\S]*?<\/title>/, '<title>Home-Nader</title>');
+html = html.replace(/<title>[\s\S]*?<\/title>/, '<title>home-nader</title>');
 html = html.replace(/src="\/_expo\/static\/js\/web\/[^"]+"/, 'src="app.js"').replace('href="/favicon.ico"', 'href="favicon.ico"');
 if (!html.includes('rel="manifest"')) html = html.replace('</head>', tags + '</head>');
 if (!html.includes('serviceWorker')) html = html.replace('</body>', sw + '</body>');

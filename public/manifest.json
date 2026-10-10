@@ -1,6 +1,6 @@
 {
-  "name": "Home-Nader",
-  "short_name": "Home-Nader",
+  "name": "home-nader",
+  "short_name": "home-nader",
   "description": "Metro Vancouver real estate: listings, mortgage calculators and more.",
   "start_url": "./",
   "scope": "./",

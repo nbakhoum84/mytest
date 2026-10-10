@@ -13,7 +13,7 @@ export default function HomeScreen({ goTo, openWeb }) {
       {/* Top bar */}
       <View style={styles.topBar}>
         <HeaderLogo />
-        <Text style={styles.name}>Home-Nader</Text>
+        <Text style={styles.name}>home-nader</Text>
       </View>
 
       {/* Hero */}
