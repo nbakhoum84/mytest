@@ -6,6 +6,17 @@ const path = require('path');
 
 execSync('npx expo export --platform web --output-dir dist', { stdio: 'inherit' });
 
+// Rewrite the JavaScript into an older syntax (ES2017) so older iPhones (Safari) can run it.
+// Without this, newer syntax in the bundle leaves a blank white page on older iOS versions.
+const esbuild = require('esbuild');
+const jsDir = path.join('dist', '_expo', 'static', 'js', 'web');
+for (const name of fs.readdirSync(jsDir).filter((n) => n.endsWith('.js'))) {
+  const p = path.join(jsDir, name);
+  const out = esbuild.transformSync(fs.readFileSync(p, 'utf8'), { target: 'es2017', minify: true, legalComments: 'none' });
+  fs.writeFileSync(p, out.code);
+  console.log('Transpiled to ES2017:', name, Math.round(out.code.length / 1024) + ' KB');
+}
+
 const file = path.join('dist', 'index.html');
 let html = fs.readFileSync(file, 'utf8');
 const themeColor = html.includes('name="theme-color"') ? '' : '<meta name="theme-color" content="#14213d">\n';
