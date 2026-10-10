@@ -56,3 +56,11 @@ export const CALCULATORS_PAGE = `${SITE_URL}/mortgage-calculators`;
 
 // Header logo (loaded from the web; falls back to the bundled logo if it can't load).
 export const LOGO_URL = 'https://cdn.lofty.com/image/fs/400919269340348/website/135866/cmsbuild/2026923_d682dca9df114f5a.jpeg';
+
+// Download links for the app itself (shown at the bottom of the Home tab).
+// Paste the Android .apk build link and the iPhone link (TestFlight or Expo Go/Snack) here.
+// A button with an empty link shows as "Link coming soon".
+export const APP_LINKS = {
+  android: '',
+  ios: '',
+};

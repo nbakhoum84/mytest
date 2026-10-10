@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { AGENT, CATEGORIES, COLORS, LOGO_URL } from '../config';
+import { AGENT, APP_LINKS, CATEGORIES, COLORS, LOGO_URL } from '../config';
 import { HERO } from '../hero';
 import { LOGO } from '../logo';
 
@@ -92,6 +92,13 @@ export default function HomeScreen({ goTo, openWeb }) {
         </View>
       </View>
 
+      {/* Get the app */}
+      <Text style={styles.h2}>Get the app</Text>
+      <View style={styles.getRow}>
+        <StoreCard label="Android" sub="Download for Android" url={APP_LINKS.android} />
+        <StoreCard label="Apple" sub="Download for iPhone" url={APP_LINKS.ios} />
+      </View>
+
       <Text style={styles.footer}>{AGENT.brokerage} · {AGENT.address}</Text>
       <Text style={styles.footer}>Listing information is deemed reliable but not guaranteed.</Text>
     </ScrollView>
@@ -114,6 +121,20 @@ function HeaderLogo() {
       resizeMode="contain"
       onError={() => setFailed(true)}
     />
+  );
+}
+
+function StoreCard({ label, sub, url }) {
+  const ready = !!url;
+  return (
+    <TouchableOpacity
+      style={[styles.storeCard, !ready && styles.storeOff]}
+      disabled={!ready}
+      onPress={() => Linking.openURL(url)}
+    >
+      <Text style={styles.storeLabel}>{label}</Text>
+      <Text style={styles.storeSub}>{ready ? sub : 'Link coming soon'}</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -166,6 +187,12 @@ const styles = StyleSheet.create({
   contactRow: { flexDirection: 'row', justifyContent: 'space-between' },
   contactBtn: { flex: 1, backgroundColor: COLORS.primary, borderRadius: 10, paddingVertical: 13, alignItems: 'center', marginHorizontal: 4 },
   contactBtnText: { color: '#fff', fontWeight: '600' },
+
+  getRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  storeCard: { width: '48.5%', backgroundColor: COLORS.primary, borderRadius: 14, paddingVertical: 18, paddingHorizontal: 16 },
+  storeOff: { opacity: 0.45 },
+  storeLabel: { color: '#fff', fontSize: 18, fontWeight: '700' },
+  storeSub: { color: COLORS.accent, fontSize: 13, marginTop: 4 },
 
   footer: { textAlign: 'center', color: COLORS.muted, fontSize: 12, marginTop: 14 },
 });
