@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Linking, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AGENT, APP_LINKS, CATEGORIES, COLORS, LOGO_URL } from '../config';
 import { HERO } from '../hero';
 import { LOGO } from '../logo';
@@ -93,11 +93,25 @@ export default function HomeScreen({ goTo, openWeb }) {
       </View>
 
       {/* Get the app */}
-      <Text style={styles.h2}>Get the app</Text>
-      <View style={styles.getRow}>
-        <StoreCard label="Android" sub="Download for Android" url={APP_LINKS.android} />
-        <StoreCard label="Apple" sub="Open on iPhone" url={APP_LINKS.ios} fallback={APP_LINKS.iosFallback} />
-      </View>
+      {Platform.OS === 'web' ? (
+        <>
+          <Text style={styles.h2}>Install this app</Text>
+          <View style={styles.installBox}>
+            <Text style={styles.installTitle}>iPhone (Safari)</Text>
+            <Text style={styles.installText}>Tap the Share button, then “Add to Home Screen”.</Text>
+            <Text style={[styles.installTitle, { marginTop: 12 }]}>Android (Chrome)</Text>
+            <Text style={styles.installText}>Tap the ⋮ menu, then “Install app” or “Add to Home screen”.</Text>
+          </View>
+        </>
+      ) : (
+        <>
+          <Text style={styles.h2}>Get the app</Text>
+          <View style={styles.getRow}>
+            <StoreCard label="Android" sub="Download for Android" url={APP_LINKS.android} />
+            <StoreCard label="Apple" sub="Open on iPhone" url={APP_LINKS.ios} fallback={APP_LINKS.iosFallback} />
+          </View>
+        </>
+      )}
 
       <Text style={styles.footer}>{AGENT.brokerage} · {AGENT.address}</Text>
       <Text style={styles.footer}>Listing information is deemed reliable but not guaranteed.</Text>
@@ -193,6 +207,10 @@ const styles = StyleSheet.create({
   storeOff: { opacity: 0.45 },
   storeLabel: { color: '#fff', fontSize: 18, fontWeight: '700' },
   storeSub: { color: COLORS.accent, fontSize: 13, marginTop: 4 },
+
+  installBox: { backgroundColor: COLORS.card, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: COLORS.border },
+  installTitle: { fontSize: 15, fontWeight: '700', color: COLORS.text },
+  installText: { fontSize: 14, color: COLORS.muted, marginTop: 4, lineHeight: 20 },
 
   footer: { textAlign: 'center', color: COLORS.muted, fontSize: 12, marginTop: 14 },
 });

@@ -46,6 +46,23 @@ eas submit --platform ios                  # uploads to App Store Connect / Test
 Without the terminal: in the Expo dashboard you can connect this GitHub repository to the project
 and start builds from the web page (Builds > Create build).
 
+## Web app (installable from your website, no app stores)
+The same app also runs as a web app that visitors add to their home screen
+(iPhone: Safari > Share > Add to Home Screen; Android: Chrome menu > Install app).
+
+```
+npm install
+npm run build:web      # builds the site into dist/ (manifest, icons and service worker included)
+```
+`web-build/home-nader-web.zip` is a ready-made copy of `dist/`. To publish it:
+1. Go to https://app.netlify.com/drop, create a free account, and drag the unzipped folder in.
+2. Netlify gives you a web address. Link to it from home-nader.com (for example a button "Install our app").
+3. Optional: in Netlify, add a custom domain such as `app.home-nader.com` (a CNAME record at your domain registrar).
+
+Host it at the root of its own address (not in a sub-folder like `home-nader.com/app`).
+The Ratehub calculators on the web run in the page itself; if a widget is blocked on another domain,
+the Quick tab or "Open on the website" still works.
+
 ## Notes
 - Listings come from the site's Lofty/IDX pages (no public API), so listing pages open in the in-app browser rather than rebuilt natively.
 - City URL patterns are confirmed for Burnaby only; check the other cities in `src/config.js`.

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Image, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Image, Linking, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
@@ -468,11 +468,25 @@ function HomeScreen({ goTo, openWeb }) {
       </View>
 
       {/* Get the app */}
-      <Text style={homeStyles.h2}>Get the app</Text>
-      <View style={homeStyles.getRow}>
-        <StoreCard label="Android" sub="Download for Android" url={APP_LINKS.android} />
-        <StoreCard label="Apple" sub="Open on iPhone" url={APP_LINKS.ios} fallback={APP_LINKS.iosFallback} />
-      </View>
+      {Platform.OS === 'web' ? (
+        <>
+          <Text style={homeStyles.h2}>Install this app</Text>
+          <View style={homeStyles.installBox}>
+            <Text style={homeStyles.installTitle}>iPhone (Safari)</Text>
+            <Text style={homeStyles.installText}>Tap the Share button, then “Add to Home Screen”.</Text>
+            <Text style={[homeStyles.installTitle, { marginTop: 12 }]}>Android (Chrome)</Text>
+            <Text style={homeStyles.installText}>Tap the ⋮ menu, then “Install app” or “Add to Home screen”.</Text>
+          </View>
+        </>
+      ) : (
+        <>
+          <Text style={homeStyles.h2}>Get the app</Text>
+          <View style={homeStyles.getRow}>
+            <StoreCard label="Android" sub="Download for Android" url={APP_LINKS.android} />
+            <StoreCard label="Apple" sub="Open on iPhone" url={APP_LINKS.ios} fallback={APP_LINKS.iosFallback} />
+          </View>
+        </>
+      )}
 
       <Text style={homeStyles.footer}>{AGENT.brokerage} · {AGENT.address}</Text>
       <Text style={homeStyles.footer}>Listing information is deemed reliable but not guaranteed.</Text>
@@ -568,6 +582,10 @@ const homeStyles = StyleSheet.create({
   storeOff: { opacity: 0.45 },
   storeLabel: { color: '#fff', fontSize: 18, fontWeight: '700' },
   storeSub: { color: COLORS.accent, fontSize: 13, marginTop: 4 },
+
+  installBox: { backgroundColor: COLORS.card, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: COLORS.border },
+  installTitle: { fontSize: 15, fontWeight: '700', color: COLORS.text },
+  installText: { fontSize: 14, color: COLORS.muted, marginTop: 4, lineHeight: 20 },
 
   footer: { textAlign: 'center', color: COLORS.muted, fontSize: 12, marginTop: 14 },
 });
@@ -996,7 +1014,7 @@ function App() {
 }
 
 const appStyles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: COLORS.bg },
+  root: { flex: 1, backgroundColor: COLORS.bg, ...(Platform.OS === 'web' ? { width: '100%', maxWidth: 520, alignSelf: 'center' } : {}) },
   tabs: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: COLORS.border },
   tab: { flex: 1, alignItems: 'center', paddingVertical: 14 },
   tabText: { color: COLORS.muted, fontSize: 13 },

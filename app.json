@@ -33,6 +33,15 @@
       "eas": {
         "projectId": "ef147604-5085-4817-b2bd-8224da9edab7"
       }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/icon.png",
+      "name": "Home-Nader",
+      "shortName": "Home-Nader",
+      "backgroundColor": "#ffffff",
+      "themeColor": "#14213d"
     }
   }
 }
