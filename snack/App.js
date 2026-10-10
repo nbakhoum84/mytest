@@ -70,7 +70,10 @@ const LOGO_URL = 'https://cdn.lofty.com/image/fs/400919269340348/website/135866/
 // A button with an empty link shows as "Link coming soon".
 const APP_LINKS = {
   android: 'https://expo.dev/accounts/homenader/projects/real-home-van/builds/38d4dcc5-1076-4253-8a08-d6452c29e525',
-  ios: '',
+  // Opens the app in Expo Go (your saved Snack). Replace with a TestFlight link once available.
+  ios: 'exp://u.expo.dev/933fd9c0-1666-11e7-afca-d980795c5824?runtime-version=exposdk%3A54.0.0&channel-name=production&snack=%40homenader%2Fa86997&snack-channel=3JQasN4BZ0',
+  // Used if the phone can't open the link above (for example Expo Go is not installed).
+  iosFallback: 'https://snack.expo.dev/@homenader/a86997',
 };
 
 // ---- src/logo.js
@@ -468,7 +471,7 @@ function HomeScreen({ goTo, openWeb }) {
       <Text style={homeStyles.h2}>Get the app</Text>
       <View style={homeStyles.getRow}>
         <StoreCard label="Android" sub="Download for Android" url={APP_LINKS.android} />
-        <StoreCard label="Apple" sub="Download for iPhone" url={APP_LINKS.ios} />
+        <StoreCard label="Apple" sub="Open on iPhone" url={APP_LINKS.ios} fallback={APP_LINKS.iosFallback} />
       </View>
 
       <Text style={homeStyles.footer}>{AGENT.brokerage} · {AGENT.address}</Text>
@@ -496,13 +499,13 @@ function HeaderLogo() {
   );
 }
 
-function StoreCard({ label, sub, url }) {
+function StoreCard({ label, sub, url, fallback }) {
   const ready = !!url;
   return (
     <TouchableOpacity
       style={[homeStyles.storeCard, !ready && homeStyles.storeOff]}
       disabled={!ready}
-      onPress={() => Linking.openURL(url)}
+      onPress={() => Linking.openURL(url).catch(() => fallback && Linking.openURL(fallback))}
     >
       <Text style={homeStyles.storeLabel}>{label}</Text>
       <Text style={homeStyles.storeSub}>{ready ? sub : 'Link coming soon'}</Text>

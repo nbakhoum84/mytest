@@ -62,5 +62,8 @@ export const LOGO_URL = 'https://cdn.lofty.com/image/fs/400919269340348/website/
 // A button with an empty link shows as "Link coming soon".
 export const APP_LINKS = {
   android: 'https://expo.dev/accounts/homenader/projects/real-home-van/builds/38d4dcc5-1076-4253-8a08-d6452c29e525',
-  ios: '',
+  // Opens the app in Expo Go (your saved Snack). Replace with a TestFlight link once available.
+  ios: 'exp://u.expo.dev/933fd9c0-1666-11e7-afca-d980795c5824?runtime-version=exposdk%3A54.0.0&channel-name=production&snack=%40homenader%2Fa86997&snack-channel=3JQasN4BZ0',
+  // Used if the phone can't open the link above (for example Expo Go is not installed).
+  iosFallback: 'https://snack.expo.dev/@homenader/a86997',
 };

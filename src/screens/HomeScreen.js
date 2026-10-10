@@ -96,7 +96,7 @@ export default function HomeScreen({ goTo, openWeb }) {
       <Text style={styles.h2}>Get the app</Text>
       <View style={styles.getRow}>
         <StoreCard label="Android" sub="Download for Android" url={APP_LINKS.android} />
-        <StoreCard label="Apple" sub="Download for iPhone" url={APP_LINKS.ios} />
+        <StoreCard label="Apple" sub="Open on iPhone" url={APP_LINKS.ios} fallback={APP_LINKS.iosFallback} />
       </View>
 
       <Text style={styles.footer}>{AGENT.brokerage} · {AGENT.address}</Text>
@@ -124,13 +124,13 @@ function HeaderLogo() {
   );
 }
 
-function StoreCard({ label, sub, url }) {
+function StoreCard({ label, sub, url, fallback }) {
   const ready = !!url;
   return (
     <TouchableOpacity
       style={[styles.storeCard, !ready && styles.storeOff]}
       disabled={!ready}
-      onPress={() => Linking.openURL(url)}
+      onPress={() => Linking.openURL(url).catch(() => fallback && Linking.openURL(fallback))}
     >
       <Text style={styles.storeLabel}>{label}</Text>
       <Text style={styles.storeSub}>{ready ? sub : 'Link coming soon'}</Text>
