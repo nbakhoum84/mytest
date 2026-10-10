@@ -17,6 +17,20 @@ for (const name of fs.readdirSync(jsDir).filter((n) => n.endsWith('.js'))) {
   console.log('Transpiled to ES2017:', name, Math.round(out.code.length / 1024) + ' KB');
 }
 
+// Flatten the output: GitHub's drag-and-drop upload can skip folders, so put every file at the top
+// level of dist/ (app.js, images, index.html) and use relative paths. No folders needed.
+const bundleName = fs.readdirSync(jsDir).find((n) => n.endsWith('.js'));
+let code = fs.readFileSync(path.join(jsDir, bundleName), 'utf8');
+const assetDir = path.join('dist', 'assets', 'assets');
+if (fs.existsSync(assetDir)) {
+  for (const a of fs.readdirSync(assetDir)) fs.renameSync(path.join(assetDir, a), path.join('dist', a));
+}
+code = code.split('"/assets/assets/').join('"');
+fs.writeFileSync(path.join('dist', 'app.js'), code);
+fs.rmSync(path.join('dist', '_expo'), { recursive: true, force: true });
+fs.rmSync(path.join('dist', 'assets'), { recursive: true, force: true });
+fs.rmSync(path.join('dist', 'metadata.json'), { force: true });
+
 const file = path.join('dist', 'index.html');
 let html = fs.readFileSync(file, 'utf8');
 const themeColor = html.includes('name="theme-color"') ? '' : '<meta name="theme-color" content="#14213d">\n';
@@ -30,6 +44,7 @@ ${themeColor}<meta name="apple-mobile-web-app-capable" content="yes">
 `;
 const sw = `<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>`;
 html = html.replace(/<title>[\s\S]*?<\/title>/, '<title>Home-Nader</title>');
+html = html.replace(/src="\/_expo\/static\/js\/web\/[^"]+"/, 'src="app.js"').replace('href="/favicon.ico"', 'href="favicon.ico"');
 if (!html.includes('rel="manifest"')) html = html.replace('</head>', tags + '</head>');
 if (!html.includes('serviceWorker')) html = html.replace('</body>', sw + '</body>');
 fs.writeFileSync(file, html);

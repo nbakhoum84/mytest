@@ -59,6 +59,7 @@ npm run build:web      # builds the site into dist/ (manifest, icons and service
 2. Netlify gives you a web address. Link to it from home-nader.com (for example a button "Install our app").
 3. Optional: in Netlify, add a custom domain such as `app.home-nader.com` (a CNAME record at your domain registrar).
 
+The build is flat (no folders, so it can be uploaded to GitHub by drag-and-drop) and its code is converted to an older JavaScript syntax so older iPhones can run it.
 Host it at the root of its own address (not in a sub-folder like `home-nader.com/app`).
 The Ratehub calculators on the web run in the page itself; if a widget is blocked on another domain,
 the Quick tab or "Open on the website" still works.
