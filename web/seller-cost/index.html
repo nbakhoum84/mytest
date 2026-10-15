@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Seller Cost</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<meta name="theme-color" content="#0f6b4c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+  :root{--bg:#fff;--text:#111827;--muted:#6b7280;--primary:#0f6b4c;--card:#f3f4f6;--border:#e5e7eb;--bad:#b91c1c}
+  @media(prefers-color-scheme:dark){:root{--bg:#111827;--text:#f9fafb;--muted:#9ca3af;--primary:#34d399;--card:#1f2937;--border:#374151;--bad:#f87171}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,sans-serif;padding-bottom:64px}
+  main{max-width:560px;margin:0 auto;padding:20px}
+  h1{font-size:22px;margin:0 0 16px}
+  label{color:var(--muted);display:block;margin-bottom:6px}
+  input[type=text]{width:100%;font-size:18px;padding:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);margin-bottom:16px}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+  .total{background:var(--card);padding:10px;border-radius:8px;margin-top:8px;border:0;color:var(--primary);font-weight:700;font-size:18px}
+  .total.neg{color:var(--bad)}
+  .note{color:var(--muted);font-size:12px;margin-top:16px}
+  .bad{color:var(--bad)}
+  .step{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer}
+  .done{text-decoration:line-through;color:var(--muted)}
+  nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--bg);border-top:1px solid var(--border)}
+  nav button{flex:1;padding:14px;border:0;background:none;color:var(--muted);font-size:14px}
+  nav button.on{color:var(--primary);font-weight:700}
+  [hidden]{display:none}
+</style>
+</head>
+<body>
+<main>
+  <section id="costs">
+    <h1>Seller Cost</h1>
+    <label for="price">Expected sale price (CAD)</label>
+    <input id="price" type="text" inputmode="numeric" value="1000000">
+    <label for="mortgage">Mortgage balance to pay out</label>
+    <input id="mortgage" type="text" inputmode="numeric" value="0">
+    <label for="penalty">Prepayment penalty (if any)</label>
+    <input id="penalty" type="text" inputmode="numeric" value="0">
+    <label for="legal">Legal fees (before GST)</label>
+    <input id="legal" type="text" inputmode="numeric" value="1500">
+    <label for="prep">Staging, photos &amp; cleaning</label>
+    <input id="prep" type="text" inputmode="numeric" value="1500">
+    <label for="first">Commission % on first $100,000</label>
+    <input id="first" type="text" inputmode="decimal" value="7">
+    <label for="rest">Commission % on the balance</label>
+    <input id="rest" type="text" inputmode="decimal" value="3">
+    <div class="row"><span>Sale price</span><span id="hp"></span></div>
+    <div id="items"></div>
+    <div class="row"><span>Total selling costs</span><span id="sub"></span></div>
+    <div class="row"><span>Mortgage payout</span><span id="mp"></span></div>
+    <div class="row total" id="tr"><span>Estimated net proceeds</span><span id="total"></span></div>
+    <p class="note bad" id="nx"></p>
+    <p class="note">Estimate only. Commission is negotiable; defaults are a typical BC structure (7% of the first $100,000, 3% of the balance) plus 5% GST. Excludes property tax and strata adjustments, moving costs and any tax owing on the sale (a principal residence is normally exempt from capital gains tax). Confirm figures with your realtor and lawyer.</p>
+  </section>
+  <section id="list" hidden>
+    <h1>Seller checklist (<span id="count">0</span>/10)</h1>
+    <div id="steps"></div>
+  </section>
+</main>
+<nav><button id="t-costs" class="on">Costs</button><button id="t-list">Checklist</button></nav>
+<script>
+const STEPS=['Meet a realtor & agree on list price','Sign listing agreement','Declutter, clean & stage','Professional photos','Collect strata documents (if any)','List and hold showings','Review offers & negotiate','Remove subjects','Arrange mortgage payout & lawyer','Hand over keys on possession day'];
+const $=id=>document.getElementById(id);
+const num=id=>parseFloat($(id).value.replace(/[^0-9.]/g,''))||0;
+const money=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('en-CA');
+// Keep in sync with apps/seller-cost/src/costs.js
+const commission=(p,f,r)=>Math.round((Math.min(p,1e5)*f+Math.max(0,p-1e5)*r)*100)/100;
+function calc(){
+  const p=num('price'),mort=num('mortgage'),pen=num('penalty'),legal=num('legal'),prep=num('prep');
+  const c=commission(p,num('first')/100,num('rest')/100);
+  const items=[['Realtor commission',c],['GST on commission (5%)',c*.05],['Legal fees',legal],['GST on legal fees (5%)',legal*.05],['Staging, photos & cleaning',prep],...(pen>0?[['Mortgage prepayment penalty',pen]]:[])];
+  $('items').innerHTML=items.map(([l,a])=>`<div class="row"><span>${l}</span><span>-${money(a)}</span></div>`).join('');
+  const sc=items.reduce((s,i)=>s+i[1],0),net=p-sc-mort;
+  $('hp').textContent=money(p);$('sub').textContent=money(sc);$('mp').textContent='-'+money(mort);
+  $('total').textContent=money(net);$('tr').classList.toggle('neg',net<0);
+  $('nx').textContent=p>0&&net<0?'Costs and mortgage exceed the sale price: you would owe money at closing.':'';
+}
+let done=[];try{done=JSON.parse(localStorage.getItem('sc-done')||'[]')}catch(e){}
+function renderSteps(){
+  $('steps').innerHTML=STEPS.map((s,i)=>`<div class="step" data-i="${i}"><span>${done[i]?'☑':'☐'}</span><span class="${done[i]?'done':''}">${s}</span></div>`).join('');
+  $('count').textContent=done.filter(Boolean).length;
+}
+$('steps').onclick=e=>{const d=e.target.closest('.step');if(!d)return;const i=+d.dataset.i;done[i]=!done[i];try{localStorage.setItem('sc-done',JSON.stringify(done))}catch(e){}renderSteps()};
+['price','mortgage','penalty','legal','prep','first','rest'].forEach(id=>$(id).oninput=calc);
+function tab(t){$('costs').hidden=t!=='costs';$('list').hidden=t!=='list';$('t-costs').className=t==='costs'?'on':'';$('t-list').className=t==='list'?'on':''}
+$('t-costs').onclick=()=>tab('costs');$('t-list').onclick=()=>tab('list');
+calc();renderSteps();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
