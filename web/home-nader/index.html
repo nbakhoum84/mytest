@@ -82,7 +82,7 @@ const CITIES=['Abbotsford','Burnaby','Coquitlam','Delta','Langley','New Westmins
 const slug=c=>c.toLowerCase().replace(/\s+/g,'-');
 const CATS=[
   {label:'Residential',url:c=>`${SITE}/${slug(c)}-listings`},
-  {label:'Commercial',url:c=>`${SITE}/${slug(c)}`},
+  {label:'Commercial',url:c=>c==='White Rock'?`${SITE}/pages/commercial-white-rock`:`${SITE}/${slug(c)}`},
   {label:'Presales / New',url:c=>`${SITE}/presales-${slug(c)}`},
   {label:'Sold',url:c=>`${SITE}/${slug(c)}-sold-listings`}];
 const RES=[['Buyer’s guide',`${SITE}/home-buyers-guide`],['FAQ',`${SITE}/faq`],['Blog & market news',`${SITE}/blog`],

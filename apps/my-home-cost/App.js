@@ -23,8 +23,9 @@ function Costs() {
   const [price, setPrice] = useState('900000');
   const [ftb, setFtb] = useState(false);
   const [nb, setNb] = useState(false); // only one exemption can be claimed
+  const [gst, setGst] = useState(false);
   const p = parseFloat(price.replace(/[^0-9.]/g, '')) || 0;
-  const { items, closingTotal, total, note } = estimateClosingCosts({ price: p, firstTimeBuyer: ftb, newBuild: nb });
+  const { items, closingTotal, gst: gstAmount, total, note } = estimateClosingCosts({ price: p, firstTimeBuyer: ftb, newBuild: nb, gst });
   return (
     <ScrollView contentContainerStyle={styles.pad}>
       <Text style={styles.h1}>My Home Cost</Text>
@@ -37,6 +38,10 @@ function Costs() {
       <View style={styles.row}>
         <Text style={styles.label}>Newly built home exemption</Text>
         <Switch value={nb} onValueChange={(v) => { setNb(v); if (v) setFtb(false); }} />
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>New build: add 5% GST</Text>
+        <Switch value={gst} onValueChange={setGst} />
       </View>
       {note && <Text style={styles.note}>{note}</Text>}
       <View style={styles.row}>
@@ -53,11 +58,17 @@ function Costs() {
         <Text style={styles.text}>Closing costs subtotal</Text>
         <Text style={styles.text}>{money(closingTotal)}</Text>
       </View>
+      {gst && (
+        <View style={styles.row}>
+          <Text style={styles.text}>GST on new build (5%, before rebate)</Text>
+          <Text style={styles.text}>{money(gstAmount)}</Text>
+        </View>
+      )}
       <View style={[styles.row, styles.total]}>
-        <Text style={styles.totalText}>Total cost (price + closing costs)</Text>
+        <Text style={styles.totalText}>Total cost (price + closing costs{gst ? ' + GST' : ''})</Text>
         <Text style={styles.totalText}>{money(total)}</Text>
       </View>
-      <Text style={styles.note}>Estimate only. First-time buyer exemption: up to $8,000 off for homes up to $835,000, phasing out to $860,000. Newly built home exemption: whole tax waived up to $1,100,000, phasing out to $1,150,000 (only one exemption can be claimed). Confirm eligibility with your lawyer. Excludes GST on new builds and adjustments.</Text>
+      <Text style={styles.note}>Estimate only. First-time buyer exemption: up to $8,000 off for homes up to $835,000, phasing out to $860,000. Newly built home exemption: whole tax waived up to $1,100,000, phasing out to $1,150,000 (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Excludes adjustments.</Text>
     </ScrollView>
   );
 }

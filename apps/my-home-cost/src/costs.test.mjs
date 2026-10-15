@@ -25,4 +25,8 @@ assert.strictEqual(nb.items[0].amount + nb.items[1].amount, 0);
 const r = estimateClosingCosts({ price: 900000 });
 assert.strictEqual(r.closingTotal, 18700);
 assert.strictEqual(r.total, 918700);
+const g = estimateClosingCosts({ price: 1000000, gst: true });
+assert.strictEqual(g.gst, 50000);
+assert.strictEqual(g.total, 1000000 + g.closingTotal + 50000);
+assert.strictEqual(estimateClosingCosts({ price: 1000000 }).gst, 0);
 console.log('costs tests passed');
