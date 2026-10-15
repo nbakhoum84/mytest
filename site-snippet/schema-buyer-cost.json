@@ -20,23 +20,23 @@
     },
     {
       "@type": "WebPage",
-      "@id": "https://home-nader.com/my-home-cost#webpage",
-      "url": "https://home-nader.com/my-home-cost",
-      "name": "My Home Cost Calculator BC | Closing Costs and Property Transfer Tax",
+      "@id": "https://home-nader.com/buyer-cost#webpage",
+      "url": "https://home-nader.com/buyer-cost",
+      "name": "Buyer Cost Calculator BC | Closing Costs and Property Transfer Tax",
       "description": "Free BC home buyer closing cost calculator. Estimate property transfer tax, first-time buyer and newly built home exemptions, GST, legal fees and inspection, with a buyer checklist.",
       "inLanguage": "en-CA",
       "about": {
-        "@id": "https://home-nader.com/my-home-cost#app"
+        "@id": "https://home-nader.com/buyer-cost#app"
       },
       "breadcrumb": {
-        "@id": "https://home-nader.com/my-home-cost#breadcrumb"
+        "@id": "https://home-nader.com/buyer-cost#breadcrumb"
       }
     },
     {
       "@type": "WebApplication",
-      "@id": "https://home-nader.com/my-home-cost#app",
-      "name": "My Home Cost",
-      "url": "https://home-nader.com/my-home-cost",
+      "@id": "https://home-nader.com/buyer-cost#app",
+      "name": "Buyer Cost",
+      "url": "https://home-nader.com/buyer-cost",
       "description": "Free BC home buyer closing cost calculator. Estimate property transfer tax, first-time buyer and newly built home exemptions, GST, legal fees and inspection, with a buyer checklist.",
       "applicationCategory": "FinanceApplication",
       "operatingSystem": "Any (web browser)",
@@ -54,7 +54,7 @@
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://home-nader.com/my-home-cost#breadcrumb",
+      "@id": "https://home-nader.com/buyer-cost#breadcrumb",
       "itemListElement": [
         {
           "@type": "ListItem",
@@ -65,8 +65,8 @@
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "My Home Cost",
-          "item": "https://home-nader.com/my-home-cost"
+          "name": "Buyer Cost",
+          "item": "https://home-nader.com/buyer-cost"
         }
       ]
     }
