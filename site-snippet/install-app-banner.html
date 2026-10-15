@@ -1,0 +1,22 @@
+<!-- Home Nader: "Get the app" banner. Paste into Lofty's site-wide footer/custom code so it shows on every page.
+     Replace APP_STORE_URL and PLAY_STORE_URL with the real store links once the app is published. -->
+<style>
+  #hn-app-bar{position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#0f4c81;color:#fff;
+    font:14px/1.4 system-ui,sans-serif;padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between}
+  #hn-app-bar a{color:#fff;text-decoration:underline;cursor:pointer}
+  #hn-app-steps{display:none;position:fixed;left:0;right:0;bottom:48px;z-index:99999;background:#fff;color:#111827;
+    font:14px/1.5 system-ui,sans-serif;padding:16px;border-top:3px solid #0f4c81;max-height:60vh;overflow:auto}
+  #hn-app-steps li{margin:6px 0}
+</style>
+<div id="hn-app-steps">
+  <strong>Install the Home Nader app</strong>
+  <ol>
+    <li>On your phone, open the <a href="APP_STORE_URL">App Store</a> (iPhone) or <a href="PLAY_STORE_URL">Google Play</a> (Android).</li>
+    <li>Search for <b>Home Nader</b> and tap <b>Get</b> / <b>Install</b>.</li>
+    <li>Open the app. Browse listings, use the mortgage calculator, or contact Nader directly.</li>
+  </ol>
+</div>
+<div id="hn-app-bar">
+  <span>Get the Home Nader app on your phone</span>
+  <a onclick="var s=document.getElementById('hn-app-steps');s.style.display=s.style.display==='block'?'none':'block'">Install steps</a>
+</div>
