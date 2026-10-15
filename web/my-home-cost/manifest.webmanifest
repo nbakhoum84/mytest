@@ -1,6 +1,6 @@
 {
-  "name": "Closing Costs BC",
-  "short_name": "Closing Costs",
+  "name": "My Home Cost",
+  "short_name": "My Home Cost",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
