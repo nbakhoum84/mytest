@@ -1,0 +1,23 @@
+<!-- Home Nader: "Use the app" banner. Paste into Lofty's site-wide footer/custom code so it shows on every page.
+     APP_URL must point to where web/my-home-cost is hosted (default assumes GitHub Pages). -->
+<style>
+  #hn-app-bar{position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#0f4c81;color:#fff;
+    font:14px/1.4 system-ui,sans-serif;padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between}
+  #hn-app-bar a{color:#fff;text-decoration:underline;cursor:pointer;white-space:nowrap}
+  #hn-app-steps{display:none;position:fixed;left:0;right:0;bottom:48px;z-index:99999;background:#fff;color:#111827;
+    font:14px/1.5 system-ui,sans-serif;padding:16px;border-top:3px solid #0f4c81;max-height:60vh;overflow:auto}
+  #hn-app-steps li{margin:6px 0}
+</style>
+<div id="hn-app-steps">
+  <strong>Use our free apps. No store needed.</strong>
+  <ol>
+    <li>On your phone, open an app: <a href="https://nbakhoum84.github.io/mytest/home-nader/" target="_blank" rel="noopener"><b>Home Nader</b></a> (listings, mortgage calculator, contact) or <a href="https://nbakhoum84.github.io/mytest/my-home-cost/" target="_blank" rel="noopener"><b>My Home Cost</b></a>.</li>
+    <li><b>iPhone (Safari):</b> tap the Share button, then <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+    <li><b>Android (Chrome):</b> tap the ⋮ menu, then <b>Install app</b> (or <b>Add to Home screen</b>).</li>
+    <li>Open it from your home screen like any other app. It also works offline.</li>
+  </ol>
+</div>
+<div id="hn-app-bar">
+  <span>Free Home Nader apps: install on your phone</span>
+  <a onclick="var s=document.getElementById('hn-app-steps');s.style.display=s.style.display==='block'?'none':'block'">How to install</a>
+</div>

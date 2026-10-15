@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "My Home Cost",
+    "slug": "my-home-cost",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.homenader.myhomecost" },
+    "android": { "package": "com.homenader.myhomecost" }
+  }
+}
