@@ -10,18 +10,30 @@ export function propertyTransferTax(price) {
   );
 }
 
+// BC first-time home buyers' exemption (registrations from April 1, 2024):
+// full tax waived up to $500k; a flat $8,000 off from $500k to $835k;
+// phased out ($320 less per $1,000) from $835k to $860k; none at $860k or more.
+export function firstTimeBuyerExemption(price) {
+  const tax = propertyTransferTax(price);
+  if (price >= 860000) return 0;
+  const full = Math.min(tax, 8000);
+  return price <= 835000 ? full : full * ((860000 - price) / 25000);
+}
+
 // Estimate only: legal, inspection, appraisal and adjustments are typical ranges.
 export function estimateClosingCosts({ price, legal = 1800, inspection = 500, appraisal = 400, firstTimeBuyer = false }) {
-  const ptt = firstTimeBuyer && price <= 835000 ? 0 : propertyTransferTax(price);
+  const exemption = firstTimeBuyer ? firstTimeBuyerExemption(price) : 0;
   const items = [
-    { label: 'Property transfer tax', amount: ptt },
+    { label: 'Property transfer tax', amount: propertyTransferTax(price) },
+    ...(firstTimeBuyer ? [{ label: 'First-time buyer exemption', amount: -exemption }] : []),
     { label: 'Legal fees & disbursements', amount: legal },
     { label: 'Home inspection', amount: inspection },
     { label: 'Appraisal', amount: appraisal },
   ];
   const closingTotal = items.reduce((s, i) => s + i.amount, 0);
-  return { items, closingTotal, total: price + closingTotal };
+  const note = firstTimeBuyer && exemption === 0 ? 'No exemption applies at $860,000 or more.' : null;
+  return { items, closingTotal, total: price + closingTotal, note };
 }
 
 export const money = (n) =>
-  '$' + Math.round(n).toLocaleString('en-CA');
+  (n < 0 ? '-$' : '$') + Math.abs(Math.round(n)).toLocaleString('en-CA');

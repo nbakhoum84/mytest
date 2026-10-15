@@ -23,7 +23,7 @@ function Costs() {
   const [price, setPrice] = useState('900000');
   const [ftb, setFtb] = useState(false);
   const p = parseFloat(price.replace(/[^0-9.]/g, '')) || 0;
-  const { items, closingTotal, total } = estimateClosingCosts({ price: p, firstTimeBuyer: ftb });
+  const { items, closingTotal, total, note } = estimateClosingCosts({ price: p, firstTimeBuyer: ftb });
   return (
     <ScrollView contentContainerStyle={styles.pad}>
       <Text style={styles.h1}>My Home Cost</Text>
@@ -33,6 +33,7 @@ function Costs() {
         <Text style={styles.label}>First-time buyer exemption</Text>
         <Switch value={ftb} onValueChange={setFtb} />
       </View>
+      {note && <Text style={styles.note}>{note}</Text>}
       <View style={styles.row}>
         <Text style={styles.text}>House price</Text>
         <Text style={styles.text}>{money(p)}</Text>
@@ -51,7 +52,7 @@ function Costs() {
         <Text style={styles.totalText}>Total cost (price + closing costs)</Text>
         <Text style={styles.totalText}>{money(total)}</Text>
       </View>
-      <Text style={styles.note}>Estimate only. Exemption shown applies up to $835,000; confirm eligibility with your lawyer. Excludes GST on new builds and adjustments.</Text>
+      <Text style={styles.note}>Estimate only. First-time buyer exemption: up to $8,000 off for homes up to $835,000, phasing out to $860,000. Confirm eligibility with your lawyer. Excludes GST on new builds and adjustments.</Text>
     </ScrollView>
   );
 }
