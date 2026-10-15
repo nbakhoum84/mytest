@@ -16,7 +16,7 @@ return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 ' + (N + 4) + ' '
 function build() {
 var style = document.createElement('style');
 style.textContent =
-'#hn-sc-card{box-sizing:border-box;width:880px;max-width:calc(100vw - 32px);margin:36px 0;position:relative;left:50%;transform:translateX(-50%);padding:24px;background:#f4f2ee;border:1px solid #e6e2d9;border-radius:16px;display:flex;gap:24px;align-items:center;justify-content:space-between;font-family:inherit;color:inherit}' +
+'#hn-sc-card{box-sizing:border-box;width:960px;max-width:100%;margin:36px 0;position:relative;left:50%;transform:translateX(-50%);padding:24px;background:#f4f2ee;border:1px solid #e6e2d9;border-radius:16px;display:flex;gap:24px;align-items:center;justify-content:space-between;font-family:inherit;color:inherit}' +
 '#hn-sc-card h3{margin:0 0 12px;font-size:26px;font-weight:300;line-height:1.2;color:inherit}' +
 '#hn-sc-card p{margin:0 0 16px;font-size:15px;line-height:1.5;color:inherit}' +
 '#hn-sc-card a.hn-sc-btn{display:inline-block;padding:14px 26px;background:#c9a063;color:#111;border-radius:8px;font-size:15px;font-weight:500;text-decoration:none}' +
@@ -56,7 +56,7 @@ if (!ref && !footer && tries++ < 20) return false;
 var card = build();
 if (ref) {
 var cs = getComputedStyle(ref);
-[['width', ref.getBoundingClientRect().width + 'px'], ['max-width', '100%'],
+[['width', ref.offsetWidth + 'px'], ['max-width', '100%'],
 ['margin', cs.marginTop + ' auto ' + cs.marginBottom], ['position', 'static'], ['transform', 'none'],
 ['background-color', cs.backgroundColor], ['border', cs.border], ['border-radius', cs.borderRadius],
 ['padding', cs.padding]].forEach(function (r) { card.style.setProperty(r[0], r[1], 'important'); });
