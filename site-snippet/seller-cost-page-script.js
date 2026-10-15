@@ -8,7 +8,7 @@
   if (document.getElementById('hn-sc-bar')) return;
   var URL = 'https://nbakhoum84.github.io/mytest/seller-cost/';
   var css =
-    '#hn-sc-bar{position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#0f6b4c;color:#fff;font:14px/1.4 system-ui,sans-serif;padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between}' +
+    '#hn-sc-bar{position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#0f6b4c;color:#fff;font:14px/1.4 system-ui,sans-serif;padding:10px 80px 10px 140px;display:flex;gap:12px;align-items:center;justify-content:space-between}' +
     '#hn-sc-bar a{color:#fff;text-decoration:underline;cursor:pointer;white-space:nowrap}' +
     '#hn-sc-steps{display:none;position:fixed;left:0;right:0;bottom:48px;z-index:99999;background:#fff;color:#111827;font:14px/1.5 system-ui,sans-serif;padding:16px;border-top:3px solid #0f6b4c;max-height:60vh;overflow:auto}' +
     '#hn-sc-steps li{margin:6px 0}';
