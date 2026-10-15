@@ -22,8 +22,9 @@ const STEPS = [
 function Costs() {
   const [price, setPrice] = useState('900000');
   const [ftb, setFtb] = useState(false);
+  const [nb, setNb] = useState(false); // only one exemption can be claimed
   const p = parseFloat(price.replace(/[^0-9.]/g, '')) || 0;
-  const { items, closingTotal, total, note } = estimateClosingCosts({ price: p, firstTimeBuyer: ftb });
+  const { items, closingTotal, total, note } = estimateClosingCosts({ price: p, firstTimeBuyer: ftb, newBuild: nb });
   return (
     <ScrollView contentContainerStyle={styles.pad}>
       <Text style={styles.h1}>My Home Cost</Text>
@@ -31,7 +32,11 @@ function Costs() {
       <TextInput style={styles.input} keyboardType="numeric" value={price} onChangeText={setPrice} />
       <View style={styles.row}>
         <Text style={styles.label}>First-time buyer exemption</Text>
-        <Switch value={ftb} onValueChange={setFtb} />
+        <Switch value={ftb} onValueChange={(v) => { setFtb(v); if (v) setNb(false); }} />
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Newly built home exemption</Text>
+        <Switch value={nb} onValueChange={(v) => { setNb(v); if (v) setFtb(false); }} />
       </View>
       {note && <Text style={styles.note}>{note}</Text>}
       <View style={styles.row}>
@@ -52,7 +57,7 @@ function Costs() {
         <Text style={styles.totalText}>Total cost (price + closing costs)</Text>
         <Text style={styles.totalText}>{money(total)}</Text>
       </View>
-      <Text style={styles.note}>Estimate only. First-time buyer exemption: up to $8,000 off for homes up to $835,000, phasing out to $860,000. Confirm eligibility with your lawyer. Excludes GST on new builds and adjustments.</Text>
+      <Text style={styles.note}>Estimate only. First-time buyer exemption: up to $8,000 off for homes up to $835,000, phasing out to $860,000. Newly built home exemption: whole tax waived up to $1,100,000, phasing out to $1,150,000 (only one exemption can be claimed). Confirm eligibility with your lawyer. Excludes GST on new builds and adjustments.</Text>
     </ScrollView>
   );
 }

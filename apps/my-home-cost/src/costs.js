@@ -20,18 +20,30 @@ export function firstTimeBuyerExemption(price) {
   return price <= 835000 ? full : full * ((860000 - price) / 25000);
 }
 
+// BC newly built home exemption (not limited to first-time buyers): the whole tax is
+// waived up to $1,100,000, then phased out in proportion to $1,150,000. Cannot be
+// combined with the first-time buyer exemption.
+export function newBuildExemption(price) {
+  const tax = propertyTransferTax(price);
+  if (price >= 1150000) return 0;
+  return price <= 1100000 ? tax : tax * ((1150000 - price) / 50000);
+}
+
 // Estimate only: legal, inspection, appraisal and adjustments are typical ranges.
-export function estimateClosingCosts({ price, legal = 1800, inspection = 500, appraisal = 400, firstTimeBuyer = false }) {
-  const exemption = firstTimeBuyer ? firstTimeBuyerExemption(price) : 0;
+export function estimateClosingCosts({ price, legal = 1800, inspection = 500, appraisal = 400, firstTimeBuyer = false, newBuild = false }) {
+  const claimed = firstTimeBuyer || newBuild;
+  const exemption = firstTimeBuyer ? firstTimeBuyerExemption(price) : newBuild ? newBuildExemption(price) : 0;
   const items = [
     { label: 'Property transfer tax', amount: propertyTransferTax(price) },
-    ...(firstTimeBuyer ? [{ label: 'First-time buyer exemption', amount: -exemption }] : []),
+    ...(claimed ? [{ label: firstTimeBuyer ? 'First-time buyer exemption' : 'Newly built home exemption', amount: -exemption }] : []),
     { label: 'Legal fees & disbursements', amount: legal },
     { label: 'Home inspection', amount: inspection },
     { label: 'Appraisal', amount: appraisal },
   ];
   const closingTotal = items.reduce((s, i) => s + i.amount, 0);
-  const note = firstTimeBuyer && exemption === 0 ? 'No exemption applies at $860,000 or more.' : null;
+  const note = claimed && exemption === 0
+    ? `No exemption applies at ${firstTimeBuyer ? '$860,000' : '$1,150,000'} or more.`
+    : null;
   return { items, closingTotal, total: price + closingTotal, note };
 }
 
