@@ -26,7 +26,7 @@ function Costs() {
   const { items, total } = estimateClosingCosts({ price: p, firstTimeBuyer: ftb });
   return (
     <ScrollView contentContainerStyle={styles.pad}>
-      <Text style={styles.h1}>Closing cost estimator</Text>
+      <Text style={styles.h1}>My Home Cost</Text>
       <Text style={styles.label}>Purchase price (CAD)</Text>
       <TextInput style={styles.input} keyboardType="numeric" value={price} onChangeText={setPrice} />
       <View style={styles.row}>
