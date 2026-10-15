@@ -35,8 +35,10 @@
     <label for="price">Purchase price (CAD)</label>
     <input id="price" type="text" inputmode="numeric" value="900000">
     <div class="row"><span>First-time buyer exemption</span><input id="ftb" type="checkbox"></div>
+    <div class="row"><span>House price</span><span id="hp"></span></div>
     <div id="items"></div>
-    <div class="row total"><span>Estimated total</span><span id="total"></span></div>
+    <div class="row"><span>Closing costs subtotal</span><span id="sub"></span></div>
+    <div class="row total"><span>Total cost (price + closing costs)</span><span id="total"></span></div>
     <p class="note">Estimate only. Exemption shown applies up to $835,000; confirm eligibility with your lawyer. Excludes GST on new builds and adjustments.</p>
   </section>
   <section id="list" hidden>
@@ -55,7 +57,8 @@ function calc(){
   const p=parseFloat($('price').value.replace(/[^0-9.]/g,''))||0;
   const items=[['Property transfer tax',$('ftb').checked&&p<=835000?0:ptt(p)],['Legal fees & disbursements',1800],['Home inspection',500],['Appraisal',400]];
   $('items').innerHTML=items.map(([l,a])=>`<div class="row"><span>${l}</span><span>${money(a)}</span></div>`).join('');
-  $('total').textContent=money(items.reduce((s,i)=>s+i[1],0));
+  const cc=items.reduce((s,i)=>s+i[1],0);
+  $('hp').textContent=money(p);$('sub').textContent=money(cc);$('total').textContent=money(p+cc);
 }
 let done=[];try{done=JSON.parse(localStorage.getItem('cc-done')||'[]')}catch(e){}
 function renderSteps(){

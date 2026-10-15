@@ -19,7 +19,8 @@ export function estimateClosingCosts({ price, legal = 1800, inspection = 500, ap
     { label: 'Home inspection', amount: inspection },
     { label: 'Appraisal', amount: appraisal },
   ];
-  return { items, total: items.reduce((s, i) => s + i.amount, 0) };
+  const closingTotal = items.reduce((s, i) => s + i.amount, 0);
+  return { items, closingTotal, total: price + closingTotal };
 }
 
 export const money = (n) =>
