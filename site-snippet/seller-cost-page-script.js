@@ -1,5 +1,10 @@
 // Seller Cost banner for the sellers page. Paste into Lofty "Page Style & Script" > Page Script (JavaScript, not CSS).
-(function () {
+(function init() {
+  // Wait for the page body: Lofty can run page scripts before <body> exists.
+  if (!document.body) {
+    document.addEventListener('DOMContentLoaded', init);
+    return;
+  }
   if (document.getElementById('hn-sc-bar')) return;
   var URL = 'https://nbakhoum84.github.io/mytest/seller-cost/';
   var css =
@@ -9,7 +14,7 @@
     '#hn-sc-steps li{margin:6px 0}';
   var style = document.createElement('style');
   style.textContent = css;
-  document.head.appendChild(style);
+  (document.head || document.documentElement).appendChild(style);
 
   var steps = document.createElement('div');
   steps.id = 'hn-sc-steps';
