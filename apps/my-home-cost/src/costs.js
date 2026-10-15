@@ -30,7 +30,7 @@ export function newBuildExemption(price) {
 }
 
 // Estimate only: legal, inspection, appraisal and adjustments are typical ranges.
-export function estimateClosingCosts({ price, legal = 1800, inspection = 500, appraisal = 400, firstTimeBuyer = false, newBuild = false }) {
+export function estimateClosingCosts({ price, legal = 1800, inspection = 500, appraisal = 400, firstTimeBuyer = false, newBuild = false, gst = false }) {
   const claimed = firstTimeBuyer || newBuild;
   const exemption = firstTimeBuyer ? firstTimeBuyerExemption(price) : newBuild ? newBuildExemption(price) : 0;
   const items = [
@@ -44,7 +44,9 @@ export function estimateClosingCosts({ price, legal = 1800, inspection = 500, ap
   const note = claimed && exemption === 0
     ? `No exemption applies at ${firstTimeBuyer ? '$860,000' : '$1,150,000'} or more.`
     : null;
-  return { items, closingTotal, total: price + closingTotal, note };
+  // 5% GST on a newly built home, before any new housing rebate (not part of closing costs).
+  const gstAmount = gst ? price * 0.05 : 0;
+  return { items, closingTotal, gst: gstAmount, total: price + closingTotal + gstAmount, note };
 }
 
 export const money = (n) =>
