@@ -35,11 +35,12 @@
     <label for="price">Purchase price (CAD)</label>
     <input id="price" type="text" inputmode="numeric" value="900000">
     <div class="row"><span>First-time buyer exemption</span><input id="ftb" type="checkbox"></div>
+    <p class="note" id="nx"></p>
     <div class="row"><span>House price</span><span id="hp"></span></div>
     <div id="items"></div>
     <div class="row"><span>Closing costs subtotal</span><span id="sub"></span></div>
     <div class="row total"><span>Total cost (price + closing costs)</span><span id="total"></span></div>
-    <p class="note">Estimate only. Exemption shown applies up to $835,000; confirm eligibility with your lawyer. Excludes GST on new builds and adjustments.</p>
+    <p class="note">Estimate only. First-time buyer exemption: up to $8,000 off for homes up to $835,000, phasing out to $860,000. Confirm eligibility with your lawyer. Excludes GST on new builds and adjustments.</p>
   </section>
   <section id="list" hidden>
     <h1>Buyer checklist (<span id="count">0</span>/10)</h1>
@@ -51,11 +52,15 @@
 const STEPS=['Get mortgage pre-approval','Set budget incl. closing costs','Find and view homes','Submit offer with subjects','Book home inspection','Remove subjects & pay deposit','Arrange home insurance','Final walk-through','Sign at lawyer/notary','Get keys on possession day'];
 const band=(p,from,to,rate)=>Math.max(0,Math.min(p,to)-from)*rate;
 const ptt=p=>band(p,0,2e5,.01)+band(p,2e5,2e6,.02)+band(p,2e6,Infinity,.03)+band(p,3e6,Infinity,.02);
-const money=n=>'$'+Math.round(n).toLocaleString('en-CA');
+const money=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('en-CA');
+// First-time buyer exemption: full tax up to $500k, flat $8,000 to $835k, phased out to $860k, none above.
+const ex=p=>p>=86e4?0:Math.min(ptt(p),8000)*(p<=835e3?1:(86e4-p)/25e3);
 const $=id=>document.getElementById(id);
 function calc(){
   const p=parseFloat($('price').value.replace(/[^0-9.]/g,''))||0;
-  const items=[['Property transfer tax',$('ftb').checked&&p<=835000?0:ptt(p)],['Legal fees & disbursements',1800],['Home inspection',500],['Appraisal',400]];
+  const f=$('ftb').checked,e=f?ex(p):0;
+  $('nx').textContent=f&&e===0?'No exemption applies at $860,000 or more.':'';
+  const items=[['Property transfer tax',ptt(p)],...(f?[['First-time buyer exemption',-e]]:[]),['Legal fees & disbursements',1800],['Home inspection',500],['Appraisal',400]];
   $('items').innerHTML=items.map(([l,a])=>`<div class="row"><span>${l}</span><span>${money(a)}</span></div>`).join('');
   const cc=items.reduce((s,i)=>s+i[1],0);
   $('hp').textContent=money(p);$('sub').textContent=money(cc);$('total').textContent=money(p+cc);
