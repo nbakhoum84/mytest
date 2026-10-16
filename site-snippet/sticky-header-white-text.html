@@ -1,33 +1,44 @@
-<!-- Home Nader: white header text when the header is in sticky mode.
-     Paste into Lofty's site-wide custom code (same place as install-app-banner.html).
-     If the text doesn't change, right-click a menu link > Inspect, and add that element's
-     selector to HEADER_SELECTORS below. -->
+<!-- Home Nader: white header text while the header is sticky.
+     Paste into Lofty: Site Settings > Custom Code (Header / <head> section). Needs no class names:
+     the script finds whichever top bar is fixed/sticky on the page and tags it. -->
 <style>
-  body.hn-sticky header,
-  body.hn-sticky header a,
-  body.hn-sticky header li,
-  body.hn-sticky header span,
-  body.hn-sticky header i,
-  body.hn-sticky nav a,
-  body.hn-sticky nav li,
-  body.hn-sticky .header a,
-  body.hn-sticky .header li,
-  body.hn-sticky .header span,
-  body.hn-sticky [class*="header"] a,
-  body.hn-sticky [class*="navbar"] a,
-  body.hn-sticky [class*="nav-"] a {
+  .hn-stuck,
+  .hn-stuck a,
+  .hn-stuck li,
+  .hn-stuck span,
+  .hn-stuck p,
+  .hn-stuck i,
+  .hn-stuck button,
+  .hn-stuck svg {
     color: #fff !important;
+    fill: #fff;
   }
+  /* Optional: dark bar so white text stays readable on light sections. Delete if not wanted. */
+  .hn-stuck { background-color: rgba(15, 23, 42, .92) !important; }
 </style>
 <script>
   (function () {
-    var THRESHOLD = 40; // px scrolled before the header counts as sticky
+    function candidates() {
+      return document.querySelectorAll(
+        'header, nav, [class*="header"], [class*="Header"], [class*="navbar"], [class*="nav-"], [id*="header"], [id*="nav"]'
+      );
+    }
     function update() {
-      var scrolled = (window.pageYOffset || document.documentElement.scrollTop) > THRESHOLD;
-      document.body.classList.toggle('hn-sticky', scrolled);
+      var list = candidates();
+      for (var i = 0; i < list.length; i++) {
+        var el = list[i];
+        var cs = getComputedStyle(el);
+        var r = el.getBoundingClientRect();
+        var pinned = (cs.position === 'fixed' || cs.position === 'sticky') &&
+                     r.top <= 2 && r.height > 30 && r.width > window.innerWidth * 0.6;
+        var scrolled = (window.pageYOffset || document.documentElement.scrollTop) > 40;
+        el.classList.toggle('hn-stuck', pinned && scrolled);
+      }
     }
     window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
     window.addEventListener('load', update);
+    setTimeout(update, 500);
     update();
   })();
 </script>
