@@ -1,0 +1,33 @@
+<!-- Home Nader: white header text when the header is in sticky mode.
+     Paste into Lofty's site-wide custom code (same place as install-app-banner.html).
+     If the text doesn't change, right-click a menu link > Inspect, and add that element's
+     selector to HEADER_SELECTORS below. -->
+<style>
+  body.hn-sticky header,
+  body.hn-sticky header a,
+  body.hn-sticky header li,
+  body.hn-sticky header span,
+  body.hn-sticky header i,
+  body.hn-sticky nav a,
+  body.hn-sticky nav li,
+  body.hn-sticky .header a,
+  body.hn-sticky .header li,
+  body.hn-sticky .header span,
+  body.hn-sticky [class*="header"] a,
+  body.hn-sticky [class*="navbar"] a,
+  body.hn-sticky [class*="nav-"] a {
+    color: #fff !important;
+  }
+</style>
+<script>
+  (function () {
+    var THRESHOLD = 40; // px scrolled before the header counts as sticky
+    function update() {
+      var scrolled = (window.pageYOffset || document.documentElement.scrollTop) > THRESHOLD;
+      document.body.classList.toggle('hn-sticky', scrolled);
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('load', update);
+    update();
+  })();
+</script>
