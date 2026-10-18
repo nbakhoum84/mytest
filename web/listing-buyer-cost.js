@@ -206,7 +206,7 @@ COMMERCIAL = true;
 APP = 'https://nbakhoum84.github.io/mytest/commercial-cost/';
 }
 start();
-}, 1200);
+}, 300);
 }
 // Run once, even if the loader is pasted both site-wide and on a page.
 if (window.hnBuyerCostLoaded) return;
