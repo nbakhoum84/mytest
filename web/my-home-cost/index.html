@@ -34,7 +34,7 @@
   <section id="costs">
     <h1>My Home Cost</h1>
     <label for="price">Purchase price (CAD)</label>
-    <input id="price" type="text" inputmode="numeric" value="900000">
+    <input id="price" type="text" inputmode="numeric" value="$900,000">
     <div class="row"><span>First-time buyer exemption</span><input id="ftb" type="checkbox"></div>
     <div class="row"><span>Newly built home exemption</span><input id="nb" type="checkbox"></div>
     <div class="row"><span>New build: add 5% GST</span><input id="gst" type="checkbox"></div>
@@ -62,6 +62,8 @@ const money=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('en-CA');
 const nbx=p=>p>=115e4?0:ptt(p)*(p<=11e5?1:(115e4-p)/5e4);
 const ex=p=>p>=86e4?0:Math.min(ptt(p),8000)*(p<=835e3?1:(86e4-p)/25e3);
 const $=id=>document.getElementById(id);
+// Show the price as $1,234,567 while typing.
+function fmtPrice(){const el=$('price'),n=el.value.replace(/[^0-9]/g,'');el.value=n?'$'+(+n).toLocaleString('en-CA'):'';calc()}
 function calc(){
   const p=parseFloat($('price').value.replace(/[^0-9.]/g,''))||0;
   const f=$('ftb').checked,n=$('nb').checked,c=f||n,e=f?ex(p):n?nbx(p):0;
@@ -79,12 +81,12 @@ function renderSteps(){
   $('count').textContent=done.filter(Boolean).length;
 }
 $('steps').onclick=e=>{const d=e.target.closest('.step');if(!d)return;const i=+d.dataset.i;done[i]=!done[i];try{localStorage.setItem('cc-done',JSON.stringify(done))}catch(e){}renderSteps()};
-$('gst').onchange=calc;$('price').oninput=calc;$('ftb').onchange=()=>{if($('ftb').checked)$('nb').checked=false;calc()};$('nb').onchange=()=>{if($('nb').checked)$('ftb').checked=false;calc()};
+$('gst').onchange=calc;$('price').oninput=fmtPrice;$('ftb').onchange=()=>{if($('ftb').checked)$('nb').checked=false;calc()};$('nb').onchange=()=>{if($('nb').checked)$('ftb').checked=false;calc()};
 function tab(t){$('costs').hidden=t!=='costs';$('list').hidden=t!=='list';$('t-costs').className=t==='costs'?'on':'';$('t-list').className=t==='list'?'on':''}
 $('t-costs').onclick=()=>tab('costs');$('t-list').onclick=()=>tab('list');
 // Prefill from the link, e.g. ?price=1299000 from a listing card; ?new=1 (presale or new build) ticks GST.
 const q=new URLSearchParams(location.search),qp=parseFloat((q.get('price')||'').replace(/[^0-9.]/g,''));
-if(qp>0)$('price').value=Math.round(qp);if(q.get('new')==='1')$('gst').checked=true;
+if(qp>0)$('price').value=Math.round(qp);fmtPrice();if(q.get('new')==='1')$('gst').checked=true;
 calc();renderSteps();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>

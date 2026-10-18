@@ -34,7 +34,7 @@
   <section id="costs">
     <h1>Commercial Buyer Cost</h1>
     <label for="price">Purchase price (CAD)</label>
-    <input id="price" type="text" inputmode="numeric" value="2000000">
+    <input id="price" type="text" inputmode="numeric" value="$2,000,000">
     <div class="row"><span>Business only, no land or building (no property transfer tax)</span><input id="biz" type="checkbox"></div>
     <div class="row"><span>GST applies to this sale (5%)</span><input id="gst" type="checkbox" checked></div>
     <div class="row"><span>Buyer is GST-registered (self-assess and claim back)</span><input id="reg" type="checkbox"></div>
@@ -56,6 +56,8 @@
 const STEPS=['Get commercial financing approval','Set budget incl. closing costs and GST','Review rent roll, leases and operating costs','Submit offer or LOI with subjects','Confirm zoning and permitted use','Order Phase I environmental assessment','Order building condition assessment','Order commercial appraisal','Remove subjects and pay deposit','Arrange commercial insurance','Complete at your lawyer','Take possession and assume leases'];
 const money=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('en-CA');
 const $=id=>document.getElementById(id);
+// Show the price as $1,234,567 while typing.
+function fmtPrice(){const el=$('price'),n=el.value.replace(/[^0-9]/g,'');el.value=n?'$'+(+n).toLocaleString('en-CA'):'';calc()}
 function calc(){
   const p=parseFloat($('price').value.replace(/[^0-9.]/g,''))||0;
   const c=CommercialCosts.costs(p,{gst:$('gst').checked,registrant:$('reg').checked,land:!$('biz').checked});
@@ -72,12 +74,12 @@ function renderSteps(){
   $('count').textContent=done.filter(Boolean).length;
 }
 $('steps').onclick=e=>{const d=e.target.closest('.step');if(!d)return;const i=+d.dataset.i;done[i]=!done[i];try{localStorage.setItem('ccc-done',JSON.stringify(done))}catch(e){}renderSteps()};
-$('price').oninput=calc;$('gst').onchange=calc;$('reg').onchange=calc;$('biz').onchange=calc;
+$('price').oninput=fmtPrice;$('gst').onchange=calc;$('reg').onchange=calc;$('biz').onchange=calc;
 function tab(t){$('costs').hidden=t!=='costs';$('list').hidden=t!=='list';$('t-costs').className=t==='costs'?'on':'';$('t-list').className=t==='list'?'on':''}
 $('t-costs').onclick=()=>tab('costs');$('t-list').onclick=()=>tab('list');
 // Prefill from the link, e.g. ?price=2500000 from a commercial listing card.
 const qp=parseFloat((new URLSearchParams(location.search).get('price')||'').replace(/[^0-9.]/g,''));
-if(qp>0)$('price').value=Math.round(qp);
+if(qp>0)$('price').value=Math.round(qp);fmtPrice();
 calc();renderSteps();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
