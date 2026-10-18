@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Alert, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, BackHandler, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -18,6 +18,18 @@ const TABS = [
 
 export default function App() {
   const [tab, setTab] = useState('home');
+
+  // Android back button: from another tab go back to Home; on Home let Android close the app.
+  useEffect(() => {
+    if (Platform.OS !== 'android') return undefined;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (tab === 'home') return false;
+      setTab('home');
+      return true;
+    });
+    return () => sub.remove();
+  }, [tab]);
+
   // Website pages open in the system in-app browser (Safari View Controller on iPhone,
   // Chrome Custom Tabs on Android); its Done/Close button returns to the app.
   const openWeb = async (url) => {

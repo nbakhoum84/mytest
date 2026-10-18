@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Image, Linking, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, BackHandler, FlatList, Image, Linking, Platform, ScrollView, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
@@ -545,9 +545,14 @@ function HomeScreen({ goTo, openWeb }) {
         <Text style={homeStyles.contactSub}>Free consultation on buying, selling and investing.</Text>
         <View style={homeStyles.contactRow}>
           <ContactBtn label="Call" onPress={() => Linking.openURL(`tel:${AGENT.phone}`)} />
+          <ContactBtn label="Text" onPress={() => Linking.openURL(`sms:${AGENT.phone}`)} />
           <ContactBtn label="WhatsApp" onPress={() => Linking.openURL(AGENT.whatsapp)} />
           <ContactBtn label="Email" onPress={() => Linking.openURL(`mailto:${AGENT.email}`)} />
         </View>
+        <TouchableOpacity style={homeStyles.directions} onPress={openDirections}>
+          <Text style={homeStyles.directionsText}>Get directions to the office</Text>
+          <Text style={homeStyles.directionsSub}>{AGENT.address}</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Get the app */}
@@ -575,6 +580,14 @@ function HomeScreen({ goTo, openWeb }) {
       <Text style={homeStyles.footer}>Listing information is deemed reliable but not guaranteed.</Text>
     </ScrollView>
   );
+}
+
+// Opens the office address in Apple Maps on iPhone, the maps app on Android, Google Maps on the web.
+function openDirections() {
+  const q = encodeURIComponent(AGENT.address);
+  const google = `https://www.google.com/maps/dir/?api=1&destination=${q}`;
+  const url = Platform.select({ ios: `http://maps.apple.com/?daddr=${q}`, android: `geo:0,0?q=${q}`, default: google });
+  Linking.openURL(url).catch(() => Linking.openURL(google));
 }
 
 // Remote logo sized to its own shape; falls back to the bundled logo if it can't load.
@@ -658,7 +671,10 @@ const homeStyles = StyleSheet.create({
   contactSub: { color: COLORS.muted, marginTop: 4, marginBottom: 14 },
   contactRow: { flexDirection: 'row', justifyContent: 'space-between' },
   contactBtn: { flex: 1, backgroundColor: COLORS.primary, borderRadius: 10, paddingVertical: 13, alignItems: 'center', marginHorizontal: 4 },
-  contactBtnText: { color: '#fff', fontWeight: '600' },
+  contactBtnText: { color: '#fff', fontWeight: '600', fontSize: 13 },
+  directions: { marginTop: 12, paddingVertical: 12, paddingHorizontal: 14, borderRadius: 10, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center' },
+  directionsText: { color: COLORS.primary, fontWeight: '700' },
+  directionsSub: { color: COLORS.muted, fontSize: 12, marginTop: 2 },
 
   getRow: { flexDirection: 'row', justifyContent: 'space-between' },
   storeCard: { width: '48.5%', backgroundColor: COLORS.primary, borderRadius: 14, paddingVertical: 18, paddingHorizontal: 16 },
@@ -674,6 +690,19 @@ const homeStyles = StyleSheet.create({
 });
 
 // ---- src/screens/BrowseScreen.js
+
+// Opens the phone's share sheet for a listings page (Messages, WhatsApp, email and so on).
+function sharePage(title, url) {
+  Share.share({ title, message: `${title}: ${url}`, url }).catch(() => {});
+}
+
+function ShareBtn({ title, url }) {
+  return (
+    <TouchableOpacity onPress={() => sharePage(title, url)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={browseStyles.share}>
+      <Text style={browseStyles.shareText}>Share</Text>
+    </TouchableOpacity>
+  );
+}
 
 function BrowseScreen({ openWeb }) {
   const [category, setCategory] = useState(CATEGORIES[0]);
@@ -703,6 +732,7 @@ function BrowseScreen({ openWeb }) {
                   <Text style={browseStyles.extraTitle}>{e.label}</Text>
                   <Text style={browseStyles.extraDesc}>{e.desc}</Text>
                 </View>
+                <ShareBtn title={e.label} url={e.url} />
                 <Text style={browseStyles.arrow}>›</Text>
               </TouchableOpacity>
             ))}
@@ -712,7 +742,8 @@ function BrowseScreen({ openWeb }) {
         ListEmptyComponent={<Text style={browseStyles.empty}>No matching city.</Text>}
         renderItem={({ item }) => (
           <TouchableOpacity style={browseStyles.row} onPress={() => openWeb(category.url(item), `${item} · ${category.label}`)}>
-            <Text style={browseStyles.rowText}>{item}</Text>
+            <Text style={[browseStyles.rowText, { flex: 1 }]}>{item}</Text>
+            <ShareBtn title={`${item} · ${category.label}`} url={category.url(item)} />
             <Text style={browseStyles.arrow}>›</Text>
           </TouchableOpacity>
         )}
@@ -729,7 +760,7 @@ const browseStyles = StyleSheet.create({
   chipText: { color: COLORS.text },
   chipTextOn: { color: '#fff', fontWeight: '600' },
   search: { borderWidth: 1, borderColor: COLORS.border, borderRadius: 8, padding: 12, marginBottom: 8 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: COLORS.border },
+  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   rowText: { fontSize: 16, color: COLORS.text },
   arrow: { fontSize: 20, color: COLORS.muted },
   extras: { marginBottom: 4 },
@@ -737,6 +768,8 @@ const browseStyles = StyleSheet.create({
   extraTitle: { fontSize: 16, fontWeight: '700', color: COLORS.text },
   extraDesc: { fontSize: 13, color: COLORS.muted, marginTop: 2 },
   sectionLabel: { fontSize: 13, fontWeight: '700', color: COLORS.muted, letterSpacing: 0.5, textTransform: 'uppercase', marginTop: 8 },
+  share: { paddingHorizontal: 10, paddingVertical: 2, marginRight: 6 },
+  shareText: { color: COLORS.accentDark, fontWeight: '600', fontSize: 14 },
   empty: { textAlign: 'center', color: COLORS.muted, marginTop: 24 },
 });
 
@@ -1240,6 +1273,18 @@ const TABS = [
 
 function App() {
   const [tab, setTab] = useState('home');
+
+  // Android back button: from another tab go back to Home; on Home let Android close the app.
+  useEffect(() => {
+    if (Platform.OS !== 'android') return undefined;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (tab === 'home') return false;
+      setTab('home');
+      return true;
+    });
+    return () => sub.remove();
+  }, [tab]);
+
   // Website pages open in the system in-app browser (Safari View Controller on iPhone,
   // Chrome Custom Tabs on Android); its Done/Close button returns to the app.
   const openWeb = async (url) => {

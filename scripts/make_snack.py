@@ -16,7 +16,7 @@ ORDER = [
 ]
 
 HEADER = """import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Image, Linking, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, BackHandler, FlatList, Image, Linking, Platform, ScrollView, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
