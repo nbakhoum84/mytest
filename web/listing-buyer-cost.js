@@ -1,10 +1,13 @@
 // Buyer Cost button on listing cards. Served from GitHub Pages (nbakhoum84.github.io/mytest/listing-buyer-cost.js) and loaded by the short
-// loader in site-snippet/listing-price-buyer-cost.js, either per page or once site-wide (it then only acts on Residential and Presales/New pages).
+// loader in site-snippet/listing-price-buyer-cost.js, either per page or once site-wide (it then only acts on Residential, Presales/New and Commercial pages).
 // Every listing card gets a "Buyer cost" button next to its price. Clicking the button (or the price) opens the Buyer Cost
 // calculator in a popup, prefilled with that price; the card's own link still works everywhere else on the card.
 // Presale / new-build cards (or a page whose address mentions presale/new) also tick "New build: add 5% GST".
 (function () {
-var APP = 'https://nbakhoum84.github.io/mytest/my-home-cost/';
+var path = typeof location === 'undefined' ? '' : location.pathname.toLowerCase();
+// Commercial pages open the Commercial Buyer Cost app (BC commercial rules); everything else the residential one.
+var COMMERCIAL = /commercial/.test(path);
+var APP = 'https://nbakhoum84.github.io/mytest/' + (COMMERCIAL ? 'commercial-cost/' : 'my-home-cost/');
 var NEW_PAGE = /pre-?sale|new-?(home|build|construction|development|listing)|\/new(\/|$|\?|-)/i;
 var NEW_CARD = /pre-?sale|new construction|new development|est(\.|imated)? completion|completion date|move-in ready|developer/i;
 // "$1,299,000", "From $599,900", "Starting at $1.2M", "C$849,000+", "$599,900 - $1,200,000" (uses the lowest).
@@ -82,6 +85,7 @@ mark(best, parsePrice(best.textContent));
 }
 
 function isNew(el) {
+if (COMMERCIAL) return false;
 if (NEW_PAGE.test(location.pathname + location.search)) return true;
 var card = cardOf(el);
 return !!(card && NEW_CARD.test(card.textContent));
@@ -112,7 +116,7 @@ document.documentElement.style.overflow = '';
 function openCalc(price, isNewBuild) {
 var url = APP + '?price=' + price + (isNewBuild ? '&new=1' : '');
 var m = modal();
-m.querySelector('.hn-bcp-title').textContent = 'Buyer Cost for $' + price.toLocaleString('en-CA');
+m.querySelector('.hn-bcp-title').textContent = (COMMERCIAL ? 'Commercial Buyer Cost for $' : 'Buyer Cost for $') + price.toLocaleString('en-CA');
 m.querySelector('.hn-bcp-open').href = url;
 m.querySelector('iframe').src = url;
 m.classList.add('hn-bcp-on');
@@ -174,9 +178,8 @@ function later() { setTimeout(start, 1200); }
 // Run once, even if the loader is pasted both site-wide and on a page.
 if (window.hnBuyerCostLoaded) return;
 window.hnBuyerCostLoaded = true;
-// Only on Residential listing pages (e.g. /abbotsford-listings) and Presales/New pages; never on Commercial, Sold or a single listing.
-var path = location.pathname.toLowerCase();
-if (!/listing|pre-?sale|new-?(home|build|construction|development)/.test(path) || /commercial|sold|detail/.test(path)) return;
+// Only on Residential listing pages (e.g. /abbotsford-listings), Presales/New pages and Commercial pages; never on Sold or a single listing.
+if (!(COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)/.test(path)) || /sold|detail/.test(path)) return;
 if (document.readyState === 'complete') later();
 else window.addEventListener('load', later);
 })();
