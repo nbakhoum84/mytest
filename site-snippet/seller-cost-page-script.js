@@ -1,8 +1,8 @@
 // Seller Cost card: copies the look and width of the other "Get the ... app" cards. Paste into Lofty Page Script (JavaScript).
 (function () {
-var URL = 'https://nbakhoum84.github.io/mytest/seller-cost/';
-var N = 33;
-var ROWS = '1fc44047f,1057d9d41,175c9cd5d,175522b5d,1748a465d,104451c41,1fd55557f,1544700,105ce85ce,1a303621e,147d350d6,15207373e,127adf161,daa59667,74ac6cca,14ae660bd,9f94a7b9,a8dfb24d,16c323a2d,b9bcf11c,369531ba,141ed5f3c,167b71dd6,13a000744,1cd8337fb,1fb6d17,1fcfe4756,10496031f,1741c49f9,174c918bb,174ad5fb3,1045372bc,1fd1cf3aa'.split(',');
+var URL = 'https://home-nader.com/seller-cost';
+var N = 29;
+var ROWS = '1fdb357f,104cdd41,17577a5d,174e4e5d,1748e85d,10512941,1fd5557f,b7700,1462d125,f1ac343,ddf3a1d,1c9296a8,1578a361,17af3b63,1059eb11,13116370,1bcee161,3dfa67,1cd72bc9,10b2b0,1e5993fa,12331d,1fd4e951,10426711,174af3fb,1747f69d,17506593,104ed188,1fd2d5e9'.split(',');
 var tries = 0;
 function qr() {
 var d = '';
