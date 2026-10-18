@@ -1,4 +1,5 @@
-// Buyer Cost button on listing cards. Served from GitHub Pages (nbakhoum84.github.io/mytest/listing-buyer-cost.js) and loaded on the Residential and Presales/New pages by the short loader in site-snippet/listing-price-buyer-cost.js.
+// Buyer Cost button on listing cards. Served from GitHub Pages (nbakhoum84.github.io/mytest/listing-buyer-cost.js) and loaded by the short
+// loader in site-snippet/listing-price-buyer-cost.js, either per page or once site-wide (it then only acts on Residential and Presales/New pages).
 // Every listing card gets a "Buyer cost" button next to its price. Clicking the button (or the price) opens the Buyer Cost
 // calculator in a popup, prefilled with that price; the card's own link still works everywhere else on the card.
 // Presale / new-build cards (or a page whose address mentions presale/new) also tick "New build: add 5% GST".
@@ -152,6 +153,12 @@ if (timer) return;
 timer = setTimeout(function () { timer = null; scan(); }, 400);
 }).observe(document.body, { childList: true, subtree: true, characterData: true });
 }
+// Run once, even if the loader is pasted both site-wide and on a page.
+if (window.hnBuyerCostLoaded) return;
+window.hnBuyerCostLoaded = true;
+// Only on Residential listing pages (e.g. /abbotsford-listings) and Presales/New pages; never on Commercial, Sold or a single listing.
+var path = location.pathname.toLowerCase();
+if (!/listing|pre-?sale|new-?(home|build|construction|development)/.test(path) || /commercial|sold|detail/.test(path)) return;
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
 else start();
 })();
