@@ -1,6 +1,7 @@
-<!-- My Home Cost: paste into an HTML block on the Lofty page home-nader.com/buyer-cost. Self-contained, no external files.
+<!-- Buyer Cost: paste into an HTML block on the Lofty page home-nader.com/buyer-cost. Self-contained, no external files.
      Everything is scoped to #mh-app. It inherits your page's font and text colour; to match your brand,
-     set the accent variable below (or override it from your page CSS), e.g. #mh-app{--mh-accent:#c8102e}. -->
+     set the accent variable below (or override it from your page CSS), e.g. #mh-app{--mh-accent:#c8102e}.
+     This copy matches what is live on the Buyer Cost page (checked 2026-10-18). -->
 <style>
   #mh-app{--mh-accent:#0f4c81;--mh-border:rgba(128,128,128,.3);--mh-card:rgba(128,128,128,.12);--mh-muted:rgba(128,128,128,.95);
     max-width:560px;margin:0 auto;padding:16px;font-family:inherit;font-size:16px;line-height:1.4;color:inherit;box-sizing:border-box}
@@ -22,12 +23,11 @@
 <div id="mh-app">
   <div class="mh-tabs"><button id="mh-t-costs" class="mh-on">Costs</button><button id="mh-t-list">Checklist</button></div>
   <section id="mh-costs">
-    <h2>My Home Cost</h2>
-    <label for="mh-price">Purchase price (CAD)</label>
-    <input id="mh-price" type="text" inputmode="numeric" value="900000">
-    <div class="mh-row"><span>First-time buyer exemption</span><input id="mh-ftb" type="checkbox"></div>
-    <div class="mh-row"><span>Newly built home exemption</span><input id="mh-nb" type="checkbox"></div>
-    <div class="mh-row"><span>New build: add 5% GST</span><input id="mh-gst" type="checkbox"></div>
+    <h2>Buyer Cost</h2><label for="mh-price">Purchase price (CAD)</label>
+    <input id="mh-price" type="text" inputmode="numeric" value="900000" />
+    <div class="mh-row"><span>First-time buyer exemption</span><input id="mh-ftb" type="checkbox" /></div>
+    <div class="mh-row"><span>Newly built home exemption</span><input id="mh-nb" type="checkbox" /></div>
+    <div class="mh-row"><span>New build: add 5% GST</span><input id="mh-gst" type="checkbox" /></div>
     <p class="mh-note" id="mh-nx"></p>
     <div class="mh-row"><span>House price</span><span id="mh-hp"></span></div>
     <div id="mh-items"></div>
@@ -47,7 +47,6 @@
   var $=function(id){return document.getElementById('mh-'+id)};
   var money=function(n){return (n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('en-CA')};
   var band=function(p,from,to,rate){return Math.max(0,Math.min(p,to)-from)*rate};
-  // Keep in sync with apps/my-home-cost/src/costs.js
   var ptt=function(p){return band(p,0,2e5,.01)+band(p,2e5,2e6,.02)+band(p,2e6,Infinity,.03)+band(p,3e6,Infinity,.02)};
   var nbx=function(p){return p>=115e4?0:ptt(p)*(p<=11e5?1:(115e4-p)/5e4)};
   var ex=function(p){return p>=86e4?0:Math.min(ptt(p),8000)*(p<=835e3?1:(86e4-p)/25e3)};
