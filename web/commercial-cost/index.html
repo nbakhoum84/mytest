@@ -34,6 +34,7 @@
     <h1>Commercial Buyer Cost</h1>
     <label for="price">Purchase price (CAD)</label>
     <input id="price" type="text" inputmode="numeric" value="2000000">
+    <div class="row"><span>Business only, no land or building (no property transfer tax)</span><input id="biz" type="checkbox"></div>
     <div class="row"><span>GST applies to this sale (5%)</span><input id="gst" type="checkbox" checked></div>
     <div class="row"><span>Buyer is GST-registered (self-assess and claim back)</span><input id="reg" type="checkbox"></div>
     <div class="row"><span>Property price</span><span id="pp"></span></div>
@@ -56,7 +57,7 @@ const money=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('en-CA');
 const $=id=>document.getElementById(id);
 function calc(){
   const p=parseFloat($('price').value.replace(/[^0-9.]/g,''))||0;
-  const c=CommercialCosts.costs(p,{gst:$('gst').checked,registrant:$('reg').checked});
+  const c=CommercialCosts.costs(p,{gst:$('gst').checked,registrant:$('reg').checked,land:!$('biz').checked});
   $('items').innerHTML=c.items.map(([l,a])=>`<div class="row"><span>${l}</span><span>${money(a)}</span></div>`).join('');
   $('pp').textContent=money(p);$('sub').textContent=money(c.closing);
   $('gr').hidden=!$('gst').checked;$('reg').disabled=!$('gst').checked;
@@ -70,7 +71,7 @@ function renderSteps(){
   $('count').textContent=done.filter(Boolean).length;
 }
 $('steps').onclick=e=>{const d=e.target.closest('.step');if(!d)return;const i=+d.dataset.i;done[i]=!done[i];try{localStorage.setItem('ccc-done',JSON.stringify(done))}catch(e){}renderSteps()};
-$('price').oninput=calc;$('gst').onchange=calc;$('reg').onchange=calc;
+$('price').oninput=calc;$('gst').onchange=calc;$('reg').onchange=calc;$('biz').onchange=calc;
 function tab(t){$('costs').hidden=t!=='costs';$('list').hidden=t!=='list';$('t-costs').className=t==='costs'?'on':'';$('t-list').className=t==='list'?'on':''}
 $('t-costs').onclick=()=>tab('costs');$('t-list').onclick=()=>tab('list');
 // Prefill from the link, e.g. ?price=2500000 from a commercial listing card.
