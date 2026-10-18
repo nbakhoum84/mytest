@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { AFFORD, CMHC, FREQUENCIES, affordability, cmhcInsurance, downInDollars, minimumDown, money, mortgagePayment, num } from './src/mortgage';
+
+const PHONE = '+16046127228';
 
 const C = { bg: '#fff', text: '#111827', muted: '#6b7280', primary: '#0f4c81', card: '#f3f4f6', border: '#e5e7eb', warn: '#b91c1c' };
 
@@ -170,6 +172,13 @@ export default function App() {
       <SafeAreaView style={styles.root}>
         <StatusBar style="auto" />
         <View style={{ flex: 1 }}><Screen /></View>
+        <View style={styles.contact}>
+          {[['tel', 'Call Nader'], ['sms', 'Text Nader']].map(([s, l]) => (
+            <TouchableOpacity key={s} style={styles.contactBtn} onPress={() => Linking.openURL(`${s}:${PHONE}`)}>
+              <Text style={styles.contactText}>{l}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
         <View style={styles.tabs}>
           {TABS.map(([k, l]) => (
             <TouchableOpacity key={k} style={styles.tab} onPress={() => setTab(k)}>
@@ -200,6 +209,9 @@ const styles = StyleSheet.create({
   total: { backgroundColor: C.card, paddingHorizontal: 10, marginTop: 8, borderBottomWidth: 0, borderRadius: 8 },
   totalText: { color: C.primary, fontSize: 18, fontWeight: '700', flexShrink: 1 },
   note: { color: C.muted, fontSize: 12, marginTop: 8, marginBottom: 8 },
+  contact: { flexDirection: 'row', gap: 8, paddingHorizontal: 20, paddingVertical: 8 },
+  contactBtn: { flex: 1, alignItems: 'center', padding: 12, borderRadius: 8, backgroundColor: C.primary },
+  contactText: { color: '#fff', fontWeight: '700' },
   tabs: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: C.border },
   tab: { flex: 1, alignItems: 'center', paddingVertical: 14 },
   tabText: { color: C.muted, fontSize: 13 },
