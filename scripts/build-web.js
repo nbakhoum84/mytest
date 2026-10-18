@@ -44,7 +44,10 @@ ${themeColor}<meta name="apple-mobile-web-app-capable" content="yes">
 `;
 const sw = `<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>`;
 html = html.replace(/<title>[\s\S]*?<\/title>/, '<title>home-nader</title>');
-html = html.replace(/src="\/_expo\/static\/js\/web\/[^"]+"/, 'src="app.js"').replace('href="/favicon.ico"', 'href="favicon.ico"');
+// Version the script URL by its content so phones and browsers fetch the new app.js after each publish
+// instead of reusing a cached copy (GitHub Pages lets browsers cache files for 10 minutes).
+const version = require('crypto').createHash('sha1').update(code).digest('hex').slice(0, 10);
+html = html.replace(/src="\/_expo\/static\/js\/web\/[^"]+"/, `src="app.js?v=${version}"`).replace('href="/favicon.ico"', 'href="favicon.ico"');
 if (!html.includes('rel="manifest"')) html = html.replace('</head>', tags + '</head>');
 if (!html.includes('serviceWorker')) html = html.replace('</body>', sw + '</body>');
 fs.writeFileSync(file, html);
