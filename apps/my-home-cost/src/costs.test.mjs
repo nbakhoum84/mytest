@@ -14,7 +14,7 @@ assert.strictEqual(firstTimeBuyerExemption(850000), 3200);
 assert.strictEqual(firstTimeBuyerExemption(860000), 0);
 const ftb = estimateClosingCosts({ price: 800000, firstTimeBuyer: true });
 assert.strictEqual(ftb.items[1].amount, -8000);
-assert.strictEqual(ftb.closingTotal, 14000 - 8000 + 2700);
+assert.strictEqual(ftb.closingTotal, 14000 - 8000 + 4200); // fixed fees incl. $1,500 first-year home insurance
 assert.strictEqual(newBuildExemption(1000000), propertyTransferTax(1000000)); // fully waived
 assert.strictEqual(newBuildExemption(1100000), 20000);
 assert.strictEqual(Math.round(newBuildExemption(1140000)), 4160);
@@ -23,8 +23,8 @@ const nb = estimateClosingCosts({ price: 1100000, newBuild: true });
 assert.strictEqual(nb.items[1].label, 'Newly built home exemption');
 assert.strictEqual(nb.items[0].amount + nb.items[1].amount, 0);
 const r = estimateClosingCosts({ price: 900000 });
-assert.strictEqual(r.closingTotal, 18700);
-assert.strictEqual(r.total, 918700);
+assert.strictEqual(r.closingTotal, 20200);
+assert.strictEqual(r.total, 920200);
 const g = estimateClosingCosts({ price: 1000000, gst: true });
 assert.strictEqual(g.gst, 50000);
 assert.strictEqual(g.total, 1000000 + g.closingTotal + 50000);

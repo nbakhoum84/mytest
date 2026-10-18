@@ -336,13 +336,14 @@ function BuyerCostCalc({ openWeb, url, checks, onChecks }) {
         ['Legal fees & disbursements', money(r.legal)],
         ['Home inspection', money(r.inspection)],
         ['Appraisal', money(r.appraisal)],
+        ['Home insurance (first year)', money(r.insurance)],
         ['Closing costs subtotal', money(r.subtotal), true],
         ...(gst ? [['GST on new build (5%, before rebate)', money(r.gst)]] : []),
         ['Total cost (price + closing costs)', money(r.total), true],
       ]} />
       {r.exemption > 0 && <Note>Exemption applied: {money(r.exemption)} off the transfer tax.</Note>}
       <Note>
-        Estimate only. First-time buyer exemption: up to ${BUYER.firstTimeMaxOff.toLocaleString('en-CA')} off for homes up to ${BC_PTT.firstTimeFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.firstTimePartialTo.toLocaleString('en-CA')}. Newly built home exemption: whole tax waived up to ${BC_PTT.newBuildFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.newBuildPartialTo.toLocaleString('en-CA')} (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Excludes adjustments.
+        Estimate only. First-time buyer exemption: up to ${BUYER.firstTimeMaxOff.toLocaleString('en-CA')} off for homes up to ${BC_PTT.firstTimeFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.firstTimePartialTo.toLocaleString('en-CA')}. Newly built home exemption: whole tax waived up to ${BC_PTT.newBuildFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.newBuildPartialTo.toLocaleString('en-CA')} (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Home insurance is a typical first-year premium for a house (condos usually cost less); lenders require it before closing. Excludes adjustments.
       </Note>
       {url ? (
         <TouchableOpacity style={styles.linkBtn} onPress={() => openWeb(url, 'Buyer cost')}>

@@ -146,15 +146,16 @@ export const BUYER = {
   legal: 1800,
   inspection: 500,
   appraisal: 400,
+  insurance: 1500, // typical first-year home insurance premium, required by lenders before closing
   gstRate: 0.05,
   firstTimeMaxOff: 8000, // first-time buyer: up to $8,000 off for homes up to $835,000, phasing out to $860,000
 };
 
 export function buyerCost({ price, firstTime, newBuild, addGst }) {
   const { full: ptt, exemption: off, payable: transferTax } = bcTransferTax({ price, firstTime, newBuild });
-  const subtotal = transferTax + BUYER.legal + BUYER.inspection + BUYER.appraisal;
+  const subtotal = transferTax + BUYER.legal + BUYER.inspection + BUYER.appraisal + BUYER.insurance;
   const gst = addGst ? price * BUYER.gstRate : 0;
-  return { price, transferTax, fullTax: ptt, exemption: off, legal: BUYER.legal, inspection: BUYER.inspection, appraisal: BUYER.appraisal, subtotal, gst, total: price + subtotal + gst };
+  return { price, transferTax, fullTax: ptt, exemption: off, legal: BUYER.legal, inspection: BUYER.inspection, appraisal: BUYER.appraisal, insurance: BUYER.insurance, subtotal, gst, total: price + subtotal + gst };
 }
 
 // ---- Seller cost (matches home-nader.com/seller-cost) -------------------------------

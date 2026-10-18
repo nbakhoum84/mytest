@@ -29,8 +29,8 @@ export function newBuildExemption(price) {
   return price <= 1100000 ? tax : tax * ((1150000 - price) / 50000);
 }
 
-// Estimate only: legal, inspection, appraisal and adjustments are typical ranges.
-export function estimateClosingCosts({ price, legal = 1800, inspection = 500, appraisal = 400, firstTimeBuyer = false, newBuild = false, gst = false }) {
+// Estimate only: legal, inspection, appraisal, first-year home insurance and adjustments are typical ranges.
+export function estimateClosingCosts({ price, legal = 1800, inspection = 500, appraisal = 400, insurance = 1500, firstTimeBuyer = false, newBuild = false, gst = false }) {
   const claimed = firstTimeBuyer || newBuild;
   const exemption = firstTimeBuyer ? firstTimeBuyerExemption(price) : newBuild ? newBuildExemption(price) : 0;
   const items = [
@@ -39,6 +39,7 @@ export function estimateClosingCosts({ price, legal = 1800, inspection = 500, ap
     { label: 'Legal fees & disbursements', amount: legal },
     { label: 'Home inspection', amount: inspection },
     { label: 'Appraisal', amount: appraisal },
+    { label: 'Home insurance (first year)', amount: insurance },
   ];
   const closingTotal = items.reduce((s, i) => s + i.amount, 0);
   const note = claimed && exemption === 0
