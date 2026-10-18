@@ -56,6 +56,12 @@ b.textContent = 'Buyer cost';
 var line = el;
 while (line.parentElement && line.parentElement !== card && /^inline/.test(getComputedStyle(line).display)) line = line.parentElement;
 line.insertAdjacentElement('afterend', b);
+// If the price's row lays things out side by side, keep stepping out until the button is below the price.
+var pr = el.getBoundingClientRect();
+while (b.getBoundingClientRect().top < pr.bottom - 1 && line.parentElement && line.parentElement !== card) {
+line = line.parentElement;
+line.insertAdjacentElement('afterend', b);
+}
 // Line it up with the price's left edge.
 var r = document.createRange();
 r.selectNodeContents(el);
