@@ -27,7 +27,16 @@ const slug = (city) => city.toLowerCase().replace(/\s+/g, '-');
 export const CATEGORIES = [
   { key: 'residential', label: 'Residential', url: (c) => `${SITE_URL}/${slug(c)}-listings` },
   { key: 'commercial', label: 'Commercial', url: (c) => (c === 'White Rock' ? `${SITE_URL}/pages/commercial-white-rock` : `${SITE_URL}/${slug(c)}`) },
-  { key: 'presales', label: 'Presales / New', url: (c) => `${SITE_URL}/presales-${slug(c)}` },
+  {
+    key: 'presales',
+    label: 'Presales / New',
+    url: (c) => `${SITE_URL}/presales-${slug(c)}`,
+    // Pages in the website's Presales/New menu that are not tied to one city.
+    extras: [
+      { label: 'New homes under construction', desc: 'Homes being built across Metro Vancouver', url: `${SITE_URL}/new-homes-under-construction` },
+      { label: 'Foreclosure listings', desc: 'Foreclosure properties for sale', url: `${SITE_URL}/foreclosures-listings` },
+    ],
+  },
   { key: 'sold', label: 'Sold', url: (c) => `${SITE_URL}/${slug(c)}-sold-listings` },
 ];
 
@@ -40,6 +49,66 @@ export const RESOURCES = [
 ];
 
 export const COLORS = {
-  bg: '#ffffff', text: '#111827', muted: '#6b7280', primary: '#0f4c81',
-  card: '#f3f4f6', border: '#e5e7eb',
+  bg: '#ffffff', text: '#14213d', muted: '#6b7280', primary: '#14213d',
+  accent: '#dbae77', accentDark: '#b8894f', card: '#f5f3ef', border: '#e7e2d9',
+};
+
+// Ratehub.ca widgets, same loader and keys as the website's calculators page.
+export const RATEHUB_LOADER = 'https://www.ratehub.ca/scripts/rh-widget-loader.js';
+export const RATEHUB = {
+  payment: { slug: 'mortgage-payment-calculator', title: 'Mortgage Calculator', frameTitle: 'Ratehub.ca mortgage calculator', key: 'PaymentCalculator' },
+  rates: { slug: 'mortgage-rate-comparison-table', title: '', frameTitle: "Ratehub.ca's mortgage comparison table - compare today's best mortgage rates", key: 'ProductTableMortgages' },
+  afford: { slug: 'mortgage-affordability-calculator', title: 'Mortgage Affordability Calculator', frameTitle: 'Ratehub.ca mortgage affordability calculator', key: 'AffordabilityCalculator' },
+  cmhc: { slug: 'mortgage-cmhc-insurance-calculator', title: 'Mortgage CMHC Calculator', frameTitle: 'Ratehub.ca mortgage cmhc calculator', key: 'DownPaymentCalculator' },
+  ptt: { slug: 'mortgage-land-transfer-tax-calculator', title: 'Mortgage Land Transfer Tax Calculator', frameTitle: 'Ratehub.ca land transfer tax calculator', key: 'LandTransferTaxCalculator' },
+};
+export const CALCULATORS_PAGE = `${SITE_URL}/mortgage-calculators`;
+
+// Other pages in the website's Calculators menu (built into the website, not Ratehub widgets).
+export const COST_PAGES = [
+  { key: 'buyer', title: 'Buyer cost', desc: 'Closing costs and total cost to buy a home', url: `${SITE_URL}/buyer-cost` },
+  { key: 'seller', title: 'Seller cost', desc: 'Selling costs and your estimated net proceeds', url: `${SITE_URL}/seller-cost` },
+];
+
+
+// Header logo (loaded from the web; falls back to the bundled logo if it can't load).
+export const LOGO_URL = 'https://cdn.lofty.com/image/fs/400919269340348/website/135866/cmsbuild/2026923_d682dca9df114f5a.jpeg';
+
+// Download links for the app itself (shown at the bottom of the Home tab).
+// Paste the Android .apk build link and the iPhone link (TestFlight or Expo Go/Snack) here.
+// A button with an empty link shows as "Link coming soon".
+export const APP_LINKS = {
+  android: 'https://expo.dev/accounts/homenader/projects/real-home-van/builds/38d4dcc5-1076-4253-8a08-d6452c29e525',
+  // Opens the app in Expo Go (your saved Snack). Replace with a TestFlight link once available.
+  ios: 'exp://u.expo.dev/933fd9c0-1666-11e7-afca-d980795c5824?runtime-version=exposdk%3A54.0.0&channel-name=production&snack=%40homenader%2Fa86997&snack-channel=3JQasN4BZ0',
+  // Used if the phone can't open the link above (for example Expo Go is not installed).
+  iosFallback: 'https://snack.expo.dev/@homenader/a86997',
+};
+
+// Checklists on the website's Buyer Cost and Seller Cost pages (Checklist tab).
+export const CHECKLISTS = {
+  buyer: [
+    'Get mortgage pre-approval',
+    'Set budget incl. closing costs',
+    'Find and view homes',
+    'Submit offer with subjects',
+    'Book home inspection',
+    'Remove subjects & pay deposit',
+    'Arrange home insurance',
+    'Final walk-through',
+    'Sign at lawyer/notary',
+    'Get keys on possession day',
+  ],
+  seller: [
+    'Meet a realtor & agree on list price',
+    'Sign listing agreement',
+    'Declutter, clean & stage',
+    'Professional photos',
+    'Collect strata documents (if any)',
+    'List and hold showings',
+    'Review offers & negotiate',
+    'Remove subjects',
+    'Arrange mortgage payout & lawyer',
+    'Hand over keys on possession day',
+  ],
 };

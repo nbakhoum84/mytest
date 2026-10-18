@@ -6,6 +6,7 @@ export default function BrowseScreen({ openWeb }) {
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [query, setQuery] = useState('');
   const cities = CITIES.filter((c) => c.toLowerCase().includes(query.trim().toLowerCase()));
+  const extras = category.extras && !query.trim() ? category.extras : [];
 
   return (
     <View style={styles.root}>
@@ -21,6 +22,20 @@ export default function BrowseScreen({ openWeb }) {
       <FlatList
         data={cities}
         keyExtractor={(c) => c}
+        ListHeaderComponent={extras.length ? (
+          <View style={styles.extras}>
+            {extras.map((e) => (
+              <TouchableOpacity key={e.label} style={styles.extraCard} onPress={() => openWeb(e.url, e.label)}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.extraTitle}>{e.label}</Text>
+                  <Text style={styles.extraDesc}>{e.desc}</Text>
+                </View>
+                <Text style={styles.arrow}>›</Text>
+              </TouchableOpacity>
+            ))}
+            <Text style={styles.sectionLabel}>Presales by city</Text>
+          </View>
+        ) : null}
         ListEmptyComponent={<Text style={styles.empty}>No matching city.</Text>}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.row} onPress={() => openWeb(category.url(item), `${item} · ${category.label}`)}>
@@ -44,5 +59,10 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   rowText: { fontSize: 16, color: COLORS.text },
   arrow: { fontSize: 20, color: COLORS.muted },
+  extras: { marginBottom: 4 },
+  extraCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.card, borderRadius: 12, borderLeftWidth: 4, borderLeftColor: COLORS.accent, borderWidth: 1, borderColor: COLORS.border, padding: 14, marginBottom: 10 },
+  extraTitle: { fontSize: 16, fontWeight: '700', color: COLORS.text },
+  extraDesc: { fontSize: 13, color: COLORS.muted, marginTop: 2 },
+  sectionLabel: { fontSize: 13, fontWeight: '700', color: COLORS.muted, letterSpacing: 0.5, textTransform: 'uppercase', marginTop: 8 },
   empty: { textAlign: 'center', color: COLORS.muted, marginTop: 24 },
 });

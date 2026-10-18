@@ -1,29 +1,35 @@
-import React, { useState, useCallback } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Alert, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import * as WebBrowser from 'expo-web-browser';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import HomeScreen from './src/screens/HomeScreen';
 import BrowseScreen from './src/screens/BrowseScreen';
-import CalculatorScreen from './src/screens/CalculatorScreen';
+import CalculatorsScreen from './src/screens/CalculatorsScreen';
 import MoreScreen from './src/screens/MoreScreen';
-import WebScreen from './src/components/WebScreen';
 import { COLORS } from './src/config';
 
 const TABS = [
   { key: 'home', label: 'Home' },
   { key: 'browse', label: 'Browse' },
-  { key: 'calc', label: 'Calculator' },
+  { key: 'calc', label: 'Calculators' },
   { key: 'more', label: 'More' },
 ];
 
 export default function App() {
   const [tab, setTab] = useState('home');
-  const [web, setWeb] = useState(null); // { url, title }
-  const openWeb = useCallback((url, title) => setWeb({ url, title }), []);
-  const closeWeb = useCallback(() => setWeb(null), []);
+  // Website pages open in the system in-app browser (Safari View Controller on iPhone,
+  // Chrome Custom Tabs on Android); its Done/Close button returns to the app.
+  const openWeb = async (url) => {
+    try {
+      await WebBrowser.openBrowserAsync(url, { toolbarColor: COLORS.bg, controlsColor: COLORS.primary });
+    } catch {
+      Linking.openURL(url).catch(() => Alert.alert('Could not open the page', url));
+    }
+  };
 
   const props = { goTo: setTab, openWeb };
-  const Screen = { home: HomeScreen, browse: BrowseScreen, calc: CalculatorScreen, more: MoreScreen }[tab];
+  const Screen = { home: HomeScreen, browse: BrowseScreen, calc: CalculatorsScreen, more: MoreScreen }[tab];
 
   return (
     <SafeAreaProvider>
@@ -37,16 +43,15 @@ export default function App() {
             </TouchableOpacity>
           ))}
         </View>
-        <WebScreen url={web?.url} title={web?.title} onClose={closeWeb} />
       </SafeAreaView>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: COLORS.bg },
+  root: { flex: 1, backgroundColor: COLORS.bg, ...(Platform.OS === 'web' ? { width: '100%', maxWidth: 520, alignSelf: 'center' } : {}) },
   tabs: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: COLORS.border },
   tab: { flex: 1, alignItems: 'center', paddingVertical: 14 },
   tabText: { color: COLORS.muted, fontSize: 13 },
-  tabOn: { color: COLORS.primary, fontWeight: '700' },
+  tabOn: { color: COLORS.accentDark, fontWeight: '700' },
 });
