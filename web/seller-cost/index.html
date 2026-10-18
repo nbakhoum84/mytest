@@ -35,15 +35,15 @@
   <section id="costs">
     <h1>Seller Cost</h1>
     <label for="price">Expected sale price (CAD)</label>
-    <input id="price" type="text" inputmode="numeric" value="1000000">
+    <input id="price" type="text" inputmode="numeric" value="$1,000,000">
     <label for="mortgage">Mortgage balance to pay out</label>
-    <input id="mortgage" type="text" inputmode="numeric" value="0">
+    <input id="mortgage" type="text" inputmode="numeric" value="$0">
     <label for="penalty">Prepayment penalty (if any)</label>
-    <input id="penalty" type="text" inputmode="numeric" value="0">
+    <input id="penalty" type="text" inputmode="numeric" value="$0">
     <label for="legal">Legal fees (before GST)</label>
-    <input id="legal" type="text" inputmode="numeric" value="1500">
+    <input id="legal" type="text" inputmode="numeric" value="$1,500">
     <label for="prep">Staging, photos &amp; cleaning</label>
-    <input id="prep" type="text" inputmode="numeric" value="1500">
+    <input id="prep" type="text" inputmode="numeric" value="$1,500">
     <label for="first">Commission % on first $100,000</label>
     <input id="first" type="text" inputmode="decimal" value="7">
     <label for="rest">Commission % on the balance</label>
@@ -85,7 +85,9 @@ function renderSteps(){
   $('count').textContent=done.filter(Boolean).length;
 }
 $('steps').onclick=e=>{const d=e.target.closest('.step');if(!d)return;const i=+d.dataset.i;done[i]=!done[i];try{localStorage.setItem('sc-done',JSON.stringify(done))}catch(e){}renderSteps()};
-['price','mortgage','penalty','legal','prep','first','rest'].forEach(id=>$(id).oninput=calc);
+// Dollar amounts show as $1,234,567 while typing.
+['price','mortgage','penalty','legal','prep'].forEach(id=>$(id).oninput=()=>{const el=$(id),n=el.value.replace(/[^0-9]/g,'');el.value=n?'$'+(+n).toLocaleString('en-CA'):'';calc()});
+['first','rest'].forEach(id=>$(id).oninput=calc);
 function tab(t){$('costs').hidden=t!=='costs';$('list').hidden=t!=='list';$('t-costs').className=t==='costs'?'on':'';$('t-list').className=t==='list'?'on':''}
 $('t-costs').onclick=()=>tab('costs');$('t-list').onclick=()=>tab('list');
 calc();renderSteps();
