@@ -283,9 +283,10 @@ const BUYER = {
 
 function buyerCost({ price, firstTime, newBuild, addGst }) {
   const { full: ptt, exemption: off, payable: transferTax } = bcTransferTax({ price, firstTime, newBuild });
-  const subtotal = transferTax + BUYER.legal + BUYER.inspection + BUYER.appraisal + BUYER.insurance;
+  const inspection = addGst ? 0 : BUYER.inspection; // presales and new builds need no home inspection
+  const subtotal = transferTax + BUYER.legal + inspection + BUYER.appraisal + BUYER.insurance;
   const gst = addGst ? price * BUYER.gstRate : 0;
-  return { price, transferTax, fullTax: ptt, exemption: off, legal: BUYER.legal, inspection: BUYER.inspection, appraisal: BUYER.appraisal, insurance: BUYER.insurance, subtotal, gst, total: price + subtotal + gst };
+  return { price, transferTax, fullTax: ptt, exemption: off, legal: BUYER.legal, inspection, appraisal: BUYER.appraisal, insurance: BUYER.insurance, subtotal, gst, total: price + subtotal + gst };
 }
 
 // ---- Seller cost (matches home-nader.com/seller-cost) -------------------------------
@@ -1104,7 +1105,7 @@ function BuyerCostCalc({ openWeb, url, checks, onChecks }) {
         ['House price', money(r.price)],
         ['Property transfer tax', money(r.transferTax)],
         ['Legal fees & disbursements', money(r.legal)],
-        ['Home inspection', money(r.inspection)],
+        ...(r.inspection ? [['Home inspection', money(r.inspection)]] : []),
         ['Appraisal', money(r.appraisal)],
         ['Home insurance (first year)', money(r.insurance)],
         ['Closing costs subtotal', money(r.subtotal), true],
