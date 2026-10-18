@@ -38,7 +38,7 @@ export function estimateClosingCosts({ price, legal = 1800, inspection = 500, ap
     ...(claimed ? [{ label: firstTimeBuyer ? 'First-time buyer exemption' : 'Newly built home exemption', amount: -exemption }] : []),
     { label: 'Legal fees & disbursements', amount: legal },
     // Presales and new builds under construction (GST applies) need no home inspection.
-    ...(gst ? [] : [{ label: 'Home inspection', amount: inspection }]),
+    ...(gst || newBuild ? [] : [{ label: 'Home inspection', amount: inspection }]),
     { label: 'Appraisal', amount: appraisal },
     { label: 'Home insurance (first year)', amount: insurance },
   ];

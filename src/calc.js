@@ -153,7 +153,7 @@ export const BUYER = {
 
 export function buyerCost({ price, firstTime, newBuild, addGst }) {
   const { full: ptt, exemption: off, payable: transferTax } = bcTransferTax({ price, firstTime, newBuild });
-  const inspection = addGst ? 0 : BUYER.inspection; // presales and new builds need no home inspection
+  const inspection = addGst || newBuild ? 0 : BUYER.inspection; // presales and new builds need no home inspection
   const subtotal = transferTax + BUYER.legal + inspection + BUYER.appraisal + BUYER.insurance;
   const gst = addGst ? price * BUYER.gstRate : 0;
   return { price, transferTax, fullTax: ptt, exemption: off, legal: BUYER.legal, inspection, appraisal: BUYER.appraisal, insurance: BUYER.insurance, subtotal, gst, total: price + subtotal + gst };
