@@ -334,7 +334,7 @@ function BuyerCostCalc({ openWeb, url, checks, onChecks }) {
         ['House price', money(r.price)],
         ['Property transfer tax', money(r.transferTax)],
         ['Legal fees & disbursements', money(r.legal)],
-        ['Home inspection', money(r.inspection)],
+        ...(r.inspection ? [['Home inspection', money(r.inspection)]] : []),
         ['Appraisal', money(r.appraisal)],
         ['Home insurance (first year)', money(r.insurance)],
         ['Closing costs subtotal', money(r.subtotal), true],
