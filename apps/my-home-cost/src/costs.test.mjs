@@ -34,3 +34,4 @@ console.log('costs tests passed');
 // Presales and new builds (GST) have no home inspection; resale homes do.
 assert.ok(!estimateClosingCosts({ price: 800000, gst: true }).items.some((i) => i.label === 'Home inspection'));
 assert.ok(estimateClosingCosts({ price: 800000 }).items.some((i) => i.label === 'Home inspection'));
+assert.ok(!estimateClosingCosts({ price: 800000, newBuild: true }).items.some((i) => i.label === 'Home inspection'));
