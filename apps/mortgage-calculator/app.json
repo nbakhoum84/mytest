@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Mortgage Calculator",
+    "slug": "mortgage-calculator",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.homenader.mortgagecalculator" },
+    "android": { "package": "com.homenader.mortgagecalculator" }
+  }
+}
