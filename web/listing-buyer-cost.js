@@ -36,7 +36,7 @@ el.setAttribute('data-hn-price', price);
 addButton(el, price);
 }
 
-// One "Buyer cost" button per card, right beside the price. Re-added if the site redraws the card.
+// One "Buyer cost" button per card, on its own line right below the price. Re-added if the site redraws the card.
 function addButton(el, price) {
 var card = cardOf(el);
 if (!card) return;
@@ -48,9 +48,15 @@ b.className = 'hn-bcp-btn';
 b.setAttribute('data-hn-price', price);
 b.setAttribute('aria-label', 'Buyer cost for $' + price.toLocaleString('en-CA'));
 b.textContent = 'Buyer cost';
-// Inside the price line when the price fills its own line, otherwise right after the price.
-if (getComputedStyle(el).display === 'block') el.appendChild(b);
-else el.insertAdjacentElement('afterend', b);
+// After the whole line the price sits on (e.g. price + open house tag), so it lands just below it.
+var line = el;
+while (line.parentElement && line.parentElement !== card && /^inline/.test(getComputedStyle(line).display)) line = line.parentElement;
+line.insertAdjacentElement('afterend', b);
+// Line it up with the price's left edge.
+var r = document.createRange();
+r.selectNodeContents(el);
+var dx = Math.round(r.getBoundingClientRect().left - b.getBoundingClientRect().left);
+if (dx > 0) b.style.setProperty('margin-left', dx + 'px', 'important');
 }
 
 function scan() {
@@ -130,7 +136,7 @@ function start() {
 var style = document.createElement('style');
 style.textContent =
 '.hn-bcp{cursor:pointer!important;text-decoration:underline dotted rgba(201,160,99,.9)!important;text-underline-offset:4px}' +
-'button.hn-bcp-btn{position:relative!important;top:auto!important;left:auto!important;z-index:2!important;display:inline-flex!important;align-items:center!important;vertical-align:middle!important;gap:7px!important;width:auto!important;height:auto!important;min-height:0!important;margin:0 0 0 10px!important;padding:6px 12px!important;border:0!important;border-radius:8px!important;background:#c9a063!important;box-shadow:none!important;color:#111!important;font-family:inherit!important;font-weight:700!important;font-size:14px!important;line-height:1.2!important;letter-spacing:0!important;text-transform:none!important;cursor:pointer!important;white-space:nowrap!important;opacity:1!important}' +
+'button.hn-bcp-btn{position:relative!important;top:auto!important;left:auto!important;z-index:2!important;display:flex!important;align-items:center!important;gap:7px!important;width:max-content!important;max-width:100%!important;height:auto!important;min-height:0!important;margin:8px 0 6px!important;padding:6px 12px!important;border:0!important;border-radius:8px!important;background:#c9a063!important;box-shadow:none!important;color:#111!important;font-family:inherit!important;font-weight:700!important;font-size:14px!important;line-height:1.2!important;letter-spacing:0!important;text-transform:none!important;cursor:pointer!important;white-space:nowrap!important;opacity:1!important}' +
 '.hn-bcp-btn::before{content:"";width:16px;height:16px;flex:none;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Cpath d=%27M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v4h10V4H7zm1 7v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v6h2v-6h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2z%27/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Cpath d=%27M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v4h10V4H7zm1 7v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v6h2v-6h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2z%27/%3E%3C/svg%3E") center/contain no-repeat}' +
 'button.hn-bcp-btn:hover{background:#b88d4f!important}' +
 '#hn-bcp-modal{display:none;position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:16px}' +
