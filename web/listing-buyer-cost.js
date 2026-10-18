@@ -121,7 +121,7 @@ m.querySelector('iframe').src = 'about:blank';
 document.documentElement.style.overflow = '';
 }
 function openCalc(price, isNewBuild) {
-var url = APP + '?price=' + price + (isNewBuild ? '&new=1' : '');
+var url = APP + '?price=' + price + (isNewBuild ? '&new=1' : '') + '&v=' + Math.floor(Date.now() / 6e4);
 var m = modal();
 m.querySelector('.hn-bcp-title').textContent = (COMMERCIAL ? 'Commercial Buyer Cost for $' : 'Buyer Cost for $') + price.toLocaleString('en-CA');
 m.querySelector('.hn-bcp-open').href = url;
