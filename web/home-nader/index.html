@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home Nader</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<meta name="theme-color" content="#0f4c81">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+  :root{--bg:#fff;--text:#111827;--muted:#6b7280;--primary:#0f4c81;--card:#f3f4f6;--border:#e5e7eb}
+  @media(prefers-color-scheme:dark){:root{--bg:#111827;--text:#f9fafb;--muted:#9ca3af;--primary:#60a5fa;--card:#1f2937;--border:#374151}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,sans-serif;padding-bottom:64px}
+  main{max-width:560px;margin:0 auto;padding:16px}
+  a{color:inherit;text-decoration:none}
+  h2{font-size:18px;margin:0 0 12px}
+  .hero{background:#0f4c81;color:#fff;border-radius:16px;padding:24px;margin-bottom:24px}
+  .hero h1{font-size:26px;margin:0}.hero p{color:#dbeafe;margin:8px 0 0}
+  .btn{display:inline-block;background:#fff;color:#0f4c81;font-weight:700;padding:12px 20px;border-radius:8px;margin-top:20px;border:0;font-size:16px;cursor:pointer}
+  .btn.solid{background:var(--primary);color:#fff;width:100%;margin-top:0}
+  .tile,.row{display:block;width:100%;text-align:left;border:0;font:inherit;color:inherit;cursor:pointer}
+  .tile{background:var(--card);border-radius:12px;padding:16px;margin-bottom:10px}
+  .tile b{display:block}.tile span{color:var(--muted)}
+  .row{display:flex;justify-content:space-between;padding:15px 0;background:none;border-bottom:1px solid var(--border)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .chip{padding:8px 14px;border-radius:20px;background:var(--card);border:0;color:var(--text);font:inherit;cursor:pointer}
+  .chip.on{background:var(--primary);color:#fff;font-weight:600}
+  input,textarea{width:100%;font:inherit;padding:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);margin-bottom:10px}
+  label{color:var(--muted);display:block;margin-bottom:4px}
+  .result{background:#0f4c81;color:#fff;border-radius:16px;padding:20px;margin-top:8px}
+  .result .big{font-size:36px;font-weight:700;margin:4px 0}.result small{color:#dbeafe}
+  .note,.info{color:var(--muted);font-size:12px;margin-top:12px}.info{text-align:center;font-size:14px}
+  nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--bg);border-top:1px solid var(--border)}
+  nav button{flex:1;padding:14px;border:0;background:none;color:var(--muted);font-size:13px;cursor:pointer}
+  nav button.on{color:var(--primary);font-weight:700}
+  [hidden]{display:none}
+</style>
+</head>
+<body>
+<main>
+<section id="home">
+  <div class="hero"><h1>Find your home in Metro Vancouver</h1><p id="who"></p><button class="btn" data-go="browse">Browse listings</button></div>
+  <h2>Quick actions</h2>
+  <button class="tile" data-go="calc"><b>Mortgage calculator</b><span>Estimate your monthly payment</span></button>
+  <a class="tile" id="book" target="_blank" rel="noopener"><b>Book a free consultation</b><span>Investment &amp; ROI analysis</span></a>
+  <a class="tile" id="call"><b>Call Nader</b><span id="phoneTxt"></span></a>
+  <a class="tile" id="wa" target="_blank" rel="noopener"><b>WhatsApp</b><span>Chat directly</span></a>
+  <button class="tile" data-go="more"><b>Guides &amp; resources</b><span>Buyer’s guide, FAQ, blog</span></button>
+</section>
+
+<section id="browse" hidden>
+  <div class="chips" id="cats"></div>
+  <input id="q" placeholder="Search city">
+  <div id="cities"></div>
+</section>
+
+<section id="calc" hidden>
+  <label>Home price ($)</label><input id="price" inputmode="decimal" value="1200000">
+  <label>Down payment ($)</label><input id="down" inputmode="decimal" value="240000">
+  <label>Interest rate (%)</label><input id="rate" inputmode="decimal" value="4.5">
+  <label>Amortization (years)</label><input id="years" inputmode="decimal" value="25">
+  <div class="result"><small>Estimated monthly payment</small><div class="big" id="monthly"></div><small id="sub"></small></div>
+  <p class="note">Estimate only. Excludes insurance, property tax and fees.</p>
+</section>
+
+<section id="more" hidden>
+  <h2>Resources</h2><div id="res"></div>
+  <h2 style="margin-top:28px">Contact</h2>
+  <input id="name" placeholder="Name"><input id="phone" placeholder="Phone (optional)" type="tel">
+  <textarea id="msg" rows="4" placeholder="Message"></textarea>
+  <button class="btn solid" id="send">Send email</button>
+  <p class="info" id="contact"></p><p class="info" id="addr"></p>
+</section>
+</main>
+<nav id="tabs"></nav>
+<script>
+const SITE='https://home-nader.com';
+const AGENT={name:'Nader Bakhoum, PMP, P.Eng.',brokerage:'eXp Realty',phone:'+16046127228',phoneDisplay:'+1 (604) 612-7228',email:'info@home-nader.com',address:'7565 132 St, Surrey, BC V3W 1K5',whatsapp:'https://wa.me/qr/2B6Q4SLSEIHYI1',calendly:'https://calendly.com/nbakhoum84/your-future-property'};
+const CITIES=['Abbotsford','Burnaby','Coquitlam','Delta','Langley','New Westminster','Port Coquitlam','Port Moody','Richmond','South Surrey','Surrey','Vancouver','White Rock'];
+const slug=c=>c.toLowerCase().replace(/\s+/g,'-');
+const CATS=[
+  {label:'Residential',url:c=>`${SITE}/${slug(c)}-listings`},
+  {label:'Commercial',url:c=>c==='White Rock'?`${SITE}/pages/commercial-white-rock`:`${SITE}/${slug(c)}`},
+  {label:'Presales / New',url:c=>`${SITE}/presales-${slug(c)}`},
+  {label:'Sold',url:c=>`${SITE}/${slug(c)}-sold-listings`}];
+const RES=[['Buyer’s guide',`${SITE}/home-buyers-guide`],['FAQ',`${SITE}/faq`],['Blog & market news',`${SITE}/blog`],
+  ['How to buy a home (PDF)','https://static.chimeroi.com/servicetool-temp/How%20to%20buy%20a%20home.pdf'],
+  ['How to sell a home (PDF)','https://static.chimeroi.com/servicetool-temp/How%20to%20sell%20a%20home.pdf']];
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// Tabs
+const TABS=[['home','Home'],['browse','Browse'],['calc','Calculator'],['more','More']];
+$('tabs').innerHTML=TABS.map(([k,l])=>`<button data-go="${k}">${l}</button>`).join('');
+function go(t){TABS.forEach(([k])=>$(k).hidden=k!==t);document.querySelectorAll('nav button').forEach(b=>b.className=b.dataset.go===t?'on':'');scrollTo(0,0)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(b.dataset.go)});
+
+// Home
+$('who').textContent=`${AGENT.name} · ${AGENT.brokerage}`;
+$('book').href=AGENT.calendly;$('wa').href=AGENT.whatsapp;
+$('call').href='tel:'+AGENT.phone;$('phoneTxt').textContent=AGENT.phoneDisplay;
+
+// Browse (site pages open in a new tab: the site may refuse to be embedded)
+let cat=CATS[0];
+function renderBrowse(){
+  $('cats').innerHTML=CATS.map((c,i)=>`<button class="chip ${c===cat?'on':''}" data-i="${i}">${c.label}</button>`).join('');
+  const q=$('q').value.trim().toLowerCase();
+  const list=CITIES.filter(c=>c.toLowerCase().includes(q));
+  $('cities').innerHTML=list.length?list.map(c=>`<a class="row" href="${cat.url(c)}" target="_blank" rel="noopener"><span>${c}</span><span>›</span></a>`).join(''):'<p class="note">No matching city.</p>';
+}
+$('cats').onclick=e=>{const b=e.target.closest('.chip');if(b){cat=CATS[+b.dataset.i];renderBrowse()}};
+$('q').oninput=renderBrowse;renderBrowse();
+
+// Calculator: Canadian mortgages compound semi-annually.
+const num=s=>parseFloat(String(s).replace(/[^0-9.]/g,''))||0;
+const money=v=>'$'+Math.round(v).toLocaleString('en-CA');
+function payment(P,r,y){const n=y*12;if(P<=0||n<=0)return 0;if(r<=0)return P/n;const m=Math.pow(1+r/100/2,2/12)-1;return P*m/(1-Math.pow(1+m,-n))}
+function calc(){
+  const P=Math.max(num($('price').value)-num($('down').value),0),y=num($('years').value);
+  const m=payment(P,num($('rate').value),y);
+  $('monthly').textContent=money(m);
+  $('sub').textContent=`Mortgage: ${money(P)} · Total interest: ${money(Math.max(m*y*12-P,0))}`;
+}
+['price','down','rate','years'].forEach(id=>$(id).oninput=calc);calc();
+
+// More
+$('res').innerHTML=RES.map(([t,u])=>`<a class="row" href="${u}" target="_blank" rel="noopener"><span>${esc(t)}</span><span>›</span></a>`).join('');
+$('contact').textContent=`${AGENT.phoneDisplay} · ${AGENT.email}`;$('addr').textContent=AGENT.address;
+$('send').onclick=()=>{ // no backend: opens the visitor's mail app
+  const n=$('name').value.trim(),m=$('msg').value.trim(),p=$('phone').value.trim();
+  if(!n||!m){alert('Please enter your name and a message.');return}
+  location.href=`mailto:${AGENT.email}?subject=${encodeURIComponent('Inquiry from the app')}&body=${encodeURIComponent(m+'\n\n'+n+(p?'\n'+p:''))}`;
+};
+
+go('home');
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>

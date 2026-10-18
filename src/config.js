@@ -20,11 +20,13 @@ export const CITIES = [
 
 const slug = (city) => city.toLowerCase().replace(/\s+/g, '-');
 
-// URL patterns taken from the site's navigation menu (verified for Burnaby;
-// other cities are assumed to follow the same pattern).
+// URL patterns taken from the site's navigation menu. Residential, commercial and presales
+// patterns were confirmed for several cities (Burnaby, Surrey, Richmond, Coquitlam, Delta, ...);
+// the sold-listings pattern and some cities are still assumed to follow the same pattern.
+// White Rock's commercial page is the one confirmed exception.
 export const CATEGORIES = [
   { key: 'residential', label: 'Residential', url: (c) => `${SITE_URL}/${slug(c)}-listings` },
-  { key: 'commercial', label: 'Commercial', url: (c) => `${SITE_URL}/${slug(c)}` },
+  { key: 'commercial', label: 'Commercial', url: (c) => (c === 'White Rock' ? `${SITE_URL}/pages/commercial-white-rock` : `${SITE_URL}/${slug(c)}`) },
   {
     key: 'presales',
     label: 'Presales / New',
