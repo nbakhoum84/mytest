@@ -6,7 +6,8 @@
 (function () {
 var path = typeof location === 'undefined' ? '' : location.pathname.toLowerCase();
 // Commercial pages open the Commercial Buyer Cost app (BC commercial rules); everything else the residential one.
-var COMMERCIAL = /commercial/.test(path);
+// Commercial city pages have plain addresses (e.g. /abbotsford), so their loader sets window.hnBuyerCostMode = 'commercial'.
+var COMMERCIAL = (typeof window !== 'undefined' && window.hnBuyerCostMode === 'commercial') || /commercial/.test(path);
 var APP = 'https://nbakhoum84.github.io/mytest/' + (COMMERCIAL ? 'commercial-cost/' : 'my-home-cost/');
 var NEW_PAGE = /pre-?sale|new-?(home|build|construction|development|listing)|\/new(\/|$|\?|-)/i;
 var NEW_CARD = /pre-?sale|new construction|new development|est(\.|imated)? completion|completion date|move-in ready|developer/i;
@@ -179,6 +180,7 @@ function later() { setTimeout(start, 1200); }
 if (window.hnBuyerCostLoaded) return;
 window.hnBuyerCostLoaded = true;
 // Only on Residential listing pages (e.g. /abbotsford-listings), Presales/New pages and Commercial pages; never on Sold or a single listing.
+// (The commercial loader sets its mode before either copy of this file runs, so whichever copy runs first picks it up.)
 if (!(COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)/.test(path)) || /sold|detail/.test(path)) return;
 if (document.readyState === 'complete') later();
 else window.addEventListener('load', later);

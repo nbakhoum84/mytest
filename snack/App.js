@@ -276,15 +276,16 @@ const BUYER = {
   legal: 1800,
   inspection: 500,
   appraisal: 400,
+  insurance: 1500, // typical first-year home insurance premium, required by lenders before closing
   gstRate: 0.05,
   firstTimeMaxOff: 8000, // first-time buyer: up to $8,000 off for homes up to $835,000, phasing out to $860,000
 };
 
 function buyerCost({ price, firstTime, newBuild, addGst }) {
   const { full: ptt, exemption: off, payable: transferTax } = bcTransferTax({ price, firstTime, newBuild });
-  const subtotal = transferTax + BUYER.legal + BUYER.inspection + BUYER.appraisal;
+  const subtotal = transferTax + BUYER.legal + BUYER.inspection + BUYER.appraisal + BUYER.insurance;
   const gst = addGst ? price * BUYER.gstRate : 0;
-  return { price, transferTax, fullTax: ptt, exemption: off, legal: BUYER.legal, inspection: BUYER.inspection, appraisal: BUYER.appraisal, subtotal, gst, total: price + subtotal + gst };
+  return { price, transferTax, fullTax: ptt, exemption: off, legal: BUYER.legal, inspection: BUYER.inspection, appraisal: BUYER.appraisal, insurance: BUYER.insurance, subtotal, gst, total: price + subtotal + gst };
 }
 
 // ---- Seller cost (matches home-nader.com/seller-cost) -------------------------------
@@ -1105,13 +1106,14 @@ function BuyerCostCalc({ openWeb, url, checks, onChecks }) {
         ['Legal fees & disbursements', money(r.legal)],
         ['Home inspection', money(r.inspection)],
         ['Appraisal', money(r.appraisal)],
+        ['Home insurance (first year)', money(r.insurance)],
         ['Closing costs subtotal', money(r.subtotal), true],
         ...(gst ? [['GST on new build (5%, before rebate)', money(r.gst)]] : []),
         ['Total cost (price + closing costs)', money(r.total), true],
       ]} />
       {r.exemption > 0 && <Note>Exemption applied: {money(r.exemption)} off the transfer tax.</Note>}
       <Note>
-        Estimate only. First-time buyer exemption: up to ${BUYER.firstTimeMaxOff.toLocaleString('en-CA')} off for homes up to ${BC_PTT.firstTimeFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.firstTimePartialTo.toLocaleString('en-CA')}. Newly built home exemption: whole tax waived up to ${BC_PTT.newBuildFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.newBuildPartialTo.toLocaleString('en-CA')} (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Excludes adjustments.
+        Estimate only. First-time buyer exemption: up to ${BUYER.firstTimeMaxOff.toLocaleString('en-CA')} off for homes up to ${BC_PTT.firstTimeFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.firstTimePartialTo.toLocaleString('en-CA')}. Newly built home exemption: whole tax waived up to ${BC_PTT.newBuildFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.newBuildPartialTo.toLocaleString('en-CA')} (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Home insurance is a typical first-year premium for a house (condos usually cost less); lenders require it before closing. Excludes adjustments.
       </Note>
       {url ? (
         <TouchableOpacity style={calcsStyles.linkBtn} onPress={() => openWeb(url, 'Buyer cost')}>
