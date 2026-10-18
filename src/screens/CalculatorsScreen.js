@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import * as WebBrowser from 'expo-web-browser';
 import { CALCULATORS_PAGE, COLORS, COST_PAGES, RATEHUB } from '../config';
 import RatehubWidget from '../components/RatehubWidget';
-import { AFFORD, BC_PTT, affordability, balanceAfter, bcTransferTax, cmhcInsurance, downInDollars, num, pmt, yearlySchedule } from '../calc';
+import { AFFORD, BC_PTT, BUYER, SELLER, affordability, balanceAfter, bcTransferTax, buyerCost, cmhcInsurance, downInDollars, num, pmt, sellerCost, yearlySchedule } from '../calc';
 import { Breakdown, Chips, DownField, Field, Note, Pick, Result, Toggle, money } from '../components/Inputs';
 
 const TERMS = [10, 15, 20, 25, 30, 40];
@@ -14,7 +14,12 @@ const LIST = [
   { key: 'rates', title: 'Rate comparison', desc: 'Compare mortgage rates side by side', Comp: RatesCalc },
   { key: 'cmhc', title: 'CMHC insurance', desc: 'Mortgage default insurance premium', Comp: CmhcCalc },
   { key: 'ptt', title: 'Land transfer tax (BC)', desc: 'BC Property Transfer Tax', Comp: TransferTaxCalc },
+  // Built into the app; same figures as the website's Buyer Cost and Seller Cost pages.
+  { key: 'buyer', title: 'Buyer cost', desc: 'Closing costs and total cost to buy a home', Comp: BuyerCostCalc, native: true },
+  { key: 'seller', title: 'Seller cost', desc: 'Selling costs and your estimated net proceeds', Comp: SellerCostCalc, native: true },
 ];
+
+const pageUrl = (key) => (COST_PAGES.find((p) => p.key === key) || {}).url;
 
 export default function CalculatorsScreen({ goTo, openWeb }) {
   const [active, setActive] = useState(null);
@@ -24,19 +29,19 @@ export default function CalculatorsScreen({ goTo, openWeb }) {
   if (!item) {
     return (
       <ScrollView contentContainerStyle={styles.pad}>
-        {LIST.map((l) => (
+        {LIST.filter((l) => !l.native).map((l) => (
           <TouchableOpacity key={l.key} style={styles.tile} onPress={() => { setMode('Ratehub'); setActive(l.key); }}>
             <Text style={styles.tileTitle}>{l.title}</Text>
             <Text style={styles.tileDesc}>{l.desc}</Text>
           </TouchableOpacity>
         ))}
         <Text style={styles.sectionLabel}>Buying & selling costs</Text>
-        {COST_PAGES.map((p) => (
-          <TouchableOpacity key={p.key} style={styles.tile} onPress={() => openWeb(p.url, p.title)}>
+        {LIST.filter((l) => l.native).map((l) => (
+          <TouchableOpacity key={l.key} style={styles.tile} onPress={() => setActive(l.key)}>
             <View style={styles.tileRow}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.tileTitle}>{p.title}</Text>
-                <Text style={styles.tileDesc}>{p.desc}</Text>
+                <Text style={styles.tileTitle}>{l.title}</Text>
+                <Text style={styles.tileDesc}>{l.desc}</Text>
               </View>
               <Text style={styles.tileArrow}>›</Text>
             </View>
@@ -47,6 +52,15 @@ export default function CalculatorsScreen({ goTo, openWeb }) {
     );
   }
   const { Comp } = item;
+  if (item.native) {
+    return (
+      <ScrollView contentContainerStyle={styles.pad} keyboardShouldPersistTaps="handled">
+        <TouchableOpacity onPress={() => setActive(null)} hitSlop={10}><Text style={styles.back}>‹ All calculators</Text></TouchableOpacity>
+        <Text style={styles.h1}>{item.title}</Text>
+        <Comp openWeb={openWeb} url={pageUrl(item.key)} />
+      </ScrollView>
+    );
+  }
   const widget = RATEHUB[item.key];
   return (
     <View style={{ flex: 1 }}>
@@ -265,6 +279,87 @@ function TransferTaxCalc() {
       <Note>
         BC rates: 1% on the first $200,000, 2% up to $2M, 3% above $2M, plus 2% on residential value above $3M. First-time buyer exemption: full up to ${BC_PTT.firstTimeFull.toLocaleString('en-CA')}, partial to ${BC_PTT.firstTimePartialTo.toLocaleString('en-CA')}. New-home exemption: full up to ${BC_PTT.newBuildFull.toLocaleString('en-CA')}, partial to ${BC_PTT.newBuildPartialTo.toLocaleString('en-CA')}. Eligibility rules apply, and thresholds change, so verify with the BC government.
       </Note>
+    </View>
+  );
+}
+
+function BuyerCostCalc({ openWeb, url }) {
+  const [price, setPrice] = useState('900000');
+  const [first, setFirst] = useState(false);
+  const [newBuild, setNewBuild] = useState(false);
+  const [gst, setGst] = useState(false);
+  const r = buyerCost({ price: num(price), firstTime: first, newBuild, addGst: gst });
+
+  return (
+    <View>
+      <Field label="Purchase price (CAD)" value={price} onChange={setPrice} />
+      <Toggle label="First-time buyer exemption" value={first} onChange={setFirst} />
+      <Toggle label="Newly built home exemption" value={newBuild} onChange={setNewBuild} />
+      <Toggle label="New build: add 5% GST" value={gst} onChange={setGst} />
+      <Result title="Total cost (price + closing costs)" value={money(r.total)} lines={[`Closing costs: ${money(r.subtotal + r.gst)}`]} />
+      <Breakdown rows={[
+        ['House price', money(r.price)],
+        ['Property transfer tax', money(r.transferTax)],
+        ['Legal fees & disbursements', money(r.legal)],
+        ['Home inspection', money(r.inspection)],
+        ['Appraisal', money(r.appraisal)],
+        ['Closing costs subtotal', money(r.subtotal), true],
+        ...(gst ? [['GST on new build (5%, before rebate)', money(r.gst)]] : []),
+        ['Total cost (price + closing costs)', money(r.total), true],
+      ]} />
+      {r.exemption > 0 && <Note>Exemption applied: {money(r.exemption)} off the transfer tax.</Note>}
+      <Note>
+        Estimate only. First-time buyer exemption: up to ${BUYER.firstTimeMaxOff.toLocaleString('en-CA')} off for homes up to ${BC_PTT.firstTimeFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.firstTimePartialTo.toLocaleString('en-CA')}. Newly built home exemption: whole tax waived up to ${BC_PTT.newBuildFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.newBuildPartialTo.toLocaleString('en-CA')} (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Excludes adjustments.
+      </Note>
+      {url ? (
+        <TouchableOpacity style={styles.linkBtn} onPress={() => openWeb(url, 'Buyer cost')}>
+          <Text style={styles.linkText}>Buyer checklist and details on the website</Text>
+        </TouchableOpacity>
+      ) : null}
+    </View>
+  );
+}
+
+function SellerCostCalc({ openWeb, url }) {
+  const [price, setPrice] = useState('1000000');
+  const [mortgage, setMortgage] = useState('0');
+  const [penalty, setPenalty] = useState('0');
+  const [legal, setLegal] = useState('1500');
+  const [staging, setStaging] = useState('1500');
+  const [pct1, setPct1] = useState('7');
+  const [pct2, setPct2] = useState('3');
+  const r = sellerCost({ price: num(price), mortgage: num(mortgage), penalty: num(penalty), legal: num(legal), staging: num(staging), pct1: num(pct1), pct2: num(pct2) });
+  const neg = (v) => (v > 0 ? '-' + money(v) : money(v));
+
+  return (
+    <View>
+      <Field label="Expected sale price (CAD)" value={price} onChange={setPrice} />
+      <Field label="Mortgage balance to pay out" value={mortgage} onChange={setMortgage} />
+      <Field label="Prepayment penalty (if any)" value={penalty} onChange={setPenalty} />
+      <Field label="Legal fees (before GST)" value={legal} onChange={setLegal} />
+      <Field label="Staging, photos & cleaning" value={staging} onChange={setStaging} />
+      <Field label={`Commission % on first $${SELLER.commissionBand.toLocaleString('en-CA')}`} value={pct1} onChange={setPct1} />
+      <Field label="Commission % on the balance" value={pct2} onChange={setPct2} />
+      <Result title="Estimated net proceeds" value={money(r.net)} tone={r.net < 0 ? 'warn' : undefined} lines={[`Total selling costs: ${money(r.totalCosts)}`]} />
+      <Breakdown rows={[
+        ['Sale price', money(r.price)],
+        ['Realtor commission', neg(r.commission)],
+        ['GST on commission (5%)', neg(r.gstCommission)],
+        ['Legal fees', neg(r.legal)],
+        ['GST on legal fees (5%)', neg(r.gstLegal)],
+        ['Staging, photos & cleaning', neg(r.staging)],
+        ['Total selling costs', money(r.totalCosts), true],
+        ['Mortgage payout', neg(r.payout)],
+        ['Estimated net proceeds', money(r.net), true],
+      ]} />
+      <Note>
+        Estimate only. Commission is negotiable; defaults are a typical BC structure (7% of the first $100,000, 3% of the balance) plus 5% GST. Excludes property tax and strata adjustments, moving costs and any tax owing on the sale (a principal residence is normally exempt from capital gains tax). Confirm figures with your realtor and lawyer.
+      </Note>
+      {url ? (
+        <TouchableOpacity style={styles.linkBtn} onPress={() => openWeb(url, 'Seller cost')}>
+          <Text style={styles.linkText}>Seller checklist and details on the website</Text>
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 }

@@ -130,3 +130,45 @@ export function affordability({ income, down, debts, years, ratePct, taxRatePct,
     tdsPct: monthlyIncome > 0 ? ((qualHousing + debts) / monthlyIncome) * 100 : 0,
   };
 }
+
+// ---- Buyer cost (matches home-nader.com/buyer-cost) ---------------------------------
+// Fixed amounts and exemption rules are the ones shown on the website page.
+export const BUYER = {
+  legal: 1800,
+  inspection: 500,
+  appraisal: 400,
+  gstRate: 0.05,
+  firstTimeMaxOff: 8000, // first-time buyer: up to $8,000 off for homes up to $835,000, phasing out to $860,000
+};
+
+export function buyerCost({ price, firstTime, newBuild, addGst }) {
+  const ptt = bcTransferTax({ price, firstTime: false, newBuild: false }).full;
+  let ftbOff = 0;
+  if (firstTime) {
+    const cap = Math.min(ptt, BUYER.firstTimeMaxOff);
+    if (price <= BC_PTT.firstTimeFull) ftbOff = cap;
+    else if (price < BC_PTT.firstTimePartialTo) ftbOff = (cap * (BC_PTT.firstTimePartialTo - price)) / (BC_PTT.firstTimePartialTo - BC_PTT.firstTimeFull);
+  }
+  let newOff = 0;
+  if (newBuild) {
+    if (price <= BC_PTT.newBuildFull) newOff = ptt;
+    else if (price < BC_PTT.newBuildPartialTo) newOff = (ptt * (BC_PTT.newBuildPartialTo - price)) / (BC_PTT.newBuildPartialTo - BC_PTT.newBuildFull);
+  }
+  const off = Math.max(ftbOff, newOff); // only one exemption can be claimed: the larger one applies
+  const transferTax = Math.max(ptt - off, 0);
+  const subtotal = transferTax + BUYER.legal + BUYER.inspection + BUYER.appraisal;
+  const gst = addGst ? price * BUYER.gstRate : 0;
+  return { price, transferTax, fullTax: ptt, exemption: off, legal: BUYER.legal, inspection: BUYER.inspection, appraisal: BUYER.appraisal, subtotal, gst, total: price + subtotal + gst };
+}
+
+// ---- Seller cost (matches home-nader.com/seller-cost) -------------------------------
+export const SELLER = { gstRate: 0.05, commissionBand: 100000 };
+
+export function sellerCost({ price, mortgage, penalty, legal, staging, pct1, pct2 }) {
+  const commission = (pct1 / 100) * Math.min(price, SELLER.commissionBand) + (pct2 / 100) * Math.max(price - SELLER.commissionBand, 0);
+  const gstCommission = commission * SELLER.gstRate;
+  const gstLegal = legal * SELLER.gstRate; // GST applies to commission and legal fees, not staging
+  const totalCosts = commission + gstCommission + legal + gstLegal + staging;
+  const payout = mortgage + penalty;
+  return { price, commission, gstCommission, legal, gstLegal, staging, totalCosts, payout, net: price - totalCosts - payout };
+}
