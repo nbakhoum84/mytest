@@ -25,7 +25,16 @@ const slug = (city) => city.toLowerCase().replace(/\s+/g, '-');
 export const CATEGORIES = [
   { key: 'residential', label: 'Residential', url: (c) => `${SITE_URL}/${slug(c)}-listings` },
   { key: 'commercial', label: 'Commercial', url: (c) => `${SITE_URL}/${slug(c)}` },
-  { key: 'presales', label: 'Presales / New', url: (c) => `${SITE_URL}/presales-${slug(c)}` },
+  {
+    key: 'presales',
+    label: 'Presales / New',
+    url: (c) => `${SITE_URL}/presales-${slug(c)}`,
+    // Pages in the website's Presales/New menu that are not tied to one city.
+    extras: [
+      { label: 'New homes under construction', desc: 'Homes being built across Metro Vancouver', url: `${SITE_URL}/new-homes-under-construction` },
+      { label: 'Foreclosure listings', desc: 'Foreclosure properties for sale', url: `${SITE_URL}/foreclosures-listings` },
+    ],
+  },
   { key: 'sold', label: 'Sold', url: (c) => `${SITE_URL}/${slug(c)}-sold-listings` },
 ];
 

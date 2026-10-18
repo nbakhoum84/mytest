@@ -24,6 +24,8 @@ branch `claude/home-nader-app-code-qq450r`. The web app is published from a seco
    - `AGENT`: phone, phoneDisplay, email, address, whatsapp link, calendly link.
    - `CITIES`: the list of cities in the Residential menu, and the URL patterns in `CATEGORIES`
      (`/{city}-listings`, `/{city}` for commercial, `/presales-{city}`, `/{city}-sold-listings`; city slugs are lower case with hyphens).
+   - The two non-city pages in the Presales/New menu, kept in `CATEGORIES` (presales) `extras`:
+     `/new-homes-under-construction` and `/foreclosures-listings`.
    - `RESOURCES`: buyer's guide `/home-buyers-guide`, `/faq`, `/blog` and the two PDF guide links.
    - `RATEHUB`: the widget keys on the calculators page (`PaymentCalculator`, `ProductTableMortgages`,
      `AffordabilityCalculator`, `DownPaymentCalculator`, `LandTransferTaxCalculator`) and the calculator names.

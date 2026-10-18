@@ -33,7 +33,16 @@ const slug = (city) => city.toLowerCase().replace(/\s+/g, '-');
 const CATEGORIES = [
   { key: 'residential', label: 'Residential', url: (c) => `${SITE_URL}/${slug(c)}-listings` },
   { key: 'commercial', label: 'Commercial', url: (c) => `${SITE_URL}/${slug(c)}` },
-  { key: 'presales', label: 'Presales / New', url: (c) => `${SITE_URL}/presales-${slug(c)}` },
+  {
+    key: 'presales',
+    label: 'Presales / New',
+    url: (c) => `${SITE_URL}/presales-${slug(c)}`,
+    // Pages in the website's Presales/New menu that are not tied to one city.
+    extras: [
+      { label: 'New homes under construction', desc: 'Homes being built across Metro Vancouver', url: `${SITE_URL}/new-homes-under-construction` },
+      { label: 'Foreclosure listings', desc: 'Foreclosure properties for sale', url: `${SITE_URL}/foreclosures-listings` },
+    ],
+  },
   { key: 'sold', label: 'Sold', url: (c) => `${SITE_URL}/${slug(c)}-sold-listings` },
 ];
 
@@ -596,6 +605,7 @@ function BrowseScreen({ openWeb }) {
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [query, setQuery] = useState('');
   const cities = CITIES.filter((c) => c.toLowerCase().includes(query.trim().toLowerCase()));
+  const extras = category.extras && !query.trim() ? category.extras : [];
 
   return (
     <View style={browseStyles.root}>
@@ -611,6 +621,20 @@ function BrowseScreen({ openWeb }) {
       <FlatList
         data={cities}
         keyExtractor={(c) => c}
+        ListHeaderComponent={extras.length ? (
+          <View style={browseStyles.extras}>
+            {extras.map((e) => (
+              <TouchableOpacity key={e.label} style={browseStyles.extraCard} onPress={() => openWeb(e.url, e.label)}>
+                <View style={{ flex: 1 }}>
+                  <Text style={browseStyles.extraTitle}>{e.label}</Text>
+                  <Text style={browseStyles.extraDesc}>{e.desc}</Text>
+                </View>
+                <Text style={browseStyles.arrow}>›</Text>
+              </TouchableOpacity>
+            ))}
+            <Text style={browseStyles.sectionLabel}>Presales by city</Text>
+          </View>
+        ) : null}
         ListEmptyComponent={<Text style={browseStyles.empty}>No matching city.</Text>}
         renderItem={({ item }) => (
           <TouchableOpacity style={browseStyles.row} onPress={() => openWeb(category.url(item), `${item} · ${category.label}`)}>
@@ -634,6 +658,11 @@ const browseStyles = StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   rowText: { fontSize: 16, color: COLORS.text },
   arrow: { fontSize: 20, color: COLORS.muted },
+  extras: { marginBottom: 4 },
+  extraCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.card, borderRadius: 12, borderLeftWidth: 4, borderLeftColor: COLORS.accent, borderWidth: 1, borderColor: COLORS.border, padding: 14, marginBottom: 10 },
+  extraTitle: { fontSize: 16, fontWeight: '700', color: COLORS.text },
+  extraDesc: { fontSize: 13, color: COLORS.muted, marginTop: 2 },
+  sectionLabel: { fontSize: 13, fontWeight: '700', color: COLORS.muted, letterSpacing: 0.5, textTransform: 'uppercase', marginTop: 8 },
   empty: { textAlign: 'center', color: COLORS.muted, marginTop: 24 },
 });
 
