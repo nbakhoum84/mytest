@@ -1,0 +1,74 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "RealEstateAgent",
+      "@id": "https://home-nader.com/#agent",
+      "name": "Nader Bakhoum, PMP, P.Eng. - eXp Realty",
+      "url": "https://home-nader.com",
+      "telephone": "+1-604-612-7228",
+      "email": "info@home-nader.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "7565 132 St",
+        "addressLocality": "Surrey",
+        "addressRegion": "BC",
+        "postalCode": "V3W 1K5",
+        "addressCountry": "CA"
+      },
+      "areaServed": "Metro Vancouver, British Columbia"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://home-nader.com/seller-cost#webpage",
+      "url": "https://home-nader.com/seller-cost",
+      "name": "Seller Cost Calculator BC | Net Proceeds from Selling Your Home",
+      "description": "Free BC home seller cost calculator. Estimate realtor commission, GST, legal fees, mortgage payout and prepayment penalty to see your net proceeds, with a seller checklist.",
+      "inLanguage": "en-CA",
+      "about": {
+        "@id": "https://home-nader.com/seller-cost#app"
+      },
+      "breadcrumb": {
+        "@id": "https://home-nader.com/seller-cost#breadcrumb"
+      }
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://home-nader.com/seller-cost#app",
+      "name": "Seller Cost",
+      "url": "https://home-nader.com/seller-cost",
+      "description": "Free BC home seller cost calculator. Estimate realtor commission, GST, legal fees, mortgage payout and prepayment penalty to see your net proceeds, with a seller checklist.",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Any (web browser)",
+      "browserRequirements": "Requires JavaScript",
+      "inLanguage": "en-CA",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "CAD"
+      },
+      "provider": {
+        "@id": "https://home-nader.com/#agent"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://home-nader.com/seller-cost#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://home-nader.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Seller Cost",
+          "item": "https://home-nader.com/seller-cost"
+        }
+      ]
+    }
+  ]
+}
