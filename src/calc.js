@@ -85,26 +85,35 @@ export const BC_PTT = {
   newBuildPartialTo: 1150000,
 };
 
-export function bcTransferTax({ price, firstTime, newBuild }) {
+// Tax before any exemption.
+function transferTaxFull(price) {
   let tax = 0;
   let lower = 0;
   for (const [upper, rate] of BC_PTT.tiers) {
     if (price > lower) tax += (Math.min(price, upper) - lower) * rate;
     lower = upper;
   }
-  const full = tax;
-  let payable = tax;
+  return tax;
+}
+
+// First-time buyer: up to $8,000 off up to $835k, phasing out to $860k.
+// Newly built home: whole tax off up to $1.1M, phasing out to $1.15M.
+// Only one exemption can be claimed, so the larger one applies.
+function transferTaxExemption(price, tax, firstTime, newBuild) {
+  const phase = (amount, fullUpTo, partialTo) =>
+    price <= fullUpTo ? amount : price < partialTo ? (amount * (partialTo - price)) / (partialTo - fullUpTo) : 0;
+  const ftb = firstTime ? phase(Math.min(tax, BUYER.firstTimeMaxOff), BC_PTT.firstTimeFull, BC_PTT.firstTimePartialTo) : 0;
+  const nb = newBuild ? phase(tax, BC_PTT.newBuildFull, BC_PTT.newBuildPartialTo) : 0;
+  return nb > ftb ? { amount: nb, label: 'Newly built home' } : { amount: ftb, label: 'First-time buyer' };
+}
+
+export function bcTransferTax({ price, firstTime, newBuild }) {
+  const full = transferTaxFull(price);
+  const { amount, label } = transferTaxExemption(price, full, firstTime, newBuild);
+  const payable = Math.max(full - amount, 0);
   let note = '';
-  const exempt = (fullUpTo, partialTo, label) => {
-    if (price <= fullUpTo) return { payable: 0, note: `${label} exemption applies: no transfer tax.` };
-    if (price < partialTo) return { payable: (tax * (price - fullUpTo)) / (partialTo - fullUpTo), note: `Partial ${label.toLowerCase()} exemption applies.` };
-    return null;
-  };
-  const options = [];
-  if (firstTime) options.push(exempt(BC_PTT.firstTimeFull, BC_PTT.firstTimePartialTo, 'First-time buyer'));
-  if (newBuild) options.push(exempt(BC_PTT.newBuildFull, BC_PTT.newBuildPartialTo, 'Newly built home'));
-  for (const o of options) if (o && o.payable < payable) { payable = o.payable; note = o.note; }
-  return { full, payable, note };
+  if (amount > 0) note = payable === 0 ? `${label} exemption applies: no transfer tax.` : `${label} exemption saves $${Math.round(amount).toLocaleString('en-CA')}.`;
+  return { full, payable, exemption: amount, note };
 }
 
 // ---- Affordability -----------------------------------------------------------
@@ -142,20 +151,7 @@ export const BUYER = {
 };
 
 export function buyerCost({ price, firstTime, newBuild, addGst }) {
-  const ptt = bcTransferTax({ price, firstTime: false, newBuild: false }).full;
-  let ftbOff = 0;
-  if (firstTime) {
-    const cap = Math.min(ptt, BUYER.firstTimeMaxOff);
-    if (price <= BC_PTT.firstTimeFull) ftbOff = cap;
-    else if (price < BC_PTT.firstTimePartialTo) ftbOff = (cap * (BC_PTT.firstTimePartialTo - price)) / (BC_PTT.firstTimePartialTo - BC_PTT.firstTimeFull);
-  }
-  let newOff = 0;
-  if (newBuild) {
-    if (price <= BC_PTT.newBuildFull) newOff = ptt;
-    else if (price < BC_PTT.newBuildPartialTo) newOff = (ptt * (BC_PTT.newBuildPartialTo - price)) / (BC_PTT.newBuildPartialTo - BC_PTT.newBuildFull);
-  }
-  const off = Math.max(ftbOff, newOff); // only one exemption can be claimed: the larger one applies
-  const transferTax = Math.max(ptt - off, 0);
+  const { full: ptt, exemption: off, payable: transferTax } = bcTransferTax({ price, firstTime, newBuild });
   const subtotal = transferTax + BUYER.legal + BUYER.inspection + BUYER.appraisal;
   const gst = addGst ? price * BUYER.gstRate : 0;
   return { price, transferTax, fullTax: ptt, exemption: off, legal: BUYER.legal, inspection: BUYER.inspection, appraisal: BUYER.appraisal, subtotal, gst, total: price + subtotal + gst };

@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "build:web": "node scripts/build-web.js"
+    "build:web": "node scripts/build-web.js",
+    "test": "node --test src/calc.test.mjs"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
