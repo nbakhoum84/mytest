@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { AFFORD, CMHC, FREQUENCIES, affordability, cmhcInsurance, downInDollars, minimumDown, money, mortgagePayment, num } from './src/mortgage';
+import { AFFORD, CMHC, FREQUENCIES, affordability, cmhcInsurance, downInDollars, minimumDown, money, mortgagePayment, num, transferTax } from './src/mortgage';
 
 const PHONE = '+16046127228';
+const RATES_URL = 'https://home-nader.com/mortgage-calculators#mortgage-rate-comparison-table';
 
 const C = { bg: '#fff', text: '#111827', muted: '#6b7280', primary: '#0f4c81', card: '#f3f4f6', border: '#e5e7eb', warn: '#b91c1c' };
 
@@ -162,7 +163,46 @@ function Insurance() {
   );
 }
 
-const TABS = [['pay', 'Payment', Payment], ['afford', 'Afford', Affordability], ['cmhc', 'CMHC', Insurance]];
+function Tax() {
+  const [price, setPrice] = useState('900000');
+  const [ftb, setFtb] = useState(false);
+  const [nb, setNb] = useState(false);
+  const t = transferTax({ price: num(price), firstTime: ftb, newBuild: nb });
+  return (
+    <ScrollView contentContainerStyle={styles.pad}>
+      <Text style={styles.h1}>Property transfer tax</Text>
+      <Field label="Purchase price (CAD)" value={price} onChange={setPrice} />
+      <View style={styles.row}>
+        <Text style={styles.text}>First-time buyer</Text>
+        <Switch value={ftb} onValueChange={setFtb} />
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.text}>Newly built home</Text>
+        <Switch value={nb} onValueChange={setNb} />
+      </View>
+      <Row label="Property transfer tax" value={money(t.full)} />
+      {t.exemption > 0 && <Row label={t.label} value={money(-t.exemption)} />}
+      <Row label="Tax to pay" value={money(t.payable)} total />
+      {!!t.note && <Text style={styles.note}>{t.note}</Text>}
+      <Text style={styles.note}>Estimate only. BC rates: 1% on the first $200,000, 2% to $2,000,000, 3% above that, plus 2% more above $3,000,000. First-time buyers save up to $8,000 on homes up to $835,000, phasing out to $860,000. Newly built homes pay no tax up to $1,100,000, phasing out to $1,150,000. Only one exemption can be claimed. Confirm eligibility with your lawyer.</Text>
+    </ScrollView>
+  );
+}
+
+function Rates() {
+  return (
+    <ScrollView contentContainerStyle={styles.pad}>
+      <Text style={styles.h1}>Today's mortgage rates</Text>
+      <Text style={styles.text}>Compare today's best mortgage rates from Canadian lenders. The table updates live, so it opens on Nader's website.</Text>
+      <TouchableOpacity style={[styles.contactBtn, { marginVertical: 16 }]} onPress={() => Linking.openURL(RATES_URL)}>
+        <Text style={styles.contactText}>Compare rates</Text>
+      </TouchableOpacity>
+      <Text style={styles.note}>Bring a rate back to the Payment tab to see what it means for your monthly payment.</Text>
+    </ScrollView>
+  );
+}
+
+const TABS = [['pay', 'Payment', Payment], ['afford', 'Afford', Affordability], ['cmhc', 'CMHC', Insurance], ['tax', 'Tax', Tax], ['rates', 'Rates', Rates]];
 
 export default function App() {
   const [tab, setTab] = useState('pay');

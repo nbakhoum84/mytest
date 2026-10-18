@@ -122,5 +122,27 @@ export function affordability({ income, down, debts, years, ratePct, taxRatePct,
   };
 }
 
+// ---- BC property transfer tax --------------------------------------------------
+// Same rules as apps/my-home-cost/src/costs.js: 1% to $200k, 2% to $2M, 3% above, plus 2% above $3M.
+export function propertyTransferTax(price) {
+  const band = (from, to, rate) => Math.max(0, Math.min(price, to) - from) * rate;
+  return band(0, 200000, 0.01) + band(200000, 2000000, 0.02) + band(2000000, Infinity, 0.03) + band(3000000, Infinity, 0.02);
+}
+
+// First-time buyers: up to $8,000 off up to $835k, phased out to $860k.
+// Newly built homes: whole tax off up to $1.1M, phased out to $1.15M. Only one can be claimed.
+export function transferTax({ price, firstTime = false, newBuild = false }) {
+  const full = propertyTransferTax(price);
+  const phase = (amount, fullUpTo, partialTo) =>
+    price <= fullUpTo ? amount : price < partialTo ? (amount * (partialTo - price)) / (partialTo - fullUpTo) : 0;
+  const ftb = firstTime ? phase(Math.min(full, 8000), 835000, 860000) : 0;
+  const nb = newBuild ? phase(full, 1100000, 1150000) : 0;
+  const exemption = Math.max(ftb, nb);
+  const label = nb > ftb ? 'Newly built home exemption' : 'First-time buyer exemption';
+  let note = '';
+  if ((firstTime || newBuild) && exemption === 0) note = `No exemption applies at ${newBuild ? '$1,150,000' : '$860,000'} or more.`;
+  return { full, exemption, label, payable: full - exemption, note };
+}
+
 export const money = (n) =>
   (n < 0 ? '-$' : '$') + Math.abs(Math.round(n)).toLocaleString('en-CA');

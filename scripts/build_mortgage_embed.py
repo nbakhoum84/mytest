@@ -17,7 +17,7 @@ script = re.search(r'<script type="module">\n(.*?)</script>', page, re.S).group(
 script = '\n'.join(l for l in script.splitlines() if not l.startswith(('import ', "if ('serviceWorker'")))
 
 # Every id and class gets an mc- prefix so the page's own CSS (e.g. a Bootstrap .row) can't touch it.
-CLASSES = ['inline', 'chips', 'on', 'row', 'total', 'note', 'warn']
+CLASSES = ['inline', 'chips', 'on', 'row', 'total', 'note', 'warn', 'check', 'btn']
 def prefix(s):
     s = re.sub(r'id="', 'id="mc-', s)
     s = re.sub(r'class="([^"$]*)"', lambda m: 'class="%s"' % ' '.join('mc-' + c for c in m.group(1).split()), s)
@@ -63,6 +63,9 @@ out = f'''<!-- Mortgage Calculator: paste into an HTML block on the Lofty page h
   #mc-app .mc-tabs{{display:flex;border-bottom:1px solid var(--mc-border);margin-bottom:16px}}
   #mc-app .mc-tabs button{{flex:1;padding:12px;border:0;background:none;color:var(--mc-muted);font-size:14px;cursor:pointer}}
   #mc-app .mc-tabs button.mc-on{{color:var(--mc-accent);font-weight:700;border-bottom:2px solid var(--mc-accent)}}
+  #mc-app .mc-check{{display:flex;justify-content:space-between;align-items:center;margin:0;padding:10px 0;border-bottom:1px solid var(--mc-border);color:inherit}}
+  #mc-app .mc-check input{{width:22px;height:22px;margin:0}}
+  #mc-app .mc-btn{{display:block;text-align:center;padding:14px;border-radius:8px;background:var(--mc-accent);color:#fff;text-decoration:none;font-weight:700;margin:16px 0}}
   #mc-app [hidden]{{display:none}}
 </style>
 <div id="mc-app">

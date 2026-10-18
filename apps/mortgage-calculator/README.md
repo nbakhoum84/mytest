@@ -1,6 +1,6 @@
 # Mortgage Calculator
 
-Expo app for the home-nader.com mortgage calculators page: mortgage payment (with payment frequency, CMHC premium, 5-year term balance), affordability (stress test, GDS/TDS) and CMHC insurance.
+Expo app for the home-nader.com mortgage calculators page: mortgage payment (with payment frequency, CMHC premium, 5-year term balance), affordability (stress test, GDS/TDS), CMHC insurance, BC property transfer tax, and a link to the live rate comparison table on the website.
 
 ```
 npm install
