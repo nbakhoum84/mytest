@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
-import { CALCULATORS_PAGE, COLORS, COST_PAGES, RATEHUB } from '../config';
+import { CALCULATORS_PAGE, CHECKLISTS, COLORS, COST_PAGES, RATEHUB } from '../config';
 import RatehubWidget from '../components/RatehubWidget';
 import { AFFORD, BC_PTT, BUYER, SELLER, affordability, balanceAfter, bcTransferTax, buyerCost, cmhcInsurance, downInDollars, num, pmt, sellerCost, yearlySchedule } from '../calc';
 import { Breakdown, Chips, DownField, Field, Note, Pick, Result, Toggle, money } from '../components/Inputs';
@@ -24,6 +24,8 @@ const pageUrl = (key) => (COST_PAGES.find((p) => p.key === key) || {}).url;
 export default function CalculatorsScreen({ goTo, openWeb }) {
   const [active, setActive] = useState(null);
   const [mode, setMode] = useState('Ratehub');
+  // Checklist ticks live here so they survive switching tabs and calculators while the app is open.
+  const [checks, setChecks] = useState({ buyer: CHECKLISTS.buyer.map(() => false), seller: CHECKLISTS.seller.map(() => false) });
   const item = LIST.find((l) => l.key === active);
 
   if (!item) {
@@ -57,7 +59,7 @@ export default function CalculatorsScreen({ goTo, openWeb }) {
       <ScrollView contentContainerStyle={styles.pad} keyboardShouldPersistTaps="handled">
         <TouchableOpacity onPress={() => setActive(null)} hitSlop={10}><Text style={styles.back}>‹ All calculators</Text></TouchableOpacity>
         <Text style={styles.h1}>{item.title}</Text>
-        <Comp openWeb={openWeb} url={pageUrl(item.key)} />
+        <Comp openWeb={openWeb} url={pageUrl(item.key)} checks={checks[item.key]} onChecks={(v) => setChecks({ ...checks, [item.key]: v })} />
       </ScrollView>
     );
   }
@@ -283,15 +285,46 @@ function TransferTaxCalc() {
   );
 }
 
-function BuyerCostCalc({ openWeb, url }) {
+// Tick-off list used on the Checklist tab (ticks are kept while the app stays open).
+function Checklist({ title, items, done, onChange }) {
+  const count = done.filter(Boolean).length;
+  return (
+    <View>
+      <Text style={styles.checkTitle}>{title} ({count}/{items.length})</Text>
+      {items.map((label, i) => (
+        <Toggle key={label} label={label} value={done[i]} onChange={(v) => onChange(done.map((d, j) => (j === i ? v : d)))} />
+      ))}
+    </View>
+  );
+}
+
+function CostTabs({ tab, setTab }) {
+  return (
+    <View style={{ marginBottom: 12 }}>
+      <Chips options={['Costs', 'Checklist']} value={tab} onChange={setTab} />
+    </View>
+  );
+}
+
+function BuyerCostCalc({ openWeb, url, checks, onChecks }) {
+  const [tab, setTab] = useState('Costs');
   const [price, setPrice] = useState('900000');
   const [first, setFirst] = useState(false);
   const [newBuild, setNewBuild] = useState(false);
   const [gst, setGst] = useState(false);
   const r = buyerCost({ price: num(price), firstTime: first, newBuild, addGst: gst });
 
+  if (tab === 'Checklist') {
+    return (
+      <View>
+        <CostTabs tab={tab} setTab={setTab} />
+        <Checklist title="Buyer checklist" items={CHECKLISTS.buyer} done={checks} onChange={onChecks} />
+      </View>
+    );
+  }
   return (
     <View>
+      <CostTabs tab={tab} setTab={setTab} />
       <Field label="Purchase price (CAD)" value={price} onChange={setPrice} />
       <Toggle label="First-time buyer exemption" value={first} onChange={setFirst} />
       <Toggle label="Newly built home exemption" value={newBuild} onChange={setNewBuild} />
@@ -313,14 +346,15 @@ function BuyerCostCalc({ openWeb, url }) {
       </Note>
       {url ? (
         <TouchableOpacity style={styles.linkBtn} onPress={() => openWeb(url, 'Buyer cost')}>
-          <Text style={styles.linkText}>Buyer checklist and details on the website</Text>
+          <Text style={styles.linkText}>Open this page on the website</Text>
         </TouchableOpacity>
       ) : null}
     </View>
   );
 }
 
-function SellerCostCalc({ openWeb, url }) {
+function SellerCostCalc({ openWeb, url, checks, onChecks }) {
+  const [tab, setTab] = useState('Costs');
   const [price, setPrice] = useState('1000000');
   const [mortgage, setMortgage] = useState('0');
   const [penalty, setPenalty] = useState('0');
@@ -331,8 +365,17 @@ function SellerCostCalc({ openWeb, url }) {
   const r = sellerCost({ price: num(price), mortgage: num(mortgage), penalty: num(penalty), legal: num(legal), staging: num(staging), pct1: num(pct1), pct2: num(pct2) });
   const neg = (v) => (v > 0 ? '-' + money(v) : money(v));
 
+  if (tab === 'Checklist') {
+    return (
+      <View>
+        <CostTabs tab={tab} setTab={setTab} />
+        <Checklist title="Seller checklist" items={CHECKLISTS.seller} done={checks} onChange={onChecks} />
+      </View>
+    );
+  }
   return (
     <View>
+      <CostTabs tab={tab} setTab={setTab} />
       <Field label="Expected sale price (CAD)" value={price} onChange={setPrice} />
       <Field label="Mortgage balance to pay out" value={mortgage} onChange={setMortgage} />
       <Field label="Prepayment penalty (if any)" value={penalty} onChange={setPenalty} />
@@ -357,7 +400,7 @@ function SellerCostCalc({ openWeb, url }) {
       </Note>
       {url ? (
         <TouchableOpacity style={styles.linkBtn} onPress={() => openWeb(url, 'Seller cost')}>
-          <Text style={styles.linkText}>Seller checklist and details on the website</Text>
+          <Text style={styles.linkText}>Open this page on the website</Text>
         </TouchableOpacity>
       ) : null}
     </View>
@@ -385,6 +428,7 @@ const styles = StyleSheet.create({
   sectionLabel: { fontSize: 13, fontWeight: '700', color: COLORS.muted, letterSpacing: 0.5, textTransform: 'uppercase', marginTop: 10, marginBottom: 10 },
   tileRow: { flexDirection: 'row', alignItems: 'center' },
   tileArrow: { fontSize: 24, color: COLORS.accentDark, marginLeft: 8 },
+  checkTitle: { fontSize: 18, fontWeight: '700', color: COLORS.text, marginBottom: 14 },
   tileDesc: { color: COLORS.muted, marginTop: 2 },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   small: { color: COLORS.muted },

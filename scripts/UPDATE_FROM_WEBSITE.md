@@ -36,6 +36,7 @@ branch `claude/home-nader-app-code-qq450r`. The web app is published from a seco
      figures on https://home-nader.com/buyer-cost and /seller-cost (fixed amounts, exemption notes, commission defaults, GST).
      The website page text is the only thing the task can read. If the notes/defaults there clearly differ from the code, do NOT edit
      the calculators. Report the difference to the owner so they can confirm the new figures.
+   - The 10-item checklists (`CHECKLISTS` in `src/config.js`) come from the Checklist tab of those pages, which the task cannot read. Leave them alone.
 4. If nothing differs, stop here (see Rules).
 5. Otherwise edit `src/config.js` (only the differing values), then:
    - `npm run build:web`   (must succeed; writes `dist/`)

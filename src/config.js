@@ -82,3 +82,31 @@ export const APP_LINKS = {
   // Used if the phone can't open the link above (for example Expo Go is not installed).
   iosFallback: 'https://snack.expo.dev/@homenader/a86997',
 };
+
+// Checklists on the website's Buyer Cost and Seller Cost pages (Checklist tab).
+export const CHECKLISTS = {
+  buyer: [
+    'Get mortgage pre-approval',
+    'Set budget incl. closing costs',
+    'Find and view homes',
+    'Submit offer with subjects',
+    'Book home inspection',
+    'Remove subjects & pay deposit',
+    'Arrange home insurance',
+    'Final walk-through',
+    'Sign at lawyer/notary',
+    'Get keys on possession day',
+  ],
+  seller: [
+    'Meet a realtor & agree on list price',
+    'Sign listing agreement',
+    'Declutter, clean & stage',
+    'Professional photos',
+    'Collect strata documents (if any)',
+    'List and hold showings',
+    'Review offers & negotiate',
+    'Remove subjects',
+    'Arrange mortgage payout & lawyer',
+    'Hand over keys on possession day',
+  ],
+};
