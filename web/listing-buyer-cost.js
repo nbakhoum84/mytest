@@ -33,23 +33,24 @@ return null;
 function mark(el, price) {
 el.classList.add('hn-bcp');
 el.setAttribute('data-hn-price', price);
-if (!el.title) el.title = 'See buyer closing costs for this price';
 addButton(el, price);
 }
 
-// One "Buyer cost" button per card, right after the price. Re-added if the site redraws the card.
+// One "Buyer cost" button per card, floating over the top-left of the photo so the card doesn't change size
+// (no jump when it appears). Re-added if the site redraws the card.
 function addButton(el, price) {
-var next = el.nextElementSibling;
-if (next && next.classList.contains('hn-bcp-btn')) { next.setAttribute('data-hn-price', price); return; }
 var card = cardOf(el);
-if (card && card.querySelector('.hn-bcp-btn')) return;
+if (!card) return;
+var old = card.querySelector('.hn-bcp-btn');
+if (old) { old.setAttribute('data-hn-price', price); return; }
+if (getComputedStyle(card).position === 'static') card.style.position = 'relative';
 var b = document.createElement('button');
 b.type = 'button';
 b.className = 'hn-bcp-btn';
 b.setAttribute('data-hn-price', price);
 b.setAttribute('aria-label', 'Buyer cost for $' + price.toLocaleString('en-CA'));
 b.textContent = 'Buyer cost';
-el.insertAdjacentElement('afterend', b);
+card.appendChild(b);
 }
 
 function scan() {
@@ -129,7 +130,7 @@ function start() {
 var style = document.createElement('style');
 style.textContent =
 '.hn-bcp{cursor:pointer!important;text-decoration:underline dotted rgba(201,160,99,.9)!important;text-underline-offset:4px}' +
-'.hn-bcp-btn{display:inline-flex!important;align-items:center;gap:6px;margin:8px 0 4px;padding:8px 14px;border:0;border-radius:8px;background:#c9a063;color:#111;font-family:inherit;font-weight:600;font-size:13px;line-height:1.2;letter-spacing:0;text-transform:none;cursor:pointer;white-space:nowrap;position:relative;z-index:2}' +
+'.hn-bcp-btn{position:absolute!important;top:10px;left:10px;z-index:3;display:inline-flex!important;align-items:center;gap:6px;margin:0;padding:8px 14px;border:0;border-radius:8px;background:#c9a063;box-shadow:0 2px 8px rgba(0,0,0,.25);color:#111;font-family:inherit;font-weight:600;font-size:13px;line-height:1.2;letter-spacing:0;text-transform:none;cursor:pointer;white-space:nowrap}' +
 '.hn-bcp-btn::before{content:"";width:14px;height:14px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Cpath d=%27M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v4h10V4H7zm1 7v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v6h2v-6h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2z%27/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Cpath d=%27M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v4h10V4H7zm1 7v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v6h2v-6h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2z%27/%3E%3C/svg%3E") center/contain no-repeat}' +
 '.hn-bcp-btn:hover{background:#b88d4f}' +
 '#hn-bcp-modal{display:none;position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:16px}' +
@@ -145,20 +146,31 @@ style.textContent =
 // Capture phase, so the price click is handled before the card's link or Lofty's own click handler.
 document.addEventListener('click', onClick, true);
 document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
-scan();
 // Listing cards load and change as visitors search, filter and page, so rescan (throttled) when the page changes.
+// Our own buttons coming and going are ignored, so adding them never triggers another round.
 var timer = null;
-new MutationObserver(function () {
+function ours(n) { return n.nodeType === 1 && (n.classList.contains('hn-bcp-btn') || n.id === 'hn-bcp-modal'); }
+new MutationObserver(function (list) {
 if (timer) return;
-timer = setTimeout(function () { timer = null; scan(); }, 400);
-}).observe(document.body, { childList: true, subtree: true, characterData: true });
+for (var i = 0; i < list.length; i++) {
+var nodes = [].slice.call(list[i].addedNodes).concat([].slice.call(list[i].removedNodes));
+if (!nodes.length || nodes.some(function (n) { return !ours(n); })) {
+timer = setTimeout(function () { timer = null; scan(); }, 500);
+return;
 }
+}
+}).observe(document.body, { childList: true, subtree: true });
+scan();
+}
+// Wait until the page has fully loaded and the site has finished drawing it before touching anything;
+// changing the cards while the site is still building them made the page flicker.
+function later() { setTimeout(start, 1200); }
 // Run once, even if the loader is pasted both site-wide and on a page.
 if (window.hnBuyerCostLoaded) return;
 window.hnBuyerCostLoaded = true;
 // Only on Residential listing pages (e.g. /abbotsford-listings) and Presales/New pages; never on Commercial, Sold or a single listing.
 var path = location.pathname.toLowerCase();
 if (!/listing|pre-?sale|new-?(home|build|construction|development)/.test(path) || /commercial|sold|detail/.test(path)) return;
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
-else start();
+if (document.readyState === 'complete') later();
+else window.addEventListener('load', later);
 })();
