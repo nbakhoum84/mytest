@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { readFileSync } from 'fs';
-import { pmt, payment, minimumDown, cmhcInsurance, mortgagePayment, affordability, downInDollars } from './mortgage.js';
+import { propertyTransferTax, transferTax, pmt, payment, minimumDown, cmhcInsurance, mortgagePayment, affordability, downInDollars } from './mortgage.js';
 
 const near = (a, b, tol = 0.01) => assert.ok(Math.abs(a - b) <= tol, `${a} is not ${b}`);
 
@@ -48,6 +48,17 @@ assert.strictEqual(a.qualRate, 6.5);
 assert.ok(a.gdsPct <= 39.0001 && a.tdsPct <= 44.0001);
 assert.strictEqual(affordability({ income: 150000, down: 0, debts: 0, years: 25, ratePct: 2, taxRatePct: 0, heat: 0, hoa: 0 }).qualRate, 5.25);
 assert.strictEqual(affordability({ income: 0, down: 50000, debts: 0, years: 25, ratePct: 4, taxRatePct: 0.3, heat: 0, hoa: 0 }).price, 0);
+// BC property transfer tax and exemptions.
+assert.strictEqual(propertyTransferTax(1000000), 18000);
+assert.strictEqual(propertyTransferTax(4000000), 2000 + 36000 + 60000 + 20000);
+assert.strictEqual(transferTax({ price: 800000, firstTime: true }).payable, 6000);
+assert.strictEqual(transferTax({ price: 400000, firstTime: true }).payable, 0);
+assert.strictEqual(transferTax({ price: 850000, firstTime: true }).exemption, 3200);
+assert.strictEqual(transferTax({ price: 860000, firstTime: true }).exemption, 0);
+assert.strictEqual(transferTax({ price: 1100000, newBuild: true }).payable, 0);
+assert.strictEqual(Math.round(transferTax({ price: 1140000, newBuild: true }).exemption), 4160);
+assert.strictEqual(transferTax({ price: 1000000, firstTime: true, newBuild: true }).label, 'Newly built home exemption');
+
 // The web app (web/mortgage-calculator) loads its own copy of this file.
 assert.strictEqual(
   readFileSync(new URL('../../../web/mortgage-calculator/mortgage.js', import.meta.url), 'utf8'),

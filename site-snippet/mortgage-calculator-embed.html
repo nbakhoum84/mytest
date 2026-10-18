@@ -24,10 +24,13 @@
   #mc-app .mc-tabs{display:flex;border-bottom:1px solid var(--mc-border);margin-bottom:16px}
   #mc-app .mc-tabs button{flex:1;padding:12px;border:0;background:none;color:var(--mc-muted);font-size:14px;cursor:pointer}
   #mc-app .mc-tabs button.mc-on{color:var(--mc-accent);font-weight:700;border-bottom:2px solid var(--mc-accent)}
+  #mc-app .mc-check{display:flex;justify-content:space-between;align-items:center;margin:0;padding:10px 0;border-bottom:1px solid var(--mc-border);color:inherit}
+  #mc-app .mc-check input{width:22px;height:22px;margin:0}
+  #mc-app .mc-btn{display:block;text-align:center;padding:14px;border-radius:8px;background:var(--mc-accent);color:#fff;text-decoration:none;font-weight:700;margin:16px 0}
   #mc-app [hidden]{display:none}
 </style>
 <div id="mc-app">
-  <div class="mc-tabs" id="mc-tabs"><button data-tab="pay" class="mc-on">Payment</button><button data-tab="afford">Afford</button><button data-tab="cmhc">CMHC</button></div>
+  <div class="mc-tabs" id="mc-tabs"><button data-tab="pay" class="mc-on">Payment</button><button data-tab="afford">Afford</button><button data-tab="cmhc">CMHC</button><button data-tab="tax">Tax</button><button data-tab="rates">Rates</button></div>
   <section id="mc-pay">
     <h2>Mortgage payment</h2>
     <label for="p-price">Purchase price (CAD)</label><input id="mc-p-price" type="text" inputmode="numeric" value="900000">
@@ -64,6 +67,20 @@
     <h3>Premium rates</h3>
     <div id="mc-c-tiers"></div>
     <p class="mc-note" id="mc-c-note"></p>
+  </section>
+  <section id="mc-tax" hidden>
+    <h2>Property transfer tax</h2>
+    <label for="t-price">Purchase price (CAD)</label><input id="mc-t-price" type="text" inputmode="numeric" value="900000">
+    <label class="mc-check" for="t-ftb">First-time buyer<input id="mc-t-ftb" type="checkbox"></label>
+    <label class="mc-check" for="t-nb">Newly built home<input id="mc-t-nb" type="checkbox"></label>
+    <div id="mc-t-out"></div>
+    <p class="mc-note">Estimate only. BC rates: 1% on the first $200,000, 2% to $2,000,000, 3% above that, plus 2% more above $3,000,000. First-time buyers save up to $8,000 on homes up to $835,000, phasing out to $860,000. Newly built homes pay no tax up to $1,100,000, phasing out to $1,150,000. Only one exemption can be claimed. Confirm eligibility with your lawyer.</p>
+  </section>
+  <section id="mc-rates" hidden>
+    <h2>Today's mortgage rates</h2>
+    <p>Compare today's best mortgage rates from Canadian lenders. The table updates live, so it opens on Nader's website.</p>
+    <a class="mc-btn" href="https://home-nader.com/mortgage-calculators#mortgage-rate-comparison-table" target="_blank" rel="noopener">Compare rates</a>
+    <p class="mc-note">Bring a rate back to the Payment tab to see what it means for your monthly payment.</p>
   </section>
 </div>
 <script>
@@ -192,6 +209,28 @@ function affordability({ income, down, debts, years, ratePct, taxRatePct, heat, 
   };
 }
 
+// ---- BC property transfer tax --------------------------------------------------
+// Same rules as apps/my-home-cost/src/costs.js: 1% to $200k, 2% to $2M, 3% above, plus 2% above $3M.
+function propertyTransferTax(price) {
+  const band = (from, to, rate) => Math.max(0, Math.min(price, to) - from) * rate;
+  return band(0, 200000, 0.01) + band(200000, 2000000, 0.02) + band(2000000, Infinity, 0.03) + band(3000000, Infinity, 0.02);
+}
+
+// First-time buyers: up to $8,000 off up to $835k, phased out to $860k.
+// Newly built homes: whole tax off up to $1.1M, phased out to $1.15M. Only one can be claimed.
+function transferTax({ price, firstTime = false, newBuild = false }) {
+  const full = propertyTransferTax(price);
+  const phase = (amount, fullUpTo, partialTo) =>
+    price <= fullUpTo ? amount : price < partialTo ? (amount * (partialTo - price)) / (partialTo - fullUpTo) : 0;
+  const ftb = firstTime ? phase(Math.min(full, 8000), 835000, 860000) : 0;
+  const nb = newBuild ? phase(full, 1100000, 1150000) : 0;
+  const exemption = Math.max(ftb, nb);
+  const label = nb > ftb ? 'Newly built home exemption' : 'First-time buyer exemption';
+  let note = '';
+  if ((firstTime || newBuild) && exemption === 0) note = `No exemption applies at ${newBuild ? '$1,150,000' : '$860,000'} or more.`;
+  return { full, exemption, label, payable: full - exemption, note };
+}
+
 const money = (n) =>
   (n < 0 ? '-$' : '$') + Math.abs(Math.round(n)).toLocaleString('en-CA');
 
@@ -237,7 +276,13 @@ function cmhc() {
 $('c-tiers').innerHTML = CMHC.tiers.map(([min, rate], i) => row(`${min}% to ${i ? CMHC.tiers[i - 1][0] - 0.01 : 19.99}% down`, `${rate.toFixed(2)}%`)).join('');
 $('c-note').textContent = `Add ${CMHC.longAmortSurcharge.toFixed(2)}% for amortizations over 25 years (30 years is allowed for first-time buyers and new builds). No insurance is needed with 20% or more down. Rules as of December 2024; confirm with your lender.`;
 
-for (const [sec, fn] of [['pay', pay], ['afford', afford], ['cmhc', cmhc]]) {
+function tax() {
+  const t = transferTax({ price: v('t-price'), firstTime: $('t-ftb').checked, newBuild: $('t-nb').checked });
+  $('t-out').innerHTML = row('Property transfer tax', money(t.full)) +
+    (t.exemption ? row(t.label, money(-t.exemption)) : '') + row('Tax to pay', money(t.payable), true) +
+    (t.note ? `<p class="mc-note">${t.note}</p>` : '');
+}
+for (const [sec, fn] of [['pay', pay], ['afford', afford], ['cmhc', cmhc], ['tax', tax]]) {
   $(sec).addEventListener('input', fn);
   fn();
 }
@@ -250,6 +295,6 @@ chips('p-mode', () => { convert('p')(); pay(); }); chips('p-freq', pay); chips('
 $('tabs').onclick = (e) => {
   const b = e.target.closest('button'); if (!b) return;
   $('tabs').querySelectorAll('button').forEach((x) => x.classList.toggle('mc-on', x === b));
-  for (const s of ['pay', 'afford', 'cmhc']) $(s).hidden = s !== b.dataset.tab;
+  for (const s of ['pay', 'afford', 'cmhc', 'tax', 'rates']) $(s).hidden = s !== b.dataset.tab;
 };})();
 </script>
