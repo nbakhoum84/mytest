@@ -173,15 +173,43 @@ return;
 }).observe(document.body, { childList: true, subtree: true });
 scan();
 }
+// Commercial city pages (e.g. /abbotsford) have no telltale address, but the site highlights the section
+// you are in ("Commercial" shows bold in the top menu). True when Commercial is the one highlighted section.
+function inCommercialSection() {
+var hot = function (el) {
+for (var a = el, i = 0; a && i < 3; a = a.parentElement, i++) {
+if (/(^|[\s_-])(active|current|cur|selected|on)([\s_-]|$)/i.test(a.className || '') || a.getAttribute('aria-current')) return true;
+}
+return +getComputedStyle(el).fontWeight >= 600;
+};
+var found = {};
+var els = document.querySelectorAll('header a, header span, header li, nav a, nav span, nav li, [class*="nav" i] a, [class*="menu" i] a');
+for (var i = 0; i < els.length; i++) {
+var t = els[i].textContent.replace(/\s+/g, ' ').trim().toLowerCase();
+if (t === 'commercial' || t === 'residential' || t === 'presales/new') found[t] = found[t] || hot(els[i]);
+}
+return !!found.commercial && !found.residential && !found['presales/new'];
+}
 // Wait until the page has fully loaded and the site has finished drawing it before touching anything;
 // changing the cards while the site is still building them made the page flicker.
-function later() { setTimeout(start, 1200); }
+function later() {
+setTimeout(function () {
+if (!LISTING_PAGE) {
+if (!inCommercialSection()) return;
+COMMERCIAL = true;
+APP = 'https://nbakhoum84.github.io/mytest/commercial-cost/';
+}
+start();
+}, 1200);
+}
 // Run once, even if the loader is pasted both site-wide and on a page.
 if (window.hnBuyerCostLoaded) return;
 window.hnBuyerCostLoaded = true;
 // Only on Residential listing pages (e.g. /abbotsford-listings), Presales/New pages and Commercial pages; never on Sold or a single listing.
 // (The commercial loader sets its mode before either copy of this file runs, so whichever copy runs first picks it up.)
-if (!(COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)/.test(path)) || /sold|detail/.test(path)) return;
+// Any other page (e.g. a commercial city page like /abbotsford) is checked for the Commercial menu highlight once loaded.
+if (/sold|detail/.test(path)) return;
+var LISTING_PAGE = COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)/.test(path);
 if (document.readyState === 'complete') later();
 else window.addEventListener('load', later);
 })();
