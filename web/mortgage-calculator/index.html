@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mortgage Calculator</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="theme-color" content="#0f4c81">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mortgage">
+<style>
+  :root{--bg:#fff;--text:#111827;--muted:#6b7280;--primary:#0f4c81;--card:#f3f4f6;--border:#e5e7eb;--warn:#b91c1c}
+  @media(prefers-color-scheme:dark){:root{--bg:#111827;--text:#f9fafb;--muted:#9ca3af;--primary:#60a5fa;--card:#1f2937;--border:#374151;--warn:#f87171}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,sans-serif;padding-bottom:64px}
+  main{max-width:560px;margin:0 auto;padding:20px}
+  h1{font-size:22px;margin:0 0 16px}
+  h2{font-size:17px;margin:24px 0 4px}
+  label{color:var(--muted);display:block;margin-bottom:6px}
+  input[type=text]{width:100%;font-size:18px;padding:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);margin-bottom:16px}
+  .inline{display:flex;gap:8px}.inline input{flex:1}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .chips button{border:1px solid var(--border);border-radius:8px;padding:10px 14px;background:none;color:var(--text);font-size:14px}
+  .chips button.on{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:700}
+  .inline .chips{margin:0;flex-wrap:nowrap;align-self:flex-start}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+  .total{background:var(--card);padding:10px;border-radius:8px;margin-top:8px;border:0;color:var(--primary);font-weight:700;font-size:18px}
+  .note{color:var(--muted);font-size:12px;margin:8px 0}
+  .warn{color:var(--warn);font-size:14px}
+  nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--bg);border-top:1px solid var(--border)}
+  nav button{flex:1;padding:14px;border:0;background:none;color:var(--muted);font-size:14px}
+  nav button.on{color:var(--primary);font-weight:700}
+  .contact{max-width:560px;margin:0 auto;padding:0 20px 20px;display:flex;gap:8px}
+  .contact a{flex:1;text-align:center;padding:12px;border-radius:8px;background:var(--primary);color:#fff;text-decoration:none;font-weight:700}
+  [hidden]{display:none}
+</style>
+</head>
+<body>
+<main>
+  <section id="pay">
+    <h1>Mortgage payment</h1>
+    <label for="p-price">Purchase price (CAD)</label><input id="p-price" type="text" inputmode="numeric" value="900000">
+    <label for="p-down">Down payment</label>
+    <div class="inline"><input id="p-down" type="text" inputmode="decimal" value="10"><div class="chips" id="p-mode"><button data-v="%" class="on">%</button><button data-v="$">$</button></div></div>
+    <p class="note" id="p-min"></p>
+    <label for="p-rate">Interest rate (%)</label><input id="p-rate" type="text" inputmode="decimal" value="4.5">
+    <label for="p-years">Amortization (years)</label><input id="p-years" type="text" inputmode="numeric" value="25">
+    <label>Payment frequency</label><div class="chips" id="p-freq"></div>
+    <div id="p-out"></div>
+    <p class="note">Estimate only. Canadian fixed rates compound semi-annually. Your lender's figures may differ slightly.</p>
+  </section>
+  <section id="afford" hidden>
+    <h1>What can I afford?</h1>
+    <label for="a-income">Household income per year</label><input id="a-income" type="text" inputmode="numeric" value="150000">
+    <label for="a-down">Down payment ($)</label><input id="a-down" type="text" inputmode="numeric" value="100000">
+    <label for="a-debts">Monthly debt payments (car, loans, cards)</label><input id="a-debts" type="text" inputmode="numeric" value="500">
+    <label for="a-rate">Interest rate (%)</label><input id="a-rate" type="text" inputmode="decimal" value="4.5">
+    <label for="a-years">Amortization (years)</label><input id="a-years" type="text" inputmode="numeric" value="25">
+    <label for="a-tax">Property tax (% of price per year)</label><input id="a-tax" type="text" inputmode="decimal" value="0.3">
+    <label for="a-heat">Heating per month</label><input id="a-heat" type="text" inputmode="numeric" value="100">
+    <label for="a-strata">Strata fees per month</label><input id="a-strata" type="text" inputmode="numeric" value="0">
+    <div id="a-out"></div>
+    <p class="note" id="a-note"></p>
+  </section>
+  <section id="cmhc" hidden>
+    <h1>CMHC insurance</h1>
+    <label for="c-price">Purchase price (CAD)</label><input id="c-price" type="text" inputmode="numeric" value="900000">
+    <label for="c-down">Down payment</label>
+    <div class="inline"><input id="c-down" type="text" inputmode="decimal" value="10"><div class="chips" id="c-mode"><button data-v="%" class="on">%</button><button data-v="$">$</button></div></div>
+    <p class="note" id="c-min"></p>
+    <label for="c-years">Amortization (years)</label><input id="c-years" type="text" inputmode="numeric" value="25">
+    <div id="c-out"></div>
+    <h2>Premium rates</h2>
+    <div id="c-tiers"></div>
+    <p class="note" id="c-note"></p>
+  </section>
+</main>
+<div class="contact"><a href="tel:+16046127228">Call Nader</a><a href="sms:+16046127228">Text Nader</a></div>
+<nav><button data-tab="pay" class="on">Payment</button><button data-tab="afford">Afford</button><button data-tab="cmhc">CMHC</button></nav>
+<script type="module">
+import { AFFORD, CMHC, FREQUENCIES, affordability, cmhcInsurance, downInDollars, minimumDown, money, mortgagePayment, num } from './mortgage.js';
+const $ = (id) => document.getElementById(id);
+const v = (id) => num($(id).value);
+const row = (l, val, total) => `<div class="row${total ? ' total' : ''}"><span>${l}</span><span>${val}</span></div>`;
+const picked = (id) => $(id).querySelector('.on').dataset.v;
+function chips(id, onChange) {
+  $(id).onclick = (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    $(id).querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
+    onChange();
+  };
+}
+$('p-freq').innerHTML = Object.entries(FREQUENCIES).map(([k, f], i) => `<button data-v="${k}"${i ? '' : ' class="on"'}>${f.label}</button>`).join('');
+
+function pay() {
+  const p = v('p-price'), d = downInDollars(p, v('p-down'), picked('p-mode')), freq = picked('p-freq');
+  $('p-min').textContent = `Minimum down for this price: ${money(minimumDown(p))}`;
+  const r = mortgagePayment({ price: p, down: d, ratePct: v('p-rate'), years: v('p-years'), frequency: freq }), ins = r.insurance;
+  $('p-out').innerHTML = ins.status === 'blocked' ? `<p class="warn">${ins.message}</p>` :
+    row('Down payment', `${money(d)} (${ins.downPct.toFixed(1)}%)`) + row('CMHC insurance', money(ins.premium)) +
+    row('Mortgage amount', money(r.loan)) + row(`${FREQUENCIES[freq].label} payment`, money(r.amount), true) +
+    row('Balance after 5-year term', money(r.termBalance)) + row('Total interest', money(r.totalInterest)) +
+    row('Paid off in', `${r.payoffYears.toFixed(1)} years`) + (ins.message ? `<p class="note">${ins.message}</p>` : '');
+}
+function afford() {
+  const a = affordability({ income: v('a-income'), down: v('a-down'), debts: v('a-debts'), years: v('a-years'), ratePct: v('a-rate'), taxRatePct: v('a-tax'), heat: v('a-heat'), hoa: v('a-strata') });
+  $('a-out').innerHTML = row('Maximum home price', money(a.price), true) + row('Mortgage amount', money(a.loan)) +
+    row('Monthly mortgage payment', money(a.payment)) + row('Monthly housing cost', money(a.total)) +
+    row('Stress-test rate', `${a.qualRate.toFixed(2)}%`) + row('GDS / TDS', `${a.gdsPct.toFixed(0)}% / ${a.tdsPct.toFixed(0)}%`);
+}
+$('a-note').textContent = `Estimate only. Lenders qualify you at the higher of your rate + ${AFFORD.stressAdd}% or ${AFFORD.stressFloor}%, with housing costs up to ${AFFORD.gds * 100}% of income (GDS) and all debts up to ${AFFORD.tds * 100}% (TDS). Under 20% down, CMHC insurance is added on top and the price must stay under $1.5M.`;
+function cmhc() {
+  const p = v('c-price');
+  $('c-min').textContent = `Minimum down for this price: ${money(minimumDown(p))}`;
+  const ins = cmhcInsurance({ price: p, down: downInDollars(p, v('c-down'), picked('c-mode')), years: v('c-years') });
+  $('c-out').innerHTML = ins.status === 'blocked' ? `<p class="warn">${ins.message}</p>` :
+    row('Mortgage before insurance', money(ins.loan)) + row('Premium rate', `${ins.ratePct.toFixed(2)}%`) +
+    row('CMHC premium', money(ins.premium), true) + row('PST on premium (7%, due at closing)', money(ins.premium * 0.07)) +
+    row('Total mortgage', money(ins.total)) + (ins.message ? `<p class="note">${ins.message}</p>` : '');
+}
+$('c-tiers').innerHTML = CMHC.tiers.map(([min, rate], i) => row(`${min}% to ${i ? CMHC.tiers[i - 1][0] - 0.01 : 19.99}% down`, `${rate.toFixed(2)}%`)).join('');
+$('c-note').textContent = `Add ${CMHC.longAmortSurcharge.toFixed(2)}% for amortizations over 25 years (30 years is allowed for first-time buyers and new builds). No insurance is needed with 20% or more down. Rules as of December 2024; confirm with your lender.`;
+
+for (const [sec, fn] of [['pay', pay], ['afford', afford], ['cmhc', cmhc]]) {
+  $(sec).addEventListener('input', fn);
+  fn();
+}
+// Switching the down payment between % and $ converts the amount already entered.
+const convert = (pre) => () => {
+  const p = v(pre + '-price'), d = v(pre + '-down');
+  $(pre + '-down').value = picked(pre + '-mode') === '$' ? Math.round((p * d) / 100) : p ? +((d / p) * 100).toFixed(2) : 0;
+};
+chips('p-mode', () => { convert('p')(); pay(); }); chips('p-freq', pay); chips('c-mode', () => { convert('c')(); cmhc(); });
+document.querySelector('nav').onclick = (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('nav button').forEach((x) => x.classList.toggle('on', x === b));
+  for (const s of ['pay', 'afford', 'cmhc']) $(s).hidden = s !== b.dataset.tab;
+  scrollTo(0, 0);
+};
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
