@@ -10,6 +10,7 @@ branch `claude/home-nader-app-code-qq450r`. The web app is published from a seco
   substantive (a different number, address, city, link or key, not just formatting) AND a second WebFetch with a prompt asking for the exact
   text/URL verbatim shows the same new value. When in doubt, change nothing and mention it in the report.
 - Never remove a working city, link or calculator because it was missing from one fetch; only remove it if the site clearly no longer has it on two fetches.
+- The Pages repository `nbakhoum84/nbakhoum84.github.io` also hosts files the website itself loads (for example `hn.js`). NEVER delete, rename or edit any file there except the app's own build files, and never wipe the repository. After publishing, confirm `hn.js` is still present.
 - No design changes, no new features, no pull requests, no force pushes. Touch only the two repositories above.
 - If nothing changed: make no commit and no push. Just report "No website changes found".
 - If the build or any check fails: do not push or publish anything. Report the error.
