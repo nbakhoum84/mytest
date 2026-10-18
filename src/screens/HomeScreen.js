@@ -69,7 +69,7 @@ export default function HomeScreen({ goTo, openWeb }) {
       <TouchableOpacity style={styles.listRow} onPress={() => goTo('calc')}>
         <View style={{ flex: 1 }}>
           <Text style={styles.cardTitle}>Mortgage calculators</Text>
-          <Text style={styles.cardDesc}>Payment, affordability, rates, CMHC and land transfer tax</Text>
+          <Text style={styles.cardDesc}>Payment, affordability, rates, closing and selling costs</Text>
         </View>
         <Text style={styles.chev}>›</Text>
       </TouchableOpacity>
