@@ -28,6 +28,7 @@ branch `claude/home-nader-app-code-qq450r`. The web app is published from a seco
    - The two non-city pages in the Presales/New menu, kept in `CATEGORIES` (presales) `extras`:
      `/new-homes-under-construction` and `/foreclosures-listings`.
    - `RESOURCES`: buyer's guide `/home-buyers-guide`, `/faq`, `/blog` and the two PDF guide links.
+   - `COST_PAGES`: the Buyer Cost (`/buyer-cost`) and Seller Cost (`/seller-cost`) pages in the website's Calculators menu.
    - `RATEHUB`: the widget keys on the calculators page (`PaymentCalculator`, `ProductTableMortgages`,
      `AffordabilityCalculator`, `DownPaymentCalculator`, `LandTransferTaxCalculator`) and the calculator names.
    - Mortgage rules in `src/calc.js` (CMHC tiers, BC transfer tax) are NOT on the website. Do not change them.

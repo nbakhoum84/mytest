@@ -62,6 +62,12 @@ export const RATEHUB = {
 };
 export const CALCULATORS_PAGE = `${SITE_URL}/mortgage-calculators`;
 
+// Other pages in the website's Calculators menu (built into the website, not Ratehub widgets).
+export const COST_PAGES = [
+  { key: 'buyer', title: 'Buyer cost', desc: 'Closing costs and total cost to buy a home', url: `${SITE_URL}/buyer-cost` },
+  { key: 'seller', title: 'Seller cost', desc: 'Selling costs and your estimated net proceeds', url: `${SITE_URL}/seller-cost` },
+];
+
 
 // Header logo (loaded from the web; falls back to the bundled logo if it can't load).
 export const LOGO_URL = 'https://cdn.lofty.com/image/fs/400919269340348/website/135866/cmsbuild/2026923_d682dca9df114f5a.jpeg';

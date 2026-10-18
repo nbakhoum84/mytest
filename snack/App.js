@@ -70,6 +70,12 @@ const RATEHUB = {
 };
 const CALCULATORS_PAGE = `${SITE_URL}/mortgage-calculators`;
 
+// Other pages in the website's Calculators menu (built into the website, not Ratehub widgets).
+const COST_PAGES = [
+  { key: 'buyer', title: 'Buyer cost', desc: 'Closing costs and total cost to buy a home', url: `${SITE_URL}/buyer-cost` },
+  { key: 'seller', title: 'Seller cost', desc: 'Selling costs and your estimated net proceeds', url: `${SITE_URL}/seller-cost` },
+];
+
 
 // Header logo (loaded from the web; falls back to the bundled logo if it can't load).
 const LOGO_URL = 'https://cdn.lofty.com/image/fs/400919269340348/website/135866/cmsbuild/2026923_d682dca9df114f5a.jpeg';
@@ -678,7 +684,7 @@ const LIST = [
   { key: 'ptt', title: 'Land transfer tax (BC)', desc: 'BC Property Transfer Tax', Comp: TransferTaxCalc },
 ];
 
-function CalculatorsScreen({ goTo }) {
+function CalculatorsScreen({ goTo, openWeb }) {
   const [active, setActive] = useState(null);
   const [mode, setMode] = useState('Ratehub');
   const item = LIST.find((l) => l.key === active);
@@ -692,7 +698,19 @@ function CalculatorsScreen({ goTo }) {
             <Text style={calcsStyles.tileDesc}>{l.desc}</Text>
           </TouchableOpacity>
         ))}
-        <Note>Calculators by Ratehub.ca. Estimates only; confirm figures with your lender.</Note>
+        <Text style={calcsStyles.sectionLabel}>Buying & selling costs</Text>
+        {COST_PAGES.map((p) => (
+          <TouchableOpacity key={p.key} style={calcsStyles.tile} onPress={() => openWeb(p.url, p.title)}>
+            <View style={calcsStyles.tileRow}>
+              <View style={{ flex: 1 }}>
+                <Text style={calcsStyles.tileTitle}>{p.title}</Text>
+                <Text style={calcsStyles.tileDesc}>{p.desc}</Text>
+              </View>
+              <Text style={calcsStyles.tileArrow}>›</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+        <Note>Mortgage calculators by Ratehub.ca. Estimates only; confirm figures with your lender, realtor or lawyer.</Note>
       </ScrollView>
     );
   }
@@ -937,6 +955,9 @@ const calcsStyles = StyleSheet.create({
   h1: { fontSize: 22, fontWeight: '700', color: COLORS.text, marginBottom: 14 },
   tile: { backgroundColor: COLORS.card, borderRadius: 12, padding: 16, marginBottom: 10 },
   tileTitle: { fontSize: 16, fontWeight: '600', color: COLORS.text },
+  sectionLabel: { fontSize: 13, fontWeight: '700', color: COLORS.muted, letterSpacing: 0.5, textTransform: 'uppercase', marginTop: 10, marginBottom: 10 },
+  tileRow: { flexDirection: 'row', alignItems: 'center' },
+  tileArrow: { fontSize: 24, color: COLORS.accentDark, marginLeft: 8 },
   tileDesc: { color: COLORS.muted, marginTop: 2 },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   small: { color: COLORS.muted },

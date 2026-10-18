@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
-import { CALCULATORS_PAGE, COLORS, RATEHUB } from '../config';
+import { CALCULATORS_PAGE, COLORS, COST_PAGES, RATEHUB } from '../config';
 import RatehubWidget from '../components/RatehubWidget';
 import { AFFORD, BC_PTT, affordability, balanceAfter, bcTransferTax, cmhcInsurance, downInDollars, num, pmt, yearlySchedule } from '../calc';
 import { Breakdown, Chips, DownField, Field, Note, Pick, Result, Toggle, money } from '../components/Inputs';
@@ -16,7 +16,7 @@ const LIST = [
   { key: 'ptt', title: 'Land transfer tax (BC)', desc: 'BC Property Transfer Tax', Comp: TransferTaxCalc },
 ];
 
-export default function CalculatorsScreen({ goTo }) {
+export default function CalculatorsScreen({ goTo, openWeb }) {
   const [active, setActive] = useState(null);
   const [mode, setMode] = useState('Ratehub');
   const item = LIST.find((l) => l.key === active);
@@ -30,7 +30,19 @@ export default function CalculatorsScreen({ goTo }) {
             <Text style={styles.tileDesc}>{l.desc}</Text>
           </TouchableOpacity>
         ))}
-        <Note>Calculators by Ratehub.ca. Estimates only; confirm figures with your lender.</Note>
+        <Text style={styles.sectionLabel}>Buying & selling costs</Text>
+        {COST_PAGES.map((p) => (
+          <TouchableOpacity key={p.key} style={styles.tile} onPress={() => openWeb(p.url, p.title)}>
+            <View style={styles.tileRow}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.tileTitle}>{p.title}</Text>
+                <Text style={styles.tileDesc}>{p.desc}</Text>
+              </View>
+              <Text style={styles.tileArrow}>›</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+        <Note>Mortgage calculators by Ratehub.ca. Estimates only; confirm figures with your lender, realtor or lawyer.</Note>
       </ScrollView>
     );
   }
@@ -275,6 +287,9 @@ const styles = StyleSheet.create({
   h1: { fontSize: 22, fontWeight: '700', color: COLORS.text, marginBottom: 14 },
   tile: { backgroundColor: COLORS.card, borderRadius: 12, padding: 16, marginBottom: 10 },
   tileTitle: { fontSize: 16, fontWeight: '600', color: COLORS.text },
+  sectionLabel: { fontSize: 13, fontWeight: '700', color: COLORS.muted, letterSpacing: 0.5, textTransform: 'uppercase', marginTop: 10, marginBottom: 10 },
+  tileRow: { flexDirection: 'row', alignItems: 'center' },
+  tileArrow: { fontSize: 24, color: COLORS.accentDark, marginLeft: 8 },
   tileDesc: { color: COLORS.muted, marginTop: 2 },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   small: { color: COLORS.muted },
