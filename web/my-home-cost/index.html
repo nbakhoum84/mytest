@@ -81,6 +81,9 @@ $('steps').onclick=e=>{const d=e.target.closest('.step');if(!d)return;const i=+d
 $('gst').onchange=calc;$('price').oninput=calc;$('ftb').onchange=()=>{if($('ftb').checked)$('nb').checked=false;calc()};$('nb').onchange=()=>{if($('nb').checked)$('ftb').checked=false;calc()};
 function tab(t){$('costs').hidden=t!=='costs';$('list').hidden=t!=='list';$('t-costs').className=t==='costs'?'on':'';$('t-list').className=t==='list'?'on':''}
 $('t-costs').onclick=()=>tab('costs');$('t-list').onclick=()=>tab('list');
+// Prefill from the link, e.g. ?price=1299000 from a listing card; ?new=1 (presale or new build) ticks GST.
+const q=new URLSearchParams(location.search),qp=parseFloat((q.get('price')||'').replace(/[^0-9.]/g,''));
+if(qp>0)$('price').value=Math.round(qp);if(q.get('new')==='1')$('gst').checked=true;
 calc();renderSteps();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>

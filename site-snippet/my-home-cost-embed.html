@@ -74,6 +74,10 @@
   $('nb').onchange=function(){if($('nb').checked)$('ftb').checked=false;calc()};
   function tab(t){$('costs').hidden=t!=='costs';$('list').hidden=t!=='list';$('t-costs').className=t==='costs'?'mh-on':'';$('t-list').className=t==='list'?'mh-on':''}
   $('t-costs').onclick=function(){tab('costs')};$('t-list').onclick=function(){tab('list')};
+  // Prefill from the page link, e.g. home-nader.com/buyer-cost?price=1299000; ?new=1 (presale or new build) ticks GST.
+  var q=location.search.match(/[?&]price=([^&]*)/),qn=/[?&]new=1(&|$)/.test(location.search);
+  var qp=q?parseFloat(decodeURIComponent(q[1]).replace(/[^0-9.]/g,'')):0;
+  if(qp>0)$('price').value=Math.round(qp);if(qn)$('gst').checked=true;
   calc();renderSteps();
 })();
 </script>
