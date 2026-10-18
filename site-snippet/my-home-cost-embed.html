@@ -24,7 +24,7 @@
   <div class="mh-tabs"><button id="mh-t-costs" class="mh-on">Costs</button><button id="mh-t-list">Checklist</button></div>
   <section id="mh-costs">
     <h2>Buyer Cost</h2><label for="mh-price">Purchase price (CAD)</label>
-    <input id="mh-price" type="text" inputmode="numeric" value="900000" />
+    <input id="mh-price" type="text" inputmode="numeric" value="$900,000" />
     <div class="mh-row"><span>First-time buyer exemption</span><input id="mh-ftb" type="checkbox" /></div>
     <div class="mh-row"><span>Newly built home exemption</span><input id="mh-nb" type="checkbox" /></div>
     <div class="mh-row"><span>New build: add 5% GST</span><input id="mh-gst" type="checkbox" /></div>
@@ -69,7 +69,8 @@
     $('count').textContent=done.filter(Boolean).length;
   }
   $('steps').onclick=function(e){var d=e.target.closest('.mh-step');if(!d)return;var i=+d.getAttribute('data-i');done[i]=!done[i];try{localStorage.setItem('mhc-done',JSON.stringify(done))}catch(x){}renderSteps()};
-  $('price').oninput=calc;$('gst').onchange=calc;
+  function fmt(){var el=$('price'),n=el.value.replace(/[^0-9]/g,'');el.value=n?'$'+(+n).toLocaleString('en-CA'):'';calc()}
+  $('price').oninput=fmt;$('gst').onchange=calc;
   $('ftb').onchange=function(){if($('ftb').checked)$('nb').checked=false;calc()};
   $('nb').onchange=function(){if($('nb').checked)$('ftb').checked=false;calc()};
   function tab(t){$('costs').hidden=t!=='costs';$('list').hidden=t!=='list';$('t-costs').className=t==='costs'?'mh-on':'';$('t-list').className=t==='list'?'mh-on':''}
@@ -77,7 +78,7 @@
   // Prefill from the page link, e.g. home-nader.com/buyer-cost?price=1299000; ?new=1 (presale or new build) ticks GST.
   var q=location.search.match(/[?&]price=([^&]*)/),qn=/[?&]new=1(&|$)/.test(location.search);
   var qp=q?parseFloat(decodeURIComponent(q[1]).replace(/[^0-9.]/g,'')):0;
-  if(qp>0)$('price').value=Math.round(qp);if(qn)$('gst').checked=true;
+  if(qp>0){$('price').value=Math.round(qp);fmt()}if(qn)$('gst').checked=true;
   calc();renderSteps();
 })();
 </script>
