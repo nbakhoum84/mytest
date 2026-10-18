@@ -87,9 +87,14 @@ export default function HomeScreen({ goTo, openWeb }) {
         <Text style={styles.contactSub}>Free consultation on buying, selling and investing.</Text>
         <View style={styles.contactRow}>
           <ContactBtn label="Call" onPress={() => Linking.openURL(`tel:${AGENT.phone}`)} />
+          <ContactBtn label="Text" onPress={() => Linking.openURL(`sms:${AGENT.phone}`)} />
           <ContactBtn label="WhatsApp" onPress={() => Linking.openURL(AGENT.whatsapp)} />
           <ContactBtn label="Email" onPress={() => Linking.openURL(`mailto:${AGENT.email}`)} />
         </View>
+        <TouchableOpacity style={styles.directions} onPress={openDirections}>
+          <Text style={styles.directionsText}>Get directions to the office</Text>
+          <Text style={styles.directionsSub}>{AGENT.address}</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Get the app */}
@@ -117,6 +122,14 @@ export default function HomeScreen({ goTo, openWeb }) {
       <Text style={styles.footer}>Listing information is deemed reliable but not guaranteed.</Text>
     </ScrollView>
   );
+}
+
+// Opens the office address in Apple Maps on iPhone, the maps app on Android, Google Maps on the web.
+function openDirections() {
+  const q = encodeURIComponent(AGENT.address);
+  const google = `https://www.google.com/maps/dir/?api=1&destination=${q}`;
+  const url = Platform.select({ ios: `http://maps.apple.com/?daddr=${q}`, android: `geo:0,0?q=${q}`, default: google });
+  Linking.openURL(url).catch(() => Linking.openURL(google));
 }
 
 // Remote logo sized to its own shape; falls back to the bundled logo if it can't load.
@@ -200,7 +213,10 @@ const styles = StyleSheet.create({
   contactSub: { color: COLORS.muted, marginTop: 4, marginBottom: 14 },
   contactRow: { flexDirection: 'row', justifyContent: 'space-between' },
   contactBtn: { flex: 1, backgroundColor: COLORS.primary, borderRadius: 10, paddingVertical: 13, alignItems: 'center', marginHorizontal: 4 },
-  contactBtnText: { color: '#fff', fontWeight: '600' },
+  contactBtnText: { color: '#fff', fontWeight: '600', fontSize: 13 },
+  directions: { marginTop: 12, paddingVertical: 12, paddingHorizontal: 14, borderRadius: 10, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center' },
+  directionsText: { color: COLORS.primary, fontWeight: '700' },
+  directionsSub: { color: COLORS.muted, fontSize: 12, marginTop: 2 },
 
   getRow: { flexDirection: 'row', justifyContent: 'space-between' },
   storeCard: { width: '48.5%', backgroundColor: COLORS.primary, borderRadius: 14, paddingVertical: 18, paddingHorizontal: 16 },
