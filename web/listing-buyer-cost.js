@@ -48,7 +48,10 @@ if (!card) return;
 var oldRow = card.querySelector('.hn-bcp-row');
 if (oldRow) {
 var olds = oldRow.querySelectorAll('.hn-bcp-btn');
-for (var o = 0; o < olds.length; o++) olds[o].setAttribute('data-hn-price', price);
+for (var o = 0; o < olds.length; o++) {
+olds[o].setAttribute('data-hn-price', price);
+olds[o].setAttribute('aria-label', (olds[o].getAttribute('data-hn-kind') === 'mortgage' ? 'Mortgage calculator for $' : 'Buyer cost for $') + price.toLocaleString('en-CA'));
+}
 return;
 }
 // "Buyer cost" and "Mortgage" sit side by side in one row (Mortgage not on Commercial pages); the mortgage calculator starts from the same price.
@@ -76,7 +79,16 @@ if (dx > 0) b.style.setProperty('margin-left', dx + 'px', 'important');
 function scan() {
 if (!document.body) return;
 var done = document.querySelectorAll('.hn-bcp');
-for (var d = 0; d < done.length; d++) addButton(done[d], +done[d].getAttribute('data-hn-price'));
+// The site reuses card elements when results are sorted, filtered or paged, so re-read each price from its current text.
+for (var d = 0; d < done.length; d++) {
+var fresh = parsePrice(done[d].textContent);
+if (fresh) { done[d].setAttribute('data-hn-price', fresh); addButton(done[d], fresh); continue; }
+var dc = cardOf(done[d]);
+done[d].classList.remove('hn-bcp');
+done[d].removeAttribute('data-hn-price');
+var dr = dc && dc.querySelector('.hn-bcp-row');
+if (dr && !dc.querySelector('.hn-bcp')) dr.remove();
+}
 var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
 acceptNode: function (n) { return n.nodeValue.indexOf('$') >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; }
 });
@@ -146,7 +158,10 @@ m.querySelector('.hn-bcp-x').focus();
 function onClick(e) {
 var el = e.target && e.target.closest && e.target.closest('.hn-bcp,.hn-bcp-btn');
 if (!el) return;
-var price = +el.getAttribute('data-hn-price');
+// Use the price the card shows right now, not the one stored when the button was added.
+var card = cardOf(el.classList.contains('hn-bcp') ? el : el.parentElement);
+var shown = card && card.querySelector('.hn-bcp');
+var price = (shown && parsePrice(shown.textContent)) || +el.getAttribute('data-hn-price');
 if (!price) return;
 // Stop the card's own link (to the listing page) only for clicks on the price or the button.
 e.preventDefault();
@@ -189,7 +204,7 @@ timer = setTimeout(function () { timer = null; scan(); }, 500);
 return;
 }
 }
-}).observe(document.body, { childList: true, subtree: true });
+}).observe(document.body, { childList: true, subtree: true, characterData: true });
 scan();
 }
 // Commercial city pages (e.g. /abbotsford) have no telltale address, but the site highlights the section
