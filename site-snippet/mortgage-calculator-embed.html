@@ -247,6 +247,11 @@ function chips(id, onChange) {
 }
 $('p-freq').innerHTML = Object.entries(FREQUENCIES).map(([k, f], i) => `<button data-v="${k}"${i ? '' : ' class="mc-on"'}>${f.label}</button>`).join('');
 
+// 2026 total residential property tax rates (% of assessed value per year: municipal + school + regional + other levies), from housingportal.ca,
+// wowa.ca and millrate.ca. Set when a listing's Mortgage button passes ?city=. Estimates only; the BC home owner grant and the city's own bylaw can differ.
+const CITY_TAX = { 'Abbotsford': 0.4521, 'Burnaby': 0.3284, 'Coquitlam': 0.3852, 'Delta': 0.3958, 'Langley': 0.3617, 'New Westminster': 0.4793,
+  'Port Coquitlam': 0.3775, 'Port Moody': 0.4291, 'Richmond': 0.3538, 'South Surrey': 0.3427, 'Surrey': 0.3427, 'Vancouver': 0.3364, 'White Rock': 0.4319 };
+let taxCity = '';
 function pay() {
   const p = v('p-price'), d = downInDollars(p, v('p-down'), picked('p-mode')), freq = picked('p-freq');
   $('p-min').textContent = `Minimum down for this price: ${money(minimumDown(p))}`;
@@ -254,6 +259,7 @@ function pay() {
   $('p-out').innerHTML = ins.status === 'blocked' ? `<p class="mc-warn">${ins.message}</p>` :
     row('Down payment', `${money(d)} (${ins.downPct.toFixed(1)}%)`) + row('CMHC insurance', money(ins.premium)) +
     row('Mortgage amount', money(r.loan)) + row(`${FREQUENCIES[freq].label} payment`, money(r.amount), true) +
+    (taxCity ? row(`Property tax in ${taxCity} (${CITY_TAX[taxCity]}%/yr, est.)`, `${money((p * CITY_TAX[taxCity]) / 100 / 12)}/mo`) : '') +
     row('Balance after 5-year term', money(r.termBalance)) + row('Total interest', money(r.totalInterest)) +
     row('Paid off in', `${r.payoffYears.toFixed(1)} years`) + (ins.message ? `<p class="mc-note">${ins.message}</p>` : '');
 }
@@ -305,6 +311,8 @@ $('tabs').onclick = (e) => {
     if (q.get('new') === '1') $('t-nb').checked = true;
     const city = (q.get('city') || '').replace(/[^A-Za-z .'-]/g, '').slice(0, 40);
     if (city) $('p-min').insertAdjacentHTML('beforebegin', `<p class="mc-note">Listing in ${city}, BC</p>`);
+    const key = Object.keys(CITY_TAX).find((c) => c.toLowerCase() === city.toLowerCase());
+    if (key) { taxCity = key; $('a-tax').value = CITY_TAX[key]; afford(); }
     pay(); cmhc(); tax();
   }
 }})();
