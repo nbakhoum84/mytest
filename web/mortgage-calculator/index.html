@@ -98,7 +98,7 @@
 <div class="contact"><a href="tel:+16046127228">Call Nader</a><a href="sms:+16046127228">Text Nader</a></div>
 <nav><button data-tab="pay" class="on">Payment</button><button data-tab="afford">Afford</button><button data-tab="cmhc">CMHC</button><button data-tab="tax">Tax</button><button data-tab="rates">Rates</button></nav>
 <script type="module">
-import { transferTax, AFFORD, CMHC, FREQUENCIES, affordability, cmhcInsurance, downInDollars, minimumDown, money, mortgagePayment, num } from './mortgage.js';
+import { propertyTransferTax, transferTax, AFFORD, CMHC, FREQUENCIES, affordability, cmhcInsurance, downInDollars, minimumDown, money, mortgagePayment, num } from './mortgage.js';
 const $ = (id) => document.getElementById(id);
 const v = (id) => num($(id).value);
 const row = (l, val, total) => `<div class="row${total ? ' total' : ''}"><span>${l}</span><span>${val}</span></div>`;
@@ -176,7 +176,13 @@ document.querySelector('nav').onclick = (e) => {
 {
   const q = new URLSearchParams(location.search), price = Math.round(num(q.get('price')));
   if (price >= 50000) {
-    for (const id of ['p-price', 'c-price', 't-price']) { $(id).value = price; fmtPrice(id); }
+    // The payment tab starts from the Buyer Cost form's Total cost (price + closing costs, no exemptions ticked, GST for new builds);
+    // the CMHC and transfer tax tabs keep the listing price, since those rules apply to the price itself.
+    const gst = q.get('new') === '1';
+    const closing = propertyTransferTax(price) + 1800 + (gst ? 0 : 500) + 400 + 1500 + (gst ? price * 0.05 : 0);
+    for (const id of ['c-price', 't-price']) { $(id).value = price; fmtPrice(id); }
+    $('p-price').value = Math.round(price + closing); fmtPrice('p-price');
+    $('p-min').insertAdjacentHTML('beforebegin', `<p class="note">Purchase price = listing ${money(price)} + closing costs ${money(closing)} (Buyer Cost total).</p>`);
     if (q.get('new') === '1') $('t-nb').checked = true;
     const city = (q.get('city') || '').replace(/[^A-Za-z .'-]/g, '').slice(0, 40);
     if (city) $('p-min').insertAdjacentHTML('beforebegin', `<p class="note">Listing in ${city}, BC</p>`);
