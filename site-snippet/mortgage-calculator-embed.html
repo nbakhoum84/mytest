@@ -313,7 +313,9 @@ $('tabs').onclick = (e) => {
     // The payment tab starts from the Buyer Cost form's Total cost (price + closing costs, no exemptions ticked, GST for new builds);
     // the CMHC and transfer tax tabs keep the listing price, since those rules apply to the price itself.
     const gst = q.get('new') === '1';
-    const closing = propertyTransferTax(price) + 1800 + (gst ? 0 : 500) + 400 + 1500 + (gst ? price * 0.05 : 0);
+    // &total= is the Total cost last shown in the Buyer Cost popup (with whatever boxes were ticked); otherwise the defaults are used.
+    const sent = Math.round(num(q.get('mc-total')));
+    const closing = sent > price ? sent - price : propertyTransferTax(price) + 1800 + (gst ? 0 : 500) + 400 + 1500 + (gst ? price * 0.05 : 0);
     for (const id of ['c-price', 't-price']) { $(id).value = price; fmtPrice(id); }
     $('p-price').value = Math.round(price + closing); fmtPrice('p-price');
     $('p-min').insertAdjacentHTML('beforebegin', `<p class="mc-note">Purchase price = listing ${money(price)} + closing costs ${money(closing)} (Buyer Cost total).</p>`);
