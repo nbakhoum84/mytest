@@ -4,7 +4,7 @@
      Everything is scoped to #mc-app. It inherits your page's font and text colour; to match your brand,
      set the accent variable below (or override it from your page CSS), e.g. #mc-app{--mc-accent:#c8102e}. -->
 <style>
-  #mc-app{--mc-accent:#0f4c81;--mc-border:rgba(128,128,128,.3);--mc-card:rgba(128,128,128,.12);--mc-muted:rgba(128,128,128,.95);--mc-warn:#b91c1c;
+  #mc-app{--mc-accent:#dbae77;--mc-border:rgba(128,128,128,.3);--mc-card:rgba(128,128,128,.12);--mc-muted:rgba(128,128,128,.95);--mc-warn:#b91c1c;
     max-width:560px;margin:0 auto;padding:16px;font-family:inherit;font-size:16px;line-height:1.4;color:inherit;box-sizing:border-box}
   #mc-app *{box-sizing:border-box;font-family:inherit}
   #mc-app h2{font-size:22px;margin:0 0 16px;color:inherit}
@@ -16,24 +16,24 @@
   #mc-app .mc-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
   #mc-app .mc-inline .mc-chips{margin:0;flex-wrap:nowrap;align-self:flex-start}
   #mc-app .mc-chips button{border:1px solid var(--mc-border);border-radius:8px;padding:10px 14px;background:none;color:inherit;font-size:14px;cursor:pointer;line-height:1.2}
-  #mc-app .mc-chips button.mc-on{background:var(--mc-accent);border-color:var(--mc-accent);color:#fff;font-weight:700}
+  #mc-app .mc-chips button.mc-on{background:var(--mc-accent);border-color:var(--mc-accent);color:#111;font-weight:700}
   #mc-app .mc-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0;padding:10px 0;border-bottom:1px solid var(--mc-border)}
-  #mc-app .mc-total{background:var(--mc-card);padding:10px;border-radius:8px;margin-top:8px;border:0;color:var(--mc-accent);font-weight:700;font-size:18px}
+  #mc-app .mc-total{background:var(--mc-card);padding:10px;border-radius:8px;margin-top:8px;border:0;color:inherit;font-weight:700;font-size:18px}
   #mc-app .mc-note{color:var(--mc-muted);font-size:12px;margin:8px 0}
   #mc-app .mc-warn{color:var(--mc-warn);font-size:14px}
   #mc-app .mc-tabs{display:flex;border-bottom:1px solid var(--mc-border);margin-bottom:16px}
   #mc-app .mc-tabs button{flex:1;padding:12px;border:0;background:none;color:var(--mc-muted);font-size:14px;cursor:pointer}
-  #mc-app .mc-tabs button.mc-on{color:var(--mc-accent);font-weight:700;border-bottom:2px solid var(--mc-accent)}
+  #mc-app .mc-tabs button.mc-on{background:var(--mc-accent);color:#111;font-weight:700}
   #mc-app .mc-check{display:flex;justify-content:space-between;align-items:center;margin:0;padding:10px 0;border-bottom:1px solid var(--mc-border);color:inherit}
   #mc-app .mc-check input{width:22px;height:22px;margin:0}
-  #mc-app .mc-btn{display:block;text-align:center;padding:14px;border-radius:8px;background:var(--mc-accent);color:#fff;text-decoration:none;font-weight:700;margin:16px 0}
+  #mc-app .mc-btn{display:block;text-align:center;padding:14px;border-radius:8px;background:var(--mc-accent);color:#111;text-decoration:none;font-weight:700;margin:16px 0}
   #mc-app [hidden]{display:none}
 </style>
 <div id="mc-app">
   <div class="mc-tabs" id="mc-tabs"><button data-tab="pay" class="mc-on">Payment</button><button data-tab="afford">Afford</button><button data-tab="cmhc">CMHC</button><button data-tab="tax">Tax</button><button data-tab="rates">Rates</button></div>
   <section id="mc-pay">
     <h2>Mortgage payment</h2>
-    <label for="p-price">Purchase price (CAD)</label><input id="mc-p-price" type="text" inputmode="numeric" value="900000">
+    <label for="p-price">Purchase price (CAD)</label><input id="mc-p-price" type="text" inputmode="numeric" value="$900,000">
     <label for="p-down">Down payment</label>
     <div class="mc-inline"><input id="mc-p-down" type="text" inputmode="decimal" value="10"><div class="mc-chips" id="mc-p-mode"><button data-v="%" class="mc-on">%</button><button data-v="$">$</button></div></div>
     <p class="mc-note" id="mc-p-min"></p>
@@ -58,7 +58,7 @@
   </section>
   <section id="mc-cmhc" hidden>
     <h2>CMHC insurance</h2>
-    <label for="c-price">Purchase price (CAD)</label><input id="mc-c-price" type="text" inputmode="numeric" value="900000">
+    <label for="c-price">Purchase price (CAD)</label><input id="mc-c-price" type="text" inputmode="numeric" value="$900,000">
     <label for="c-down">Down payment</label>
     <div class="mc-inline"><input id="mc-c-down" type="text" inputmode="decimal" value="10"><div class="mc-chips" id="mc-c-mode"><button data-v="%" class="mc-on">%</button><button data-v="$">$</button></div></div>
     <p class="mc-note" id="mc-c-min"></p>
@@ -70,7 +70,7 @@
   </section>
   <section id="mc-tax" hidden>
     <h2>Property transfer tax</h2>
-    <label for="t-price">Purchase price (CAD)</label><input id="mc-t-price" type="text" inputmode="numeric" value="900000">
+    <label for="t-price">Purchase price (CAD)</label><input id="mc-t-price" type="text" inputmode="numeric" value="$900,000">
     <label class="mc-check" for="t-ftb">First-time buyer<input id="mc-t-ftb" type="checkbox"></label>
     <label class="mc-check" for="t-nb">Newly built home<input id="mc-t-nb" type="checkbox"></label>
     <div id="mc-t-out"></div>
@@ -252,6 +252,9 @@ $('p-freq').innerHTML = Object.entries(FREQUENCIES).map(([k, f], i) => `<button 
 const CITY_TAX = { 'Abbotsford': 0.4521, 'Burnaby': 0.3284, 'Coquitlam': 0.3852, 'Delta': 0.3958, 'Langley': 0.3617, 'New Westminster': 0.4793,
   'Port Coquitlam': 0.3775, 'Port Moody': 0.4291, 'Richmond': 0.3538, 'South Surrey': 0.3427, 'Surrey': 0.3427, 'Vancouver': 0.3364, 'White Rock': 0.4319 };
 let taxCity = '';
+// Show prices as $1,234,567 while typing.
+const fmtPrice = (id) => { const n = $(id).value.replace(/[^0-9]/g, ''); $(id).value = n ? '$' + (+n).toLocaleString('en-CA') : ''; };
+for (const id of ['p-price', 'c-price', 't-price']) $(id).addEventListener('input', () => fmtPrice(id));
 function pay() {
   const p = v('p-price'), d = downInDollars(p, v('p-down'), picked('p-mode')), freq = picked('p-freq');
   $('p-min').textContent = `Minimum down for this price: ${money(minimumDown(p))}`;
@@ -307,7 +310,7 @@ $('tabs').onclick = (e) => {
 {
   const q = new URLSearchParams(location.search), price = Math.round(num(q.get('price')));
   if (price >= 50000) {
-    for (const id of ['p-price', 'c-price', 't-price']) $(id).value = price;
+    for (const id of ['p-price', 'c-price', 't-price']) { $(id).value = price; fmtPrice(id); }
     if (q.get('new') === '1') $('t-nb').checked = true;
     const city = (q.get('city') || '').replace(/[^A-Za-z .'-]/g, '').slice(0, 40);
     if (city) $('p-min').insertAdjacentHTML('beforebegin', `<p class="mc-note">Listing in ${city}, BC</p>`);

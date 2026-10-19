@@ -43,7 +43,7 @@ out = f'''<!-- Mortgage Calculator: paste into an HTML block on the Lofty page h
      Everything is scoped to #mc-app. It inherits your page's font and text colour; to match your brand,
      set the accent variable below (or override it from your page CSS), e.g. #mc-app{{--mc-accent:#c8102e}}. -->
 <style>
-  #mc-app{{--mc-accent:#0f4c81;--mc-border:rgba(128,128,128,.3);--mc-card:rgba(128,128,128,.12);--mc-muted:rgba(128,128,128,.95);--mc-warn:#b91c1c;
+  #mc-app{{--mc-accent:#dbae77;--mc-border:rgba(128,128,128,.3);--mc-card:rgba(128,128,128,.12);--mc-muted:rgba(128,128,128,.95);--mc-warn:#b91c1c;
     max-width:560px;margin:0 auto;padding:16px;font-family:inherit;font-size:16px;line-height:1.4;color:inherit;box-sizing:border-box}}
   #mc-app *{{box-sizing:border-box;font-family:inherit}}
   #mc-app h2{{font-size:22px;margin:0 0 16px;color:inherit}}
@@ -55,17 +55,17 @@ out = f'''<!-- Mortgage Calculator: paste into an HTML block on the Lofty page h
   #mc-app .mc-chips{{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}}
   #mc-app .mc-inline .mc-chips{{margin:0;flex-wrap:nowrap;align-self:flex-start}}
   #mc-app .mc-chips button{{border:1px solid var(--mc-border);border-radius:8px;padding:10px 14px;background:none;color:inherit;font-size:14px;cursor:pointer;line-height:1.2}}
-  #mc-app .mc-chips button.mc-on{{background:var(--mc-accent);border-color:var(--mc-accent);color:#fff;font-weight:700}}
+  #mc-app .mc-chips button.mc-on{{background:var(--mc-accent);border-color:var(--mc-accent);color:#111;font-weight:700}}
   #mc-app .mc-row{{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0;padding:10px 0;border-bottom:1px solid var(--mc-border)}}
-  #mc-app .mc-total{{background:var(--mc-card);padding:10px;border-radius:8px;margin-top:8px;border:0;color:var(--mc-accent);font-weight:700;font-size:18px}}
+  #mc-app .mc-total{{background:var(--mc-card);padding:10px;border-radius:8px;margin-top:8px;border:0;color:inherit;font-weight:700;font-size:18px}}
   #mc-app .mc-note{{color:var(--mc-muted);font-size:12px;margin:8px 0}}
   #mc-app .mc-warn{{color:var(--mc-warn);font-size:14px}}
   #mc-app .mc-tabs{{display:flex;border-bottom:1px solid var(--mc-border);margin-bottom:16px}}
   #mc-app .mc-tabs button{{flex:1;padding:12px;border:0;background:none;color:var(--mc-muted);font-size:14px;cursor:pointer}}
-  #mc-app .mc-tabs button.mc-on{{color:var(--mc-accent);font-weight:700;border-bottom:2px solid var(--mc-accent)}}
+  #mc-app .mc-tabs button.mc-on{{background:var(--mc-accent);color:#111;font-weight:700}}
   #mc-app .mc-check{{display:flex;justify-content:space-between;align-items:center;margin:0;padding:10px 0;border-bottom:1px solid var(--mc-border);color:inherit}}
   #mc-app .mc-check input{{width:22px;height:22px;margin:0}}
-  #mc-app .mc-btn{{display:block;text-align:center;padding:14px;border-radius:8px;background:var(--mc-accent);color:#fff;text-decoration:none;font-weight:700;margin:16px 0}}
+  #mc-app .mc-btn{{display:block;text-align:center;padding:14px;border-radius:8px;background:var(--mc-accent);color:#111;text-decoration:none;font-weight:700;margin:16px 0}}
   #mc-app [hidden]{{display:none}}
 </style>
 <div id="mc-app">
