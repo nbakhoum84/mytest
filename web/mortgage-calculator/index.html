@@ -116,7 +116,7 @@ $('p-freq').innerHTML = Object.entries(FREQUENCIES).map(([k, f], i) => `<button 
 // wowa.ca and millrate.ca. Set when a listing's Mortgage button passes ?city=. Estimates only; the BC home owner grant and the city's own bylaw can differ.
 const CITY_TAX = { 'Abbotsford': 0.4521, 'Burnaby': 0.3284, 'Coquitlam': 0.3852, 'Delta': 0.3958, 'Langley': 0.3617, 'New Westminster': 0.4793,
   'Port Coquitlam': 0.3775, 'Port Moody': 0.4291, 'Richmond': 0.3538, 'South Surrey': 0.3427, 'Surrey': 0.3427, 'Vancouver': 0.3364, 'White Rock': 0.4319 };
-let taxCity = '';
+let taxCity = '', closingCash = 0;
 // Show prices as $1,234,567 while typing.
 const fmtPrice = (id) => { const n = $(id).value.replace(/[^0-9]/g, ''); $(id).value = n ? '$' + (+n).toLocaleString('en-CA') : ''; };
 for (const id of ['p-price', 'c-price', 't-price']) $(id).addEventListener('input', () => fmtPrice(id));
@@ -126,7 +126,8 @@ function pay() {
   const r = mortgagePayment({ price: p, down: d, ratePct: v('p-rate'), years: v('p-years'), frequency: freq }), ins = r.insurance;
   $('p-out').innerHTML = ins.status === 'blocked' ? `<p class="warn">${ins.message}</p>` :
     row('Down payment', `${money(d)} (${ins.downPct.toFixed(1)}%)`) + row('CMHC insurance', money(ins.premium)) +
-    row('Mortgage amount', money(r.loan)) + row(`${FREQUENCIES[freq].label} payment`, money(r.amount), true) +
+    row('Mortgage amount', money(r.loan)) +
+    (closingCash ? row('Closing costs (cash, Buyer Cost)', money(closingCash)) + row('Cash needed to close', money(d + closingCash + ins.premium * 0.07), true) : '') + row(`${FREQUENCIES[freq].label} payment`, money(r.amount), true) +
     (taxCity ? row(`Property tax in ${taxCity} (${CITY_TAX[taxCity]}%/yr, est.)`, `${money((p * CITY_TAX[taxCity]) / 100 / 12)}/mo`) : '') +
     row('Balance after 5-year term', money(r.termBalance)) + row('Total interest', money(r.totalInterest)) +
     row('Paid off in', `${r.payoffYears.toFixed(1)} years`) + (ins.message ? `<p class="note">${ins.message}</p>` : '');
@@ -176,15 +177,16 @@ document.querySelector('nav').onclick = (e) => {
 {
   const q = new URLSearchParams(location.search), price = Math.round(num(q.get('price')));
   if (price >= 50000) {
-    // The payment tab starts from the Buyer Cost form's Total cost (price + closing costs, no exemptions ticked, GST for new builds);
-    // the CMHC and transfer tax tabs keep the listing price, since those rules apply to the price itself.
+    // Closing costs come from the Buyer Cost form (price + closing costs = its Total cost; defaults: no exemptions ticked, GST for new builds).
     const gst = q.get('new') === '1';
     // &total= is the Total cost last shown in the Buyer Cost popup (with whatever boxes were ticked); otherwise the defaults are used.
     const sent = Math.round(num(q.get('total')));
     const closing = sent > price ? sent - price : propertyTransferTax(price) + 1800 + (gst ? 0 : 500) + 400 + 1500 + (gst ? price * 0.05 : 0);
     for (const id of ['c-price', 't-price']) { $(id).value = price; fmtPrice(id); }
-    $('p-price').value = Math.round(price + closing); fmtPrice('p-price');
-    $('p-min').insertAdjacentHTML('beforebegin', `<p class="note">Purchase price = listing ${money(price)} + closing costs ${money(closing)} (Buyer Cost total).</p>`);
+    // In BC closing costs are paid in cash and can't be added to the mortgage (only the CMHC premium can), so the mortgage stays on the price.
+    $('p-price').value = price; fmtPrice('p-price');
+    closingCash = Math.round(closing);
+    $('p-min').insertAdjacentHTML('beforebegin', `<p class="note">Closing costs of ${money(closing)} (Buyer Cost total ${money(price + closing)}) are paid in cash, not added to the mortgage.</p>`);
     if (q.get('new') === '1') $('t-nb').checked = true;
     const city = (q.get('city') || '').replace(/[^A-Za-z .'-]/g, '').slice(0, 40);
     if (city) $('p-min').insertAdjacentHTML('beforebegin', `<p class="note">Listing in ${city}, BC</p>`);
