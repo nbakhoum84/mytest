@@ -162,6 +162,17 @@ document.querySelector('nav').onclick = (e) => {
   for (const s of ['pay', 'afford', 'cmhc', 'tax', 'rates']) $(s).hidden = s !== b.dataset.tab;
   scrollTo(0, 0);
 };
+// Opened from a listing's Mortgage button: ?price=1299000&city=Surrey starts every tab at that price and shows the city.
+{
+  const q = new URLSearchParams(location.search), price = Math.round(num(q.get('price')));
+  if (price >= 50000) {
+    for (const id of ['p-price', 'c-price', 't-price']) $(id).value = price;
+    if (q.get('new') === '1') $('t-nb').checked = true;
+    const city = (q.get('city') || '').replace(/[^A-Za-z .'-]/g, '').slice(0, 40);
+    if (city) $('p-min').insertAdjacentHTML('beforebegin', `<p class="note">Listing in ${city}, BC</p>`);
+    pay(); cmhc(); tax();
+  }
+}
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>

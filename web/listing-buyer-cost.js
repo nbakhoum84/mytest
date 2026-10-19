@@ -9,6 +9,7 @@ var path = typeof location === 'undefined' ? '' : location.pathname.toLowerCase(
 // Commercial city pages have plain addresses (e.g. /abbotsford), so their loader sets window.hnBuyerCostMode = 'commercial'.
 var COMMERCIAL = (typeof window !== 'undefined' && window.hnBuyerCostMode === 'commercial') || /commercial/.test(path);
 var APP = 'https://nbakhoum84.github.io/mytest/' + (COMMERCIAL ? 'commercial-cost/' : 'my-home-cost/');
+var MORTGAGE_APP = 'https://nbakhoum84.github.io/mytest/mortgage-calculator/';
 var NEW_PAGE = /pre-?sale|new-?(home|build|construction|development|listing)|\/new(\/|$|\?|-)/i;
 var NEW_CARD = /pre-?sale|new construction|new development|est(\.|imated)? completion|completion date|move-in ready|developer/i;
 // "$1,299,000", "From $599,900", "Starting at $1.2M", "C$849,000+", "$599,900 - $1,200,000" (uses the lowest).
@@ -44,14 +45,17 @@ addButton(el, price);
 function addButton(el, price) {
 var card = cardOf(el);
 if (!card) return;
-var old = card.querySelector('.hn-bcp-btn');
-if (old) { old.setAttribute('data-hn-price', price); return; }
-var b = document.createElement('button');
-b.type = 'button';
-b.className = 'hn-bcp-btn';
-b.setAttribute('data-hn-price', price);
-b.setAttribute('aria-label', 'Buyer cost for $' + price.toLocaleString('en-CA'));
-b.textContent = 'Buyer cost';
+var oldRow = card.querySelector('.hn-bcp-row');
+if (oldRow) {
+var olds = oldRow.querySelectorAll('.hn-bcp-btn');
+for (var o = 0; o < olds.length; o++) olds[o].setAttribute('data-hn-price', price);
+return;
+}
+// "Buyer cost" and "Mortgage" sit side by side in one row; the mortgage calculator starts from the same price.
+var b = document.createElement('div');
+b.className = 'hn-bcp-row';
+b.innerHTML = '<button type="button" class="hn-bcp-btn" data-hn-kind="buyer" data-hn-price="' + price + '" aria-label="Buyer cost for $' + price.toLocaleString('en-CA') + '">Buyer cost</button>' +
+'<button type="button" class="hn-bcp-btn hn-bcp-mtg" data-hn-kind="mortgage" data-hn-price="' + price + '" aria-label="Mortgage calculator for $' + price.toLocaleString('en-CA') + '">Mortgage</button>';
 // After the whole line the price sits on (e.g. price + open house tag), so it lands just below it.
 var line = el;
 while (line.parentElement && line.parentElement !== card && /^inline/.test(getComputedStyle(line).display)) line = line.parentElement;
@@ -120,10 +124,18 @@ m.classList.remove('hn-bcp-on');
 m.querySelector('iframe').src = 'about:blank';
 document.documentElement.style.overflow = '';
 }
-function openCalc(price, isNewBuild) {
-var url = APP + '?price=' + price + (isNewBuild ? '&new=1' : '') + '&v=' + Math.floor(Date.now() / 6e4);
+// City from the listing page address, e.g. /south-surrey-listings -> "South Surrey" (empty on pages without one, like /new-homes-under-construction).
+function cityOf() {
+var m = /^\/(?:presales?-)?([a-z-]+?)(?:-(?:sold-)?listings?|-presales?)?\/?$/.exec(path);
+if (!m || /^(new|foreclosures?|commercial|residential)/.test(m[1])) return '';
+return m[1].split('-').map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
+}
+function openCalc(price, isNewBuild, mortgage) {
+var city = mortgage ? cityOf() : '';
+var url = (mortgage ? MORTGAGE_APP : APP) + '?price=' + price + (isNewBuild ? '&new=1' : '') + (city ? '&city=' + encodeURIComponent(city) : '') + '&v=' + Math.floor(Date.now() / 6e4);
 var m = modal();
-m.querySelector('.hn-bcp-title').textContent = (COMMERCIAL ? 'Commercial Buyer Cost for $' : 'Buyer Cost for $') + price.toLocaleString('en-CA');
+m.querySelector('.hn-bcp-title').textContent = mortgage ? 'Mortgage for $' + price.toLocaleString('en-CA') + (city ? ' in ' + city : '') :
+(COMMERCIAL ? 'Commercial Buyer Cost for $' : 'Buyer Cost for $') + price.toLocaleString('en-CA');
 m.querySelector('.hn-bcp-open').href = url;
 m.querySelector('iframe').src = url;
 m.classList.add('hn-bcp-on');
@@ -140,14 +152,15 @@ if (!price) return;
 e.preventDefault();
 e.stopPropagation();
 if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-openCalc(price, isNew(el));
+openCalc(price, isNew(el), el.getAttribute('data-hn-kind') === 'mortgage');
 }
 
 function start() {
 var style = document.createElement('style');
 style.textContent =
 '.hn-bcp{cursor:pointer!important;text-decoration:underline dotted rgba(201,160,99,.9)!important;text-underline-offset:4px}' +
-'button.hn-bcp-btn{position:relative!important;top:auto!important;left:auto!important;z-index:2!important;display:flex!important;align-items:center!important;gap:7px!important;width:max-content!important;max-width:100%!important;height:auto!important;min-height:0!important;margin:8px 0 6px!important;padding:6px 12px!important;border:0!important;border-radius:8px!important;background:#dbae77!important;box-shadow:none!important;color:#111!important;font-family:inherit!important;font-weight:700!important;font-size:14px!important;line-height:1.2!important;letter-spacing:0!important;text-transform:none!important;cursor:pointer!important;white-space:nowrap!important;opacity:1!important}' +
+'.hn-bcp-row{display:flex!important;flex-wrap:wrap;gap:8px;margin:8px 0 6px!important}' +
+'button.hn-bcp-btn{position:relative!important;top:auto!important;left:auto!important;z-index:2!important;display:flex!important;align-items:center!important;gap:7px!important;width:max-content!important;max-width:100%!important;height:auto!important;min-height:0!important;margin:0!important;padding:6px 12px!important;border:0!important;border-radius:8px!important;background:#dbae77!important;box-shadow:none!important;color:#111!important;font-family:inherit!important;font-weight:700!important;font-size:14px!important;line-height:1.2!important;letter-spacing:0!important;text-transform:none!important;cursor:pointer!important;white-space:nowrap!important;opacity:1!important}' +
 '.hn-bcp-btn::before{content:"";width:16px;height:16px;flex:none;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Cpath d=%27M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v4h10V4H7zm1 7v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v6h2v-6h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2z%27/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Cpath d=%27M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v4h10V4H7zm1 7v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v6h2v-6h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2z%27/%3E%3C/svg%3E") center/contain no-repeat}' +
 'button.hn-bcp-btn:hover{background:#c99a60!important}' +
 '#hn-bcp-modal{display:none;position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:16px}' +
@@ -166,7 +179,7 @@ document.addEventListener('keydown', function (e) { if (e.key === 'Escape') clos
 // Listing cards load and change as visitors search, filter and page, so rescan (throttled) when the page changes.
 // Our own buttons coming and going are ignored, so adding them never triggers another round.
 var timer = null;
-function ours(n) { return n.nodeType === 1 && (n.classList.contains('hn-bcp-btn') || n.id === 'hn-bcp-modal'); }
+function ours(n) { return n.nodeType === 1 && (n.classList.contains('hn-bcp-row') || n.id === 'hn-bcp-modal'); }
 new MutationObserver(function (list) {
 if (timer) return;
 for (var i = 0; i < list.length; i++) {
