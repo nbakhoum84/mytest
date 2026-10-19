@@ -1,0 +1,10 @@
+{
+  "name": "Presale Deposit Schedule",
+  "short_name": "Presale",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#dbae77",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
