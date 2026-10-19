@@ -142,9 +142,16 @@ var m = /^\/(?:presales?-)?([a-z-]+?)(?:-(?:sold-)?listings?|-presales?)?\/?$/.e
 if (!m || /^(new|foreclosures?|commercial|residential)/.test(m[1])) return '';
 return m[1].split('-').map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
 }
+// Latest Total cost shown in the Buyer Cost popup (it reports every change), so Mortgage starts from what the visitor ticked there.
+var lastTotal = null;
+window.addEventListener('message', function (e) {
+var d = e.data, m = document.getElementById('hn-bcp-modal'), f = m && m.querySelector('iframe');
+if (d && d.hnBuyerCost && f && e.source === f.contentWindow && d.price > 0 && d.total > 0) lastTotal = { price: d.price, total: d.total };
+});
 function openCalc(price, isNewBuild, mortgage) {
 var city = mortgage ? cityOf() : '';
-var url = (mortgage ? MORTGAGE_APP : APP) + '?price=' + price + (isNewBuild ? '&new=1' : '') + (city ? '&city=' + encodeURIComponent(city) : '') + '&v=' + Math.floor(Date.now() / 6e4);
+var total = mortgage && lastTotal && lastTotal.price === price ? lastTotal.total : 0;
+var url = (mortgage ? MORTGAGE_APP : APP) + '?price=' + price + (isNewBuild ? '&new=1' : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + '&v=' + Math.floor(Date.now() / 6e4);
 var m = modal();
 m.querySelector('.hn-bcp-title').textContent = mortgage ? 'Mortgage for $' + price.toLocaleString('en-CA') + (city ? ' in ' + city : '') :
 (COMMERCIAL ? 'Commercial Buyer Cost for $' : 'Buyer Cost for $') + price.toLocaleString('en-CA');

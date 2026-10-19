@@ -74,6 +74,8 @@ function calc(){
   const g=$('gst').checked?p*.05:0;
   $('gr').hidden=!$('gst').checked;$('gv').textContent=money(g);
   $('hp').textContent=money(p);$('sub').textContent=money(cc);$('total').textContent=money(p+cc+g);
+  // Inside a listing popup: tell the page the latest Total cost so its Mortgage button starts from it.
+  if(parent!==window)try{parent.postMessage({hnBuyerCost:true,price:p,total:Math.round(p+cc+g)},'*')}catch(e){}
 }
 let done=[];try{done=JSON.parse(localStorage.getItem('cc-done')||'[]')}catch(e){}
 function renderSteps(){
