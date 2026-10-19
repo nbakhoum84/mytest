@@ -51,11 +51,11 @@ var olds = oldRow.querySelectorAll('.hn-bcp-btn');
 for (var o = 0; o < olds.length; o++) olds[o].setAttribute('data-hn-price', price);
 return;
 }
-// "Buyer cost" and "Mortgage" sit side by side in one row; the mortgage calculator starts from the same price.
+// "Buyer cost" and "Mortgage" sit side by side in one row (Mortgage not on Commercial pages); the mortgage calculator starts from the same price.
 var b = document.createElement('div');
 b.className = 'hn-bcp-row';
 b.innerHTML = '<button type="button" class="hn-bcp-btn" data-hn-kind="buyer" data-hn-price="' + price + '" aria-label="Buyer cost for $' + price.toLocaleString('en-CA') + '">Buyer cost</button>' +
-'<button type="button" class="hn-bcp-btn hn-bcp-mtg" data-hn-kind="mortgage" data-hn-price="' + price + '" aria-label="Mortgage calculator for $' + price.toLocaleString('en-CA') + '">Mortgage</button>';
+(COMMERCIAL ? '' : '<button type="button" class="hn-bcp-btn hn-bcp-mtg" data-hn-kind="mortgage" data-hn-price="' + price + '" aria-label="Mortgage calculator for $' + price.toLocaleString('en-CA') + '">Mortgage</button>');
 // After the whole line the price sits on (e.g. price + open house tag), so it lands just below it.
 var line = el;
 while (line.parentElement && line.parentElement !== card && /^inline/.test(getComputedStyle(line).display)) line = line.parentElement;
