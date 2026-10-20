@@ -28,10 +28,16 @@ return n >= 50000 && n <= 100000000 ? n : 0;
 }
 if (typeof document === 'undefined') { if (typeof module !== 'undefined') module.exports = { parsePrice: parsePrice }; return; }
 
-// The listing card: the nearest ancestor (up to 8 levels) that also holds a photo.
+// The listing card: the nearest ancestor (up to 8 levels) that also holds a photo, or, for a card with no photo
+// (e.g. a dark placeholder with an icon), the ancestor that sits next to look-alike cards that do have photos.
+var PHOTO = 'img,picture,[style*="background-image"]';
 function cardOf(el) {
 for (var a = el.parentElement, i = 0; a && a !== document.body && i < 8; a = a.parentElement, i++) {
-if (a.querySelector('img,picture,[style*="background-image"]')) return a;
+if (a.querySelector(PHOTO)) return a;
+var sibs = a.className && a.parentElement ? a.parentElement.children : [];
+for (var k = 0; k < sibs.length; k++) {
+if (sibs[k] !== a && sibs[k].tagName === a.tagName && sibs[k].className === a.className && sibs[k].querySelector(PHOTO)) return a;
+}
 }
 return null;
 }
