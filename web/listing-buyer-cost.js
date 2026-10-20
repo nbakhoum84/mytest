@@ -13,20 +13,27 @@ var MORTGAGE_APP = 'https://nbakhoum84.github.io/mytest/mortgage-calculator/';
 var NEW_PAGE = /pre-?sale|new-?(home|build|construction|development|listing)|\/new(\/|$|\?|-)/i;
 var NEW_CARD = /pre-?sale|new construction|new development|est(\.|imated)? completion|completion date|move-in ready|developer/i;
 // "$1,299,000", "From $599,900", "Starting at $1.2M", "C$849,000+", "$599,900 - $1,200,000" (uses the lowest).
-var PRICE = /^(?:(?:list(?:ed)?\s*price|asking(?:\s*price)?|price|priced\s*from|starting\s*(?:from|at)|from)\s*:?\s*)?(?:CAD\s*|CA?)?\$\s*(\d[\d,]*(?:\.\d+)?)\s*([KkMm])?\s*\+?\s*(?:CAD)?(?:\s*[-–]\s*(?:CAD\s*|CA?)?\$\s*\d[\d,]*(?:\.\d+)?\s*[KkMm]?\s*\+?)?$/i;
+var PRICE = /^(?:(?:list(?:ed)?\s*price|asking(?:\s*price)?|price|priced\s*from|starting\s*(?:from|at)|from)\s*:?\s*)?(?:CAD\s*|CA?)?\$\s*(\d[\d,]*(?:\.\d+)?)\s*([KkMm])?\s*\+?\s*(?:CAD)?(?:\s*[-–]\s*(?:CAD\s*|CA?)?\$\s*(\d[\d,]*(?:\.\d+)?)\s*([KkMm])?\s*\+?)?$/i;
 // The pasted-in calculators (Buyer Cost, Seller Cost, Mortgage, First Home Savings, Presale Deposits) show their own $ totals; those aren't listing prices.
 var SKIP = 'header,nav,footer,form,select,option,button,input,textarea,label,script,style,#hn-bcp-modal,#mh-app,#sc-app,#mc-app,#fh-app,#pd-app,' +
 '.gm-style,.mapboxgl-map,.leaflet-container,[class*="marker" i],[class*="cluster" i],[class*="filter" i],[class*="dropdown" i],[class*="slider" i]';
 
-function parsePrice(text) {
+// Every price shown: one, or the low and high ends of a range like "$900K - $1.1M".
+function parsePrices(text) {
 var m = PRICE.exec(String(text || '').replace(/\s+/g, ' ').trim());
-if (!m) return 0;
-var n = parseFloat(m[1].replace(/,/g, ''));
-if (m[2]) n *= /m/i.test(m[2]) ? 1e6 : 1e3;
+if (!m) return [];
+function amount(num, unit) {
+var n = parseFloat(num.replace(/,/g, ''));
+if (unit) n *= /m/i.test(unit) ? 1e6 : 1e3;
 n = Math.round(n);
 return n >= 50000 && n <= 100000000 ? n : 0;
 }
-if (typeof document === 'undefined') { if (typeof module !== 'undefined') module.exports = { parsePrice: parsePrice }; return; }
+var low = amount(m[1], m[2]), high = m[3] ? amount(m[3], m[4]) : 0;
+if (!low) return [];
+return high > low ? [low, high] : [low];
+}
+function parsePrice(text) { return parsePrices(text)[0] || 0; }
+if (typeof document === 'undefined') { if (typeof module !== 'undefined') module.exports = { parsePrice: parsePrice, parsePrices: parsePrices }; return; }
 
 // The listing card: the nearest ancestor (up to 8 levels) that also holds a photo, or, for a card with no photo
 // (e.g. a dark placeholder with an icon), the ancestor that sits next to look-alike cards that do have photos.
@@ -128,12 +135,17 @@ m = document.createElement('div');
 m.id = 'hn-bcp-modal';
 m.innerHTML =
 '<div class="hn-bcp-box" role="dialog" aria-modal="true" aria-label="Buyer Cost">' +
-'<div class="hn-bcp-bar"><b class="hn-bcp-title">Buyer Cost</b>' +
+'<div class="hn-bcp-bar"><b class="hn-bcp-title">Buyer Cost</b><span class="hn-bcp-alts"></span>' +
 '<a class="hn-bcp-open" target="_blank" rel="noopener">Open in new tab</a>' +
 '<button type="button" class="hn-bcp-x" aria-label="Close">&times;</button></div>' +
 '<iframe title="Buyer Cost calculator"></iframe></div>';
 document.body.appendChild(m);
-m.addEventListener('click', function (e) { if (e.target === m || e.target.closest('.hn-bcp-x')) close(); });
+m.addEventListener('click', function (e) {
+if (e.target === m || e.target.closest('.hn-bcp-x')) close();
+// A price range: switch the calculator between the low and high price.
+var alt = e.target.closest('.hn-bcp-alt');
+if (alt && current) openCalc(+alt.getAttribute('data-hn-price'), current.isNewBuild, current.mortgage, current.prices);
+});
 return m;
 }
 function close() {
@@ -155,13 +167,20 @@ window.addEventListener('message', function (e) {
 var d = e.data, m = document.getElementById('hn-bcp-modal'), f = m && m.querySelector('iframe');
 if (d && d.hnBuyerCost && f && e.source === f.contentWindow && d.price > 0 && d.total > 0) lastTotal = { price: d.price, total: d.total };
 });
-function openCalc(price, isNewBuild, mortgage) {
+var current = null;
+function openCalc(price, isNewBuild, mortgage, prices) {
+current = { isNewBuild: isNewBuild, mortgage: mortgage, prices: prices || [price] };
 var city = mortgage ? cityOf() : '';
 var total = mortgage && lastTotal && lastTotal.price === price ? lastTotal.total : 0;
 var url = (mortgage ? MORTGAGE_APP : APP) + '?price=' + price + (isNewBuild ? '&new=1' : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + '&v=' + Math.floor(Date.now() / 6e4);
 var m = modal();
 m.querySelector('.hn-bcp-title').textContent = mortgage ? 'Mortgage for $' + price.toLocaleString('en-CA') + (city ? ' in ' + city : '') :
 (COMMERCIAL ? 'Commercial Buyer Cost for $' : 'Buyer Cost for $') + price.toLocaleString('en-CA');
+var alts = current.prices.length > 1 ? current.prices : [];
+if (alts.length) m.querySelector('.hn-bcp-title').textContent = mortgage ? 'Mortgage' + (city ? ' in ' + city : '') + ' for' : (COMMERCIAL ? 'Commercial Buyer Cost for' : 'Buyer Cost for');
+m.querySelector('.hn-bcp-alts').innerHTML = alts.map(function (p) {
+return '<button type="button" class="hn-bcp-alt' + (p === price ? ' hn-bcp-alt-on' : '') + '" data-hn-price="' + p + '">$' + p.toLocaleString('en-CA') + '</button>';
+}).join('');
 m.querySelector('.hn-bcp-open').href = url;
 m.querySelector('iframe').src = url;
 m.classList.add('hn-bcp-on');
@@ -175,13 +194,14 @@ if (!el) return;
 // Use the price the card shows right now, not the one stored when the button was added.
 var card = cardOf(el.classList.contains('hn-bcp') ? el : el.parentElement);
 var shown = card && card.querySelector('.hn-bcp');
-var price = (shown && parsePrice(shown.textContent)) || +el.getAttribute('data-hn-price');
+var prices = shown ? parsePrices(shown.textContent) : [];
+var price = prices[0] || +el.getAttribute('data-hn-price');
 if (!price) return;
 // Stop the card's own link (to the listing page) only for clicks on the price or the button.
 e.preventDefault();
 e.stopPropagation();
 if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-openCalc(price, isNew(el), el.getAttribute('data-hn-kind') === 'mortgage');
+openCalc(price, isNew(el), el.getAttribute('data-hn-kind') === 'mortgage', prices.length ? prices : [price]);
 }
 
 function start() {
@@ -196,7 +216,11 @@ style.textContent =
 '#hn-bcp-modal.hn-bcp-on{display:flex}' +
 '#hn-bcp-modal .hn-bcp-box{width:600px;max-width:100%;height:min(820px,100%);background:#fff;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.35)}' +
 '#hn-bcp-modal .hn-bcp-bar{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 18px;border-bottom:1px solid #e6e2d9;background:#f4f2ee;color:#111;font-family:inherit;font-size:15px;line-height:1.3}' +
-'#hn-bcp-modal .hn-bcp-title{flex:1;font-weight:600}' +
+'#hn-bcp-modal .hn-bcp-bar{flex-wrap:wrap}' +
+'#hn-bcp-modal .hn-bcp-title{font-weight:600}' +
+'#hn-bcp-modal .hn-bcp-alts{flex:1;display:flex;flex-wrap:wrap;gap:6px}' +
+'#hn-bcp-modal .hn-bcp-alt{border:1px solid #dbae77;border-radius:8px;padding:4px 10px;background:#fff;color:#111;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}' +
+'#hn-bcp-modal .hn-bcp-alt-on{background:#dbae77}' +
 '#hn-bcp-modal .hn-bcp-open{color:#8a6a35;font-size:13px;text-decoration:underline}' +
 '#hn-bcp-modal .hn-bcp-x{border:0;background:none;font-size:28px;line-height:1;padding:0 6px;cursor:pointer;color:#111}' +
 '#hn-bcp-modal iframe{flex:1;width:100%;border:0;background:#fff}' +
