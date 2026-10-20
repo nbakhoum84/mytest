@@ -28,7 +28,7 @@ export const CATEGORIES = [
   {
     key: 'presales',
     label: 'Presales / New',
-    url: (c) => `${SITE_URL}/presales-${slug(c)}`,
+    url: (c) => `${SITE_URL}/${slug(c)}-presales`,
     // Pages in the website's Presales/New menu that are not tied to one city.
     extras: [
       { label: 'New homes under construction', desc: 'Homes being built across Metro Vancouver', url: `${SITE_URL}/new-homes-under-construction` },
