@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>First Home Savings Planner</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="theme-color" content="#dbae77">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="First Home">
+<style>
+  :root{--bg:#fff;--text:#111827;--muted:#6b7280;--primary:#dbae77;--card:#f3f4f6;--border:#e5e7eb;--warn:#b91c1c}
+  @media(prefers-color-scheme:dark){:root{--bg:#111827;--text:#f9fafb;--muted:#9ca3af;--primary:#dbae77;--card:#1f2937;--border:#374151;--warn:#f87171}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,sans-serif;padding-bottom:64px}
+  main{max-width:560px;margin:0 auto;padding:20px}
+  h1{font-size:22px;margin:0 0 16px}
+  h2{font-size:17px;margin:24px 0 4px}
+  label{color:var(--muted);display:block;margin-bottom:6px}
+  input[type=text]{width:100%;font-size:18px;padding:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);margin-bottom:16px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .chips button{border:1px solid var(--border);border-radius:8px;padding:10px 14px;background:none;color:var(--text);font-size:14px}
+  .chips button.on{background:var(--primary);border-color:var(--primary);color:#111;font-weight:700}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+  .total{background:var(--card);padding:10px;border-radius:8px;margin-top:8px;border:0;color:var(--text);font-weight:700;font-size:18px}
+  .note{color:var(--muted);font-size:12px;margin:8px 0}
+  .warn{color:var(--warn);font-size:14px}
+  .bar{height:10px;background:var(--card);border-radius:5px;overflow:hidden;margin:8px 0 16px}
+  .bar div{height:100%;background:var(--primary)}
+  nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--bg);border-top:1px solid var(--border)}
+  nav button{flex:1;padding:14px 4px;border:0;background:none;color:var(--muted);font-size:14px}
+  nav button.on{background:var(--primary);color:#111;font-weight:700}
+  .contact{max-width:560px;margin:0 auto;padding:0 20px 20px;display:flex;gap:8px}
+  .contact a{flex:1;text-align:center;padding:12px;border-radius:8px;background:var(--primary);color:#111;text-decoration:none;font-weight:700}
+  .check{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);color:var(--text);margin-bottom:16px}
+  .check input{width:22px;height:22px;margin:0}
+  input[type=checkbox]{accent-color:var(--primary)}
+  ul{padding-left:20px}li{margin-bottom:8px}
+  a{color:inherit}
+  [hidden]{display:none}
+</style>
+</head>
+<body>
+<main>
+  <section id="plan">
+    <h1>First home savings plan</h1>
+    <label for="price">Home price you're saving for</label><input id="price" type="text" inputmode="numeric" value="$700,000">
+    <label>Down payment</label><div class="chips" id="down"><button data-v="0" class="on">Minimum</button><button data-v="10">10%</button><button data-v="20">20%</button></div>
+    <label class="check" for="closing">Include closing costs<input id="closing" type="checkbox" checked></label>
+    <label class="check" for="partner">Buying with a partner (both first-time buyers)<input id="partner" type="checkbox"></label>
+    <h2>What you have now</h2>
+    <label for="other">Savings outside FHSA and RRSP (TFSA, bank)</label><input id="other" type="text" inputmode="numeric" value="$10,000">
+    <label for="fhsa">FHSA balance</label><input id="fhsa" type="text" inputmode="numeric" value="$0">
+    <label for="fhsa-in">FHSA contributions made so far</label><input id="fhsa-in" type="text" inputmode="numeric" value="$0">
+    <label for="fhsa-room">FHSA room left this year</label><input id="fhsa-room" type="text" inputmode="numeric" value="$8,000">
+    <label for="rrsp">RRSP balance</label><input id="rrsp" type="text" inputmode="numeric" value="$0">
+    <h2>What you'll save</h2>
+    <label for="monthly">Monthly savings (goes into the FHSA first)</label><input id="monthly" type="text" inputmode="numeric" value="$1,500">
+    <label for="rrsp-monthly">Monthly RRSP contributions</label><input id="rrsp-monthly" type="text" inputmode="numeric" value="$0">
+    <label for="ret">Expected return (% per year)</label><input id="ret" type="text" inputmode="decimal" value="3">
+    <label for="tax">Marginal tax rate (%)</label><input id="tax" type="text" inputmode="decimal" value="30">
+    <div id="out"></div>
+    <p class="note">Estimate only. With a partner, amounts are for both of you together and each of you has your own FHSA and Home Buyers' Plan limits. Tax refunds are shown but not added to your savings. Confirm details with your bank and CRA.</p>
+  </section>
+  <section id="rules" hidden>
+    <h1>The rules</h1>
+    <h2>First Home Savings Account (FHSA)</h2>
+    <ul>
+      <li>For first-time buyers 18 or older, living in Canada: you haven't lived in a home you or your partner owned this year or in the last 4 years.</li>
+      <li>Contribute up to $8,000 a year and $40,000 in total. Room starts the year you open the account, and up to $8,000 of unused room carries into the next year.</li>
+      <li>Contributions are tax deductible, and withdrawals for your first home are tax free. Nothing is paid back.</li>
+      <li>The account must be used or closed within 15 years of opening (or by the end of the year you turn 71).</li>
+    </ul>
+    <h2>RRSP Home Buyers' Plan (HBP)</h2>
+    <ul>
+      <li>Withdraw up to $60,000 from your RRSP each, so up to $120,000 for a couple.</li>
+      <li>Money must be in the RRSP at least 90 days before you withdraw it.</li>
+      <li>Pay it back to your RRSP over 15 years. For a first withdrawal up to the end of 2028, repayments start in the fifth year after; otherwise in the second year.</li>
+      <li>You can use the FHSA and the HBP together for the same home.</li>
+    </ul>
+    <h2>Minimum down payment</h2>
+    <ul>
+      <li>5% of the first $500,000, plus 10% of the part from $500,000 to $1,500,000.</li>
+      <li>Homes at $1,500,000 or more need 20% down.</li>
+      <li>Under 20% down, CMHC insurance is added to the mortgage; the 7% PST on it is paid in cash at closing.</li>
+    </ul>
+    <h2>BC first-time buyer transfer tax exemption</h2>
+    <ul><li>Up to $8,000 off the property transfer tax on homes up to $835,000, phasing out to $860,000.</li></ul>
+    <p class="note">Sources: <a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account/opening-your-fhsas.html" target="_blank" rel="noopener">CRA: FHSA</a>, <a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-home-buyers-plan.html" target="_blank" rel="noopener">CRA: Home Buyers' Plan</a>, <a href="https://budget.canada.ca/update-miseajour/2026/report-rapport/tm-mf-en.html" target="_blank" rel="noopener">2026 budget update (HBP grace period to 2028)</a>. Checked October 2026.</p>
+  </section>
+</main>
+<div class="contact"><a href="tel:+16046127228">Call Nader</a><a href="sms:+16046127228">Text Nader</a></div>
+<nav><button data-tab="plan" class="on">Plan</button><button data-tab="rules">Rules</button></nav>
+<script type="module">
+import { money, num } from '../mortgage-calculator/mortgage.js';
+import { CLOSING_FIXED, RULES, savingsGoal, savingsPlan } from './savings.js';
+const $ = (id) => document.getElementById(id);
+const v = (id) => num($(id).value);
+const row = (l, val, total) => `<div class="row${total ? ' total' : ''}"><span>${l}</span><span>${val}</span></div>`;
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const MONEY = ['price', 'other', 'fhsa', 'fhsa-in', 'fhsa-room', 'rrsp', 'monthly', 'rrsp-monthly'];
+// Show amounts as $1,234,567 while typing.
+const fmt = (id) => { const n = $(id).value.replace(/[^0-9]/g, ''); $(id).value = n ? '$' + (+n).toLocaleString('en-CA') : ''; };
+for (const id of MONEY) $(id).addEventListener('input', () => fmt(id));
+$('down').onclick = (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  $('down').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
+  calc();
+};
+// A partner has their own FHSA room, so the default room doubles.
+$('partner').addEventListener('change', () => {
+  const p = $('partner').checked ? 2 : 1, room = v('fhsa-room');
+  if (room === RULES.fhsaAnnual * (3 - p)) { $('fhsa-room').value = RULES.fhsaAnnual * p; fmt('fhsa-room'); }
+});
+function span(months) {
+  const y = Math.floor(months / 12), m = months % 12;
+  if (!months) return 'Now';
+  return [y && `${y} year${y > 1 ? 's' : ''}`, m && `${m} month${m > 1 ? 's' : ''}`].filter(Boolean).join(' ');
+}
+function calc() {
+  const price = v('price'), people = $('partner').checked ? 2 : 1;
+  const g = savingsGoal({ price, downPct: +$('down').querySelector('.on').dataset.v, closing: $('closing').checked });
+  const now = new Date();
+  const r = savingsPlan({
+    goal: g.total, people, startYear: now.getFullYear(), startMonth: now.getMonth(), monthly: v('monthly'), other: v('other'),
+    returnPct: v('ret'), fhsaBalance: v('fhsa'), fhsaContributed: v('fhsa-in'), fhsaRoom: v('fhsa-room'), rrsp: v('rrsp'),
+    rrspMonthly: v('rrsp-monthly'), taxPct: v('tax'),
+  });
+  const pct = g.total ? Math.min(100, ((v('other') + v('fhsa') + Math.min(v('rrsp'), RULES.hbpMax * people)) / g.total) * 100) : 0;
+  let html = '<h2>Your goal</h2>' + row(`Down payment${g.down > g.min ? '' : ' (minimum)'}`, money(g.down)) +
+    (g.closing ? row('Property transfer tax (after first-time buyer exemption)', money(g.ptt)) +
+      row('Legal, appraisal, inspection, insurance (est.)', money(CLOSING_FIXED)) + (g.pst ? row('PST on CMHC insurance', money(g.pst)) : '') : '') +
+    row('Savings goal', money(g.total), true) +
+    `<p class="note">You have ${pct.toFixed(0)}% of it today.</p><div class="bar"><div style="width:${pct}%"></div></div>`;
+  if (!r.reached) html += `<p class="warn">At this pace the goal isn't reached within 50 years. Try saving more each month.</p>`;
+  else {
+    html += '<h2>Your plan</h2>' + row('Goal reached', r.months ? `${MONTHS[r.month]} ${r.year}` : 'Now', true) +
+      row('Time to save', span(r.months)) + row('FHSA', money(r.fhsa)) + row("RRSP (Home Buyers' Plan)", money(r.hbp)) +
+      row('Other savings', money(r.other)) + row('Total for your home', money(r.total)) +
+      (r.taxRefund ? row('Tax refunds along the way (est.)', money(r.taxRefund)) : '') +
+      (r.hbp ? row(`HBP repayment from ${r.hbpRepayFrom}`, `${money(r.hbpYearly)}/yr for ${RULES.hbpRepayYears} years`) : '');
+    if (r.months > RULES.fhsaYears * 12) html += `<p class="warn">An FHSA must be used within ${RULES.fhsaYears} years of opening it.</p>`;
+    if (r.rrsp > r.hbp) html += `<p class="note">${money(r.rrsp - r.hbp)} of your RRSP is over the Home Buyers' Plan limit and stays invested.</p>`;
+  }
+  $('out').innerHTML = html;
+}
+$('plan').addEventListener('input', calc);
+$('plan').addEventListener('change', calc);
+calc();
+document.querySelector('nav').onclick = (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('nav button').forEach((x) => x.classList.toggle('on', x === b));
+  for (const s of ['plan', 'rules']) $(s).hidden = s !== b.dataset.tab;
+  scrollTo(0, 0);
+};
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Presale Deposit Schedule</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="theme-color" content="#dbae77">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Presale">
+<style>
+  :root{--bg:#fff;--text:#111827;--muted:#6b7280;--primary:#dbae77;--card:#f3f4f6;--border:#e5e7eb;--warn:#b91c1c}
+  @media(prefers-color-scheme:dark){:root{--bg:#111827;--text:#f9fafb;--muted:#9ca3af;--primary:#dbae77;--card:#1f2937;--border:#374151;--warn:#f87171}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,sans-serif;padding-bottom:64px}
+  main{max-width:560px;margin:0 auto;padding:20px}
+  h1{font-size:22px;margin:0 0 16px}
+  h2{font-size:17px;margin:24px 0 4px}
+  label{color:var(--muted);display:block;margin-bottom:6px}
+  input[type=text],input[type=date]{width:100%;font-size:18px;padding:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);margin-bottom:16px;font-family:inherit}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .chips button,.add{border:1px solid var(--border);border-radius:8px;padding:10px 14px;background:none;color:var(--text);font-size:14px}
+  .chips button.on{background:var(--primary);border-color:var(--primary);color:#111;font-weight:700}
+  .dep{display:grid;grid-template-columns:1fr 1fr 44px;gap:8px;align-items:end}
+  .dep label{font-size:13px}
+  .dep button{height:48px;margin-bottom:16px;border:1px solid var(--border);border-radius:8px;background:none;color:var(--muted);font-size:20px}
+  .add{margin-bottom:16px}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+  .row small{display:block;color:var(--muted);font-size:13px}
+  .row span:last-child{text-align:right}
+  .total{background:var(--card);padding:10px;border-radius:8px;margin-top:8px;border:0;color:var(--text);font-weight:700;font-size:18px}
+  .note{color:var(--muted);font-size:12px;margin:8px 0}
+  .warn{color:var(--warn);font-size:14px}
+  nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--bg);border-top:1px solid var(--border)}
+  nav button{flex:1;padding:14px 4px;border:0;background:none;color:var(--muted);font-size:14px}
+  nav button.on{background:var(--primary);color:#111;font-weight:700}
+  .contact{max-width:560px;margin:0 auto;padding:0 20px 20px;display:flex;gap:8px}
+  .contact a{flex:1;text-align:center;padding:12px;border-radius:8px;background:var(--primary);color:#111;text-decoration:none;font-weight:700}
+  .check{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);color:var(--text);margin-bottom:16px}
+  .check input{width:22px;height:22px;margin:0}
+  input[type=checkbox]{accent-color:var(--primary)}
+  ul{padding-left:20px}li{margin-bottom:8px}
+  a{color:inherit}
+  [hidden]{display:none}
+</style>
+</head>
+<body>
+<main>
+  <section id="plan">
+    <h1>Presale deposit schedule</h1>
+    <label for="price">Purchase price</label><input id="price" type="text" inputmode="numeric" value="$750,000">
+    <label for="signed">Contract signing date</label><input id="signed" type="date">
+    <label for="completion">Estimated completion date</label><input id="completion" type="date">
+    <label>Deposit structure</label><div class="chips" id="preset"></div>
+    <div id="deps"></div>
+    <button class="add" id="add" type="button">+ Add a deposit</button>
+    <label class="check" for="ftb">First-time buyer<input id="ftb" type="checkbox"></label>
+    <label class="check" for="gstin">GST included in the price<input id="gstin" type="checkbox"></label>
+    <div id="out"></div>
+    <p class="note">Estimate only. Deposit dates count from the day you sign; your contract sets the exact dates. Confirm costs with your lawyer.</p>
+  </section>
+  <section id="rules" hidden>
+    <h1>How presale deposits work</h1>
+    <ul>
+      <li>Most Metro Vancouver presales ask for 10% to 20% in deposits, usually 5% at a time: at signing, then about 90 and 180 days later, sometimes again at one year.</li>
+      <li>You have 7 days after signing (and receiving the disclosure statement) to cancel for any reason. This is the rescission period under BC's Real Estate Development Marketing Act.</li>
+      <li>Deposits are held in trust by a lawyer, notary or brokerage, not paid to the developer, and count toward your down payment.</li>
+      <li>The rest of the price is due at completion, when the building is finished. That's when your mortgage starts, so you need final mortgage approval close to completion.</li>
+      <li>GST (5%) is usually added at completion. First-time buyers of a new home get it back, up to $50,000, on homes up to $1,000,000, phasing out to $1,500,000 (contracts signed after March 19, 2025).</li>
+      <li>Newly built homes pay no BC property transfer tax up to $1,100,000, phasing out to $1,150,000.</li>
+    </ul>
+    <p class="note">Sources: <a href="https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/19-3-10/first-time-home-buyers-gst-hst-rebate.html" target="_blank" rel="noopener">CRA: First-time Home Buyers' GST/HST Rebate</a>, <a href="https://www.realestatenorthshore.com/news/market-minute/deposit-structures-explained-how-presale-payments/" target="_blank" rel="noopener">Presale deposit structures</a>. Checked October 2026.</p>
+  </section>
+</main>
+<div class="contact"><a href="tel:+16046127228">Call Nader</a><a href="sms:+16046127228">Text Nader</a></div>
+<nav><button data-tab="plan" class="on">Schedule</button><button data-tab="rules">How it works</button></nav>
+<script type="module">
+import { money, num } from '../mortgage-calculator/mortgage.js';
+import { PRESETS, addDays, depositSchedule } from './deposits.js';
+const $ = (id) => document.getElementById(id);
+const v = (id) => num($(id).value);
+const row = (l, val, total) => `<div class="row${total ? ' total' : ''}"><span>${l}</span><span>${val}</span></div>`;
+const date = (iso) => new Date(iso + 'T00:00:00Z').toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+const fmt = () => { const n = $('price').value.replace(/[^0-9]/g, ''); $('price').value = n ? '$' + (+n).toLocaleString('en-CA') : ''; };
+$('price').addEventListener('input', fmt);
+const today = new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+$('signed').value = today;
+$('completion').value = addDays(today, 3 * 365);
+
+function deposits(list) {
+  $('deps').innerHTML = list.map(([pct, days], i) =>
+    `<div class="dep"><div><label for="d${i}p">Deposit ${i + 1} (%)</label><input id="d${i}p" type="text" inputmode="decimal" value="${pct}"></div>` +
+    `<div><label for="d${i}d">Days after signing</label><input id="d${i}d" type="text" inputmode="numeric" value="${days}"></div>` +
+    `<button type="button" data-rm="${i}" aria-label="Remove deposit ${i + 1}">×</button></div>`).join('');
+}
+const read = () => [...$('deps').querySelectorAll('.dep')].map((d) => d.querySelectorAll('input')).map(([p, d]) => [num(p.value), Math.round(num(d.value))]);
+$('preset').innerHTML = Object.keys(PRESETS).map((k, i) => `<button data-v="${k}"${i ? '' : ' class="on"'}>${k === '10/10' ? '10% + 10%' : k + ' in 5%s'}</button>`).join('');
+$('preset').onclick = (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  $('preset').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
+  deposits(PRESETS[b.dataset.v]); calc();
+};
+const custom = () => $('preset').querySelectorAll('button').forEach((x) => x.classList.remove('on'));
+$('deps').onclick = (e) => {
+  const b = e.target.closest('[data-rm]'); if (!b) return;
+  const list = read(); list.splice(+b.dataset.rm, 1); deposits(list); custom(); calc();
+};
+$('deps').addEventListener('input', custom);
+$('add').onclick = () => { const list = read(), last = list[list.length - 1]; list.push([5, last ? last[1] + 90 : 0]); deposits(list); custom(); calc(); };
+
+function calc() {
+  const price = v('price'), signed = $('signed').value || today;
+  const s = depositSchedule({ price, signed, deposits: read(), completion: $('completion').value, firstTime: $('ftb').checked, gstIncluded: $('gstin').checked });
+  let html = '<h2>Deposits</h2>' + s.rows.map((r, i) =>
+    row(`Deposit ${i + 1}: ${+r.pct.toFixed(2)}%<small>${r.days ? `${date(r.date)} (${r.days} days)` : `${date(r.date)} (at signing)`}</small>`,
+      `${money(r.amount)}<small>${money(r.paid)} paid</small>`)).join('') +
+    row(`Total deposits (${s.depositPct.toFixed(1)}%)`, money(s.deposits), true);
+  if (s.late.length) html += `<p class="warn">${s.late.length === 1 ? 'One deposit falls' : `${s.late.length} deposits fall`} after the completion date.</p>`;
+  const done = $('completion').value ? ` (${date($('completion').value)})` : '';
+  html += `<h2>At completion${done}</h2>` + row('Balance of the price', money(s.balance)) +
+    (s.extraDown ? row('More down payment needed (minimum is ' + money(s.minDown) + ')', money(s.extraDown)) : '') +
+    (s.gst ? row('GST (5%)', money(s.gst)) : '') + (s.rebate ? row("First-time buyer GST rebate", money(-s.rebate)) : '') +
+    row(s.pttExemption ? 'Property transfer tax (after new home exemption)' : 'Property transfer tax', money(s.ptt)) +
+    row('Legal fees (est.)', money(s.legal)) + row('Cash needed at completion', money(s.cashAtCompletion), true) +
+    row('Mortgage needed', money(s.mortgage));
+  if (s.mortgage && s.depositPct < 20) html += '<p class="note">With under 20% down, CMHC insurance is added to the mortgage at completion.</p>';
+  if (s.rebate) html += '<p class="note">Some builders credit the GST rebate at completion; otherwise you apply to CRA for it afterwards.</p>';
+  $('out').innerHTML = html;
+}
+deposits(PRESETS['15%']);
+$('plan').addEventListener('input', calc);
+$('plan').addEventListener('change', calc);
+calc();
+document.querySelector('nav').onclick = (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('nav button').forEach((x) => x.classList.toggle('on', x === b));
+  for (const sec of ['plan', 'rules']) $(sec).hidden = sec !== b.dataset.tab;
+  scrollTo(0, 0);
+};
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
