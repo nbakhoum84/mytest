@@ -90,8 +90,10 @@
   </section>
   <section id="rates" hidden>
     <h1>Today's mortgage rates</h1>
-    <p>Compare today's best mortgage rates from Canadian lenders. The table updates live, so it opens on Nader's website.</p>
-    <a class="btn" href="https://home-nader.com/mortgage-calculators#mortgage-rate-comparison-table" target="_blank" rel="noopener">Compare rates</a>
+    <p>Compare today's best mortgage rates from Canadian lenders. The table updates live.</p>
+    <!-- Same Ratehub comparison table as home-nader.com/mortgage-calculators; loaded when the Rates tab first opens. -->
+    <div id="rh-rates" style="min-height:420px"></div>
+    <p class="note">Table not showing? <a href="https://home-nader.com/mortgage-calculators#mortgage-rate-comparison-table" target="_blank" rel="noopener">Compare rates on Nader's website</a>.</p>
     <p class="note">Bring a rate back to the Payment tab to see what it means for your monthly payment.</p>
   </section>
 </main>
@@ -171,6 +173,13 @@ document.querySelector('nav').onclick = (e) => {
   const b = e.target.closest('button'); if (!b) return;
   document.querySelectorAll('nav button').forEach((x) => x.classList.toggle('on', x === b));
   for (const s of ['pay', 'afford', 'cmhc', 'tax', 'rates']) $(s).hidden = s !== b.dataset.tab;
+  if (b.dataset.tab === 'rates' && !$('rh-rates').firstChild) {
+    const sc = document.createElement('script');
+    sc.src = 'https://www.ratehub.ca/scripts/rh-widget-loader.js'; sc.async = true;
+    sc.setAttribute('rh-title', ''); sc.setAttribute('rh-frame-title', "Ratehub.ca's mortgage comparison table - compare today's best mortgage rates");
+    sc.setAttribute('rh-widget-key', 'ProductTableMortgages');
+    $('rh-rates').appendChild(sc);
+  }
   scrollTo(0, 0);
 };
 // Opened from a listing's Mortgage button: ?price=1299000&city=Surrey starts every tab at that price and shows the city.
