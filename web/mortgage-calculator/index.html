@@ -98,7 +98,7 @@
   </section>
 </main>
 <div class="contact"><a href="tel:+16046127228">Call Nader</a><a href="sms:+16046127228">Text Nader</a></div>
-<nav><button data-tab="pay" class="on">Payment</button><button data-tab="afford">Afford</button><button data-tab="cmhc">CMHC</button><button data-tab="tax">Tax</button><button data-tab="rates">Rates</button></nav>
+<nav><button data-tab="pay" class="on">Payment</button><button data-tab="afford">Afford</button><button data-tab="cmhc">CMHC</button><button data-tab="tax">Tax</button><button data-tab="rates">Banks Rates</button></nav>
 <script type="module">
 import { propertyTransferTax, transferTax, AFFORD, CMHC, FREQUENCIES, affordability, cmhcInsurance, downInDollars, minimumDown, money, mortgagePayment, num } from './mortgage.js';
 const $ = (id) => document.getElementById(id);
@@ -178,6 +178,9 @@ document.querySelector('nav').onclick = (e) => {
     sc.src = 'https://www.ratehub.ca/scripts/rh-widget-loader.js'; sc.async = true;
     sc.setAttribute('rh-title', ''); sc.setAttribute('rh-frame-title', "Ratehub.ca's mortgage comparison table - compare today's best mortgage rates");
     sc.setAttribute('rh-widget-key', 'ProductTableMortgages');
+    // Start Ratehub's table at the listing price (Ratehub passes rh-* attributes to the table; the exact name isn't documented, so send the likely ones).
+    const hp = String(Math.round(v('p-price')));
+    for (const a of ['rh-home-price', 'rh-purchase-price', 'rh-price', 'rh-property-value']) sc.setAttribute(a, hp);
     $('rh-rates').appendChild(sc);
   }
   scrollTo(0, 0);
