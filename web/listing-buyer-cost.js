@@ -4,14 +4,6 @@
 // calculator in a popup, prefilled with that price; the card's own link still works everywhere else on the card.
 // Presale / new-build cards (or a page whose address mentions presale/new) also tick "New build: add 5% GST".
 (function () {
-// The virtual assistant chat's greeting and quick buttons (web/chat-welcome.js) ride along on every page.
-if (typeof document !== 'undefined' && !window.hnChatWelcomeLoading) {
-window.hnChatWelcomeLoading = true;
-var cw = document.createElement('script');
-cw.src = 'https://nbakhoum84.github.io/mytest/chat-welcome.js?v=' + Math.floor(Date.now() / 6e4);
-cw.async = true;
-document.head.appendChild(cw);
-}
 var path = typeof location === 'undefined' ? '' : location.pathname.toLowerCase();
 // Commercial pages open the Commercial Buyer Cost app (BC commercial rules); everything else the residential one.
 // Commercial city pages have plain addresses (e.g. /abbotsford), so their loader sets window.hnBuyerCostMode = 'commercial'.
