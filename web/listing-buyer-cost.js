@@ -109,6 +109,40 @@ for (var k = 0; k < kids.length && k < 20; k++) max = Math.max(max, parseFloat(g
 return max;
 }
 
+// On a single listing's page the site's fixed menu covered the listing's top bar (title, PREV / NEXT).
+// Find that bar and move it (or the page under the menu) down to just below the menu.
+function fixedTop(el) {
+for (; el && el !== document.body && el !== document.documentElement; el = el.parentElement) {
+var pos = getComputedStyle(el).position;
+if (pos === 'fixed' || pos === 'sticky') return el;
+}
+return null;
+}
+function clearHeader() {
+var head = fixedTop(document.elementFromPoint(innerWidth / 2, 2));
+if (!head || head.offsetWidth < innerWidth * 0.8 || head.closest('#hn-bcp-modal')) return;
+var below = Math.round(head.getBoundingClientRect().bottom);
+var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null), n, prev = null;
+while ((n = w.nextNode())) if (/^\s*(<|‹)?\s*prev\s*$/i.test(n.nodeValue) && !head.contains(n)) { prev = n.parentElement; break; }
+if (!prev) return;
+var bar = fixedTop(prev);
+if (bar && bar !== head) {
+if (parseFloat(getComputedStyle(bar).top) < below) bar.style.setProperty('top', below + 'px', 'important');
+return;
+}
+// Not a sticky bar: push the block holding PREV down once if it starts under the menu with the page scrolled to the top.
+for (bar = prev; bar.parentElement && bar.parentElement !== document.body && bar.offsetWidth < innerWidth * 0.6; bar = bar.parentElement);
+if (bar.hasAttribute('data-hn-clear')) return;
+var gap = below - (bar.getBoundingClientRect().top + scrollY);
+if (gap > 0) { bar.setAttribute('data-hn-clear', ''); bar.style.setProperty('margin-top', (parseFloat(getComputedStyle(bar).marginTop) + gap + 8) + 'px', 'important'); }
+}
+var clearing = false;
+addEventListener('scroll', function () {
+if (!DETAIL || !active || clearing) return;
+clearing = true;
+requestAnimationFrame(function () { clearing = false; clearHeader(); });
+}, { passive: true });
+
 // Nader asked to drop the Ratehub mortgage payment calculator from single listing pages.
 // Hide its frame, and the wrapper around it as long as the wrapper holds nothing else but Ratehub's title.
 function hideRatehub() {
@@ -131,7 +165,7 @@ if (box.style.display !== 'none') box.style.setProperty('display', 'none', 'impo
 function scan() {
 if (!active) return;
 if (!document.body) return;
-if (DETAIL) hideRatehub();
+if (DETAIL) { hideRatehub(); clearHeader(); }
 var done = document.querySelectorAll('.hn-bcp');
 // The site reuses card elements when results are sorted, filtered or paged, so re-read each price from its current text.
 for (var d = 0; d < done.length; d++) {
