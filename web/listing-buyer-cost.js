@@ -96,13 +96,26 @@ var dx = Math.round(r.getBoundingClientRect().left - b.getBoundingClientRect().l
 if (dx > 0) b.style.setProperty('margin-left', dx + 'px', 'important');
 }
 
+// A single listing's page can draw the "$" with CSS, leaving only "799,900" in the text; read that as a price there.
+var BARE = /^\s*\d{1,3}(,\d{3})+\s*$/;
+function priceText(el) {
+var t = el.textContent;
+return DETAIL && BARE.test(t) ? '$' + t : t;
+}
+// Largest text size inside an element (the wrapper may be small while the digits inside are big).
+function fontOf(el) {
+var max = parseFloat(getComputedStyle(el).fontSize) || 0, kids = el.querySelectorAll('*');
+for (var k = 0; k < kids.length && k < 20; k++) max = Math.max(max, parseFloat(getComputedStyle(kids[k]).fontSize) || 0);
+return max;
+}
+
 function scan() {
 if (!active) return;
 if (!document.body) return;
 var done = document.querySelectorAll('.hn-bcp');
 // The site reuses card elements when results are sorted, filtered or paged, so re-read each price from its current text.
 for (var d = 0; d < done.length; d++) {
-var fresh = parsePrice(done[d].textContent);
+var fresh = parsePrice(priceText(done[d]));
 if (fresh) { done[d].setAttribute('data-hn-price', fresh); addButton(done[d], fresh); continue; }
 var dc = cardOf(done[d]);
 done[d].classList.remove('hn-bcp');
@@ -111,29 +124,42 @@ var dr = dc && dc.querySelector('.hn-bcp-row');
 if (dr && !dc.querySelector('.hn-bcp')) dr.remove();
 }
 var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
-acceptNode: function (n) { return n.nodeValue.indexOf('$') >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; }
+acceptNode: function (n) { return n.nodeValue.indexOf('$') >= 0 || (DETAIL && BARE.test(n.nodeValue)) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; }
 });
 var n, top = null, topSize = 0;
 while ((n = walker.nextNode())) {
 var el = n.parentElement;
 if (!el || el.closest('.hn-bcp') || el.closest(SKIP)) continue;
 // Climb while the text still reads as a single price, so "$" and "1,299,000" split across spans count as one.
-var best = parsePrice(el.textContent) ? el : null;
+var best = parsePrice(priceText(el)) ? el : null;
 for (var a = el.parentElement, i = 0; a && i < 3; a = a.parentElement, i++) {
-if (a.textContent.length > 60 || !parsePrice(a.textContent) || a.querySelector('img,picture,[style*="background-image"]')) break;
+if (a.textContent.length > 60 || !parsePrice(priceText(a)) || a.querySelector('img,picture,[style*="background-image"]')) break;
 best = a;
 }
 if (!best || !cardOf(best)) continue;
 // On a single listing's page only the big headline price gets the buttons (not similar listings, payments or offers).
 if (DETAIL) {
-var size = parseFloat(getComputedStyle(best).fontSize) || 0;
+var size = fontOf(best);
 if (size >= 24 && size > topSize) { top = best; topSize = size; }
 continue;
 }
-mark(best, parsePrice(best.textContent));
+mark(best, parsePrice(priceText(best)));
 }
-if (top && !document.querySelector('.hn-bcp')) mark(top, parsePrice(top.textContent));
+if (top && !document.querySelector('.hn-bcp')) mark(top, parsePrice(priceText(top)));
 }
+
+// For troubleshooting on the live site: type hnBuyerCostDebug() in the browser console to see every price it found and why it was used or skipped.
+window.hnBuyerCostDebug = function () {
+var out = [], w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null), n;
+while ((n = w.nextNode())) {
+var t = n.nodeValue.trim();
+if (!/\d{1,3}(,\d{3})+/.test(t) || !n.parentElement) continue;
+var el = n.parentElement, skip = el.closest(SKIP);
+out.push(t.slice(0, 40) + ' | size ' + fontOf(el) + ' | ' + (skip ? 'skipped by <' + skip.tagName.toLowerCase() + ' class="' + skip.className + '">' :
+parsePrice(priceText(el)) || parsePrice(priceText(el.parentElement)) ? 'price' : 'not a price: "' + el.parentElement.textContent.trim().slice(0, 60) + '"'));
+}
+return { path: path, detail: DETAIL, listingPage: LISTING_PAGE, active: active, found: out.slice(0, 30) };
+};
 
 function isNew(el) {
 if (COMMERCIAL) return false;
@@ -215,7 +241,7 @@ if (!el) return;
 // Use the price the card shows right now, not the one stored when the button was added.
 var card = cardOf(el.classList.contains('hn-bcp') ? el : el.parentElement);
 var shown = card && card.querySelector('.hn-bcp');
-var prices = shown ? parsePrices(shown.textContent) : [];
+var prices = shown ? parsePrices(priceText(shown)) : [];
 var price = prices[0] || +el.getAttribute('data-hn-price');
 if (!price) return;
 // Stop the card's own link (to the listing page) only for clicks on the price or the button.
