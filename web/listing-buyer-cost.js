@@ -131,6 +131,7 @@ if (box.style.display !== 'none') box.style.setProperty('display', 'none', 'impo
 function scan() {
 if (!active) return;
 if (!document.body) return;
+if (COMMERCIAL && !DETAIL) rememberCommercial();
 if (DETAIL) hideRatehub();
 var done = document.querySelectorAll('.hn-bcp');
 // The site reuses card elements when results are sorted, filtered or paged, so re-read each price from its current text.
@@ -332,15 +333,28 @@ if (t === 'commercial' || t === 'residential' || t === 'presales/new') found[t] 
 }
 return !!found.commercial && !found.residential && !found['presales/new'];
 }
+// Listings seen on commercial pages, so their own page (/listing-detail/<id>/...) also skips the Mortgage button.
+function listingId(href) { var m = /\/listing-detail\/(\d+)/.exec(href || ''); return m ? m[1] : ''; }
+function commercialIds() { try { return JSON.parse(localStorage.getItem('hnCommercialIds') || '[]'); } catch (e) { return []; } }
+function rememberCommercial() {
+var ids = commercialIds(), links = document.querySelectorAll('a[href*="/listing-detail/"]'), added = false;
+for (var i = 0; i < links.length; i++) {
+var id = listingId(links[i].getAttribute('href'));
+if (id && ids.indexOf(id) < 0) { ids.push(id); added = true; }
+}
+if (added) try { localStorage.setItem('hnCommercialIds', JSON.stringify(ids.slice(-1000))); } catch (e) {}
+}
 // Wait until the page has fully loaded and the site has finished drawing it before touching anything;
 // changing the cards while the site is still building them made the page flicker.
 function later() {
 setTimeout(function () {
-if (!LISTING_PAGE) {
-if (!inCommercialSection()) return;
+// Commercial pages don't always say so in the address, so also check the menu highlight and,
+// on a single listing, whether the visitor saw that listing on a commercial page.
+if (!COMMERCIAL && (inCommercialSection() || (DETAIL && commercialIds().indexOf(listingId(location.pathname)) >= 0))) {
 COMMERCIAL = true;
 APP = 'https://nbakhoum84.github.io/mytest/commercial-cost/';
 }
+if (!LISTING_PAGE && !COMMERCIAL) return;
 active = true;
 start();
 }, 300);
