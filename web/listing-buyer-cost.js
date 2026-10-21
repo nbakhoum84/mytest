@@ -97,6 +97,7 @@ if (dx > 0) b.style.setProperty('margin-left', dx + 'px', 'important');
 }
 
 function scan() {
+if (!active) return;
 if (!document.body) return;
 var done = document.querySelectorAll('.hn-bcp');
 // The site reuses card elements when results are sorted, filtered or paged, so re-read each price from its current text.
@@ -224,7 +225,10 @@ if (e.stopImmediatePropagation) e.stopImmediatePropagation();
 openCalc(price, isNew(el), el.getAttribute('data-hn-kind') === 'mortgage', prices.length ? prices : [price]);
 }
 
+var started = false;
 function start() {
+if (started) { scan(); return; }
+started = true;
 var style = document.createElement('style');
 style.textContent =
 '.hn-bcp{cursor:pointer!important;text-decoration:underline dotted rgba(201,160,99,.9)!important;text-underline-offset:4px}' +
@@ -291,6 +295,7 @@ if (!inCommercialSection()) return;
 COMMERCIAL = true;
 APP = 'https://nbakhoum84.github.io/mytest/commercial-cost/';
 }
+active = true;
 start();
 }, 300);
 }
@@ -301,8 +306,29 @@ window.hnBuyerCostLoaded = true;
 // (The commercial loader sets its mode before either copy of this file runs, so whichever copy runs first picks it up.)
 // Any other page (e.g. a commercial city page like /abbotsford) is checked for the Commercial menu highlight once loaded.
 // A single listing's page (/listing-detail/...) gets the buttons under its headline price.
-if (/sold/.test(path) || (/detail/.test(path) && !DETAIL)) return;
-var LISTING_PAGE = DETAIL || COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)/.test(path);
+var LISTING_PAGE = false, active = false;
+function route() {
+active = false;
+path = location.pathname.toLowerCase();
+DETAIL = /^\/listing-detail\//.test(path);
+COMMERCIAL = window.hnBuyerCostMode === 'commercial' || /commercial/.test(path);
+APP = 'https://nbakhoum84.github.io/mytest/' + (COMMERCIAL ? 'commercial-cost/' : 'my-home-cost/');
+if (/sold/.test(path) || (/detail/.test(path) && !DETAIL)) return false;
+LISTING_PAGE = DETAIL || COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)/.test(path);
+return true;
+}
+if (route()) {
 if (document.readyState === 'complete') later();
 else window.addEventListener('load', later);
+}
+// The site opens a listing (and goes back to results) without reloading the page, so follow address changes too.
+var lastUrl = location.href;
+setInterval(function () {
+if (location.href === lastUrl) return;
+lastUrl = location.href;
+// Start fresh: results the site keeps in the background would otherwise count as this page's buttons.
+[].forEach.call(document.querySelectorAll('.hn-bcp-row'), function (r) { r.remove(); });
+[].forEach.call(document.querySelectorAll('.hn-bcp'), function (x) { x.classList.remove('hn-bcp'); x.removeAttribute('data-hn-price'); });
+if (route()) later();
+}, 1000);
 })();
