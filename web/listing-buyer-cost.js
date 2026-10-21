@@ -109,9 +109,29 @@ for (var k = 0; k < kids.length && k < 20; k++) max = Math.max(max, parseFloat(g
 return max;
 }
 
+// Nader asked to drop the Ratehub mortgage payment calculator from single listing pages.
+// Hide its frame, and the wrapper around it as long as the wrapper holds nothing else but Ratehub's title.
+function hideRatehub() {
+var frames = document.querySelectorAll('iframe[src*="ratehub"]');
+for (var i = 0; i < frames.length; i++) {
+var box = frames[i];
+while (box.parentElement && box.parentElement !== document.body) {
+var kids = box.parentElement.children, only = true;
+for (var k = 0; k < kids.length; k++) {
+var t = kids[k] === box ? '' : kids[k].textContent.trim();
+if (t && !(/ratehub/i.test(t) && t.length < 120)) { only = false; break; }
+}
+if (!only) break;
+box = box.parentElement;
+}
+if (box.style.display !== 'none') box.style.setProperty('display', 'none', 'important');
+}
+}
+
 function scan() {
 if (!active) return;
 if (!document.body) return;
+if (DETAIL) hideRatehub();
 var done = document.querySelectorAll('.hn-bcp');
 // The site reuses card elements when results are sorted, filtered or paged, so re-read each price from its current text.
 for (var d = 0; d < done.length; d++) {
