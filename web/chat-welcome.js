@@ -6,13 +6,12 @@
 if (window.hnChatWelcome) return;
 window.hnChatWelcome = true;
 
-var GREETING = "Hi, I'm Nader's virtual assistant. Ask me anything about buying, selling or presales in Metro Vancouver and the Fraser Valley.";
+// Nader (2026-10-21): no bio as the introduction; start by asking whether the visitor wants to buy or sell.
+var GREETING = 'Hi! Are you looking to buy or sell?';
 var QUESTIONS = [
-  'Find homes for sale',
-  'What does it cost to buy a home?',
-  "What's my home worth?",
-  'Show me presale projects',
-  'Book a call with Nader',
+  "I'm looking to buy",
+  "I'm looking to sell",
+  'Both buy and sell',
 ];
 
 var CSS = '#hn-chat-welcome{padding:12px 14px;font-family:inherit;box-sizing:border-box}' +
