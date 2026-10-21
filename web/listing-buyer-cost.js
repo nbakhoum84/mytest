@@ -58,6 +58,8 @@ return null;
 function mark(el, price) {
 el.classList.add('hn-bcp');
 el.setAttribute('data-hn-price', price);
+// No dotted underline under the big headline price on a single listing's page.
+if (DETAIL) el.style.setProperty('text-decoration', 'none', 'important');
 addButton(el, price);
 }
 
