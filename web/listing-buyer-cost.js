@@ -10,6 +10,10 @@ var path = typeof location === 'undefined' ? '' : location.pathname.toLowerCase(
 var COMMERCIAL = (typeof window !== 'undefined' && window.hnBuyerCostMode === 'commercial') || /commercial/.test(path);
 var APP = 'https://nbakhoum84.github.io/mytest/' + (COMMERCIAL ? 'commercial-cost/' : 'my-home-cost/');
 var MORTGAGE_APP = 'https://nbakhoum84.github.io/mytest/mortgage-calculator/';
+var DETAIL = /^\/listing-detail\//.test(path);
+// Longest names first, so "South Surrey" wins over "Surrey" and "North Vancouver" over "Vancouver".
+var CITIES = ['North Vancouver', 'West Vancouver', 'New Westminster', 'Port Coquitlam', 'Pitt Meadows', 'South Surrey', 'Maple Ridge', 'Port Moody',
+'White Rock', 'Abbotsford', 'Chilliwack', 'Coquitlam', 'Vancouver', 'Burnaby', 'Richmond', 'Langley', 'Mission', 'Surrey', 'Delta'];
 var NEW_PAGE = /pre-?sale|new-?(home|build|construction|development|listing)|\/new(\/|$|\?|-)/i;
 var NEW_CARD = /pre-?sale|new construction|new development|est(\.|imated)? completion|completion date|move-in ready|developer/i;
 // "$1,299,000", "From $599,900", "Starting at $1.2M", "C$849,000+", "$599,900 - $1,200,000" (uses the lowest).
@@ -39,6 +43,8 @@ if (typeof document === 'undefined') { if (typeof module !== 'undefined') module
 // (e.g. a dark placeholder with an icon), the ancestor that sits next to look-alike cards that do have photos.
 var PHOTO = 'img,picture,[style*="background-image"]';
 function cardOf(el) {
+// A single listing's page has one price, so the whole page is its "card".
+if (DETAIL) return document.body;
 for (var a = el.parentElement, i = 0; a && a !== document.body && i < 8; a = a.parentElement, i++) {
 if (a.querySelector(PHOTO)) return a;
 var sibs = a.className && a.parentElement ? a.parentElement.children : [];
@@ -106,7 +112,7 @@ if (dr && !dc.querySelector('.hn-bcp')) dr.remove();
 var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
 acceptNode: function (n) { return n.nodeValue.indexOf('$') >= 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; }
 });
-var n;
+var n, top = null, topSize = 0;
 while ((n = walker.nextNode())) {
 var el = n.parentElement;
 if (!el || el.closest('.hn-bcp') || el.closest(SKIP)) continue;
@@ -117,13 +123,21 @@ if (a.textContent.length > 60 || !parsePrice(a.textContent) || a.querySelector('
 best = a;
 }
 if (!best || !cardOf(best)) continue;
+// On a single listing's page only the big headline price gets the buttons (not similar listings, payments or offers).
+if (DETAIL) {
+var size = parseFloat(getComputedStyle(best).fontSize) || 0;
+if (size >= 24 && size > topSize) { top = best; topSize = size; }
+continue;
+}
 mark(best, parsePrice(best.textContent));
 }
+if (top && !document.querySelector('.hn-bcp')) mark(top, parsePrice(top.textContent));
 }
 
 function isNew(el) {
 if (COMMERCIAL) return false;
 if (NEW_PAGE.test(location.pathname + location.search)) return true;
+if (DETAIL) return false;
 var card = cardOf(el);
 return !!(card && NEW_CARD.test(card.textContent));
 }
@@ -157,6 +171,12 @@ document.documentElement.style.overflow = '';
 }
 // City from the listing page address, e.g. /south-surrey-listings -> "South Surrey" (empty on pages without one, like /new-homes-under-construction).
 function cityOf() {
+// A single listing, e.g. /listing-detail/1189480162/1342-JOHNSTON-RD-804-White-Rock-BC -> "White Rock".
+if (DETAIL) {
+var slug = decodeURIComponent(path.replace(/\/$/, '').split('/').pop() || '').replace(/-bc$/, '');
+for (var c = 0; c < CITIES.length; c++) if (new RegExp('-' + CITIES[c].toLowerCase().replace(/ /g, '-') + '$').test(slug)) return CITIES[c];
+return '';
+}
 var m = /^\/(?:presales?-)?([a-z-]+?)(?:-(?:sold-)?listings?|-presales?)?\/?$/.exec(path);
 if (!m || /^(new|foreclosures?|commercial|residential)/.test(m[1])) return '';
 return m[1].split('-').map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
@@ -280,8 +300,9 @@ window.hnBuyerCostLoaded = true;
 // Only on Residential listing pages (e.g. /abbotsford-listings), Presales/New pages and Commercial pages; never on Sold or a single listing.
 // (The commercial loader sets its mode before either copy of this file runs, so whichever copy runs first picks it up.)
 // Any other page (e.g. a commercial city page like /abbotsford) is checked for the Commercial menu highlight once loaded.
-if (/sold|detail/.test(path)) return;
-var LISTING_PAGE = COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)/.test(path);
+// A single listing's page (/listing-detail/...) gets the buttons under its headline price.
+if (/sold/.test(path) || (/detail/.test(path) && !DETAIL)) return;
+var LISTING_PAGE = DETAIL || COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)/.test(path);
 if (document.readyState === 'complete') later();
 else window.addEventListener('load', later);
 })();
