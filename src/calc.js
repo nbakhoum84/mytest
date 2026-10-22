@@ -151,15 +151,12 @@ export const BUYER = {
   firstTimeMaxOff: 8000, // first-time buyer: up to $8,000 off for homes up to $835,000, phasing out to $860,000
 };
 
-// Foreign buyers pay an additional 20% PTT on residential property in Metro Vancouver and the Fraser Valley
-// (and the Capital Region, Central Okanagan and Nanaimo), and can't claim the exemptions.
-export function buyerCost({ price, firstTime, newBuild, addGst, foreign = false }) {
-  const t = bcTransferTax({ price, firstTime: firstTime && !foreign, newBuild: newBuild && !foreign });
-  const ptt = t.full, off = t.exemption, foreignTax = foreign ? price * 0.2 : 0, transferTax = t.payable + foreignTax;
+export function buyerCost({ price, firstTime, newBuild, addGst }) {
+  const { full: ptt, exemption: off, payable: transferTax } = bcTransferTax({ price, firstTime, newBuild });
   const inspection = addGst || newBuild ? 0 : BUYER.inspection; // presales and new builds need no home inspection
   const subtotal = transferTax + BUYER.legal + inspection + BUYER.appraisal + BUYER.insurance;
   const gst = addGst ? price * BUYER.gstRate : 0;
-  return { price, transferTax, fullTax: ptt, exemption: off, foreignTax, legal: BUYER.legal, inspection, appraisal: BUYER.appraisal, insurance: BUYER.insurance, subtotal, gst, total: price + subtotal + gst };
+  return { price, transferTax, fullTax: ptt, exemption: off, legal: BUYER.legal, inspection, appraisal: BUYER.appraisal, insurance: BUYER.insurance, subtotal, gst, total: price + subtotal + gst };
 }
 
 // ---- Seller cost (matches home-nader.com/seller-cost) -------------------------------

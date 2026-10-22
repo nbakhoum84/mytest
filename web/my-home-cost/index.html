@@ -38,7 +38,6 @@
     <div class="row"><span>First-time buyer exemption</span><input id="ftb" type="checkbox"></div>
     <div class="row"><span>Newly built home exemption</span><input id="nb" type="checkbox"></div>
     <div class="row"><span>New build: add 5% GST</span><input id="gst" type="checkbox"></div>
-    <div class="row"><span>Foreign buyer (not a Canadian citizen or permanent resident)</span><input id="fb" type="checkbox"></div>
     <p class="note" id="nx"></p>
     <div class="row"><span>House price</span><span id="hp"></span></div>
     <div id="items"></div>
@@ -48,7 +47,7 @@
     <div class="row"><span id="dl">Down payment</span><span id="dv"></span></div>
     <div class="row" id="pr" hidden><span>PST on CMHC insurance (7%, paid at closing)</span><span id="pv"></span></div>
     <div class="row total"><span>Cash needed to close (down payment + closing costs)</span><span id="cash"></span></div>
-    <p class="note">Estimate only. First-time buyer exemption: up to $8,000 off for homes up to $835,000, phasing out to $860,000. Newly built home exemption: whole tax waived up to $1,100,000, phasing out to $1,150,000 (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Home inspection is for resale homes only (none when New build GST or the newly built home exemption is ticked). Home insurance is a typical first-year premium for a house (condos usually cost less); lenders require it before closing. Excludes adjustments. In BC, closing costs are paid in cash on or before completion and cannot be added to your mortgage (only the CMHC mortgage insurance premium can be, and the 7% PST on that premium is paid at closing). Plan your down payment plus these closing costs as cash on hand. Cash needed to close assumes 10% down (20% at $1,500,000 or more, the minimum there); under 20% down, CMHC insurance is added to the mortgage and its 7% PST is paid in cash. Foreign buyers pay an extra 20% property transfer tax on residential property in Metro Vancouver, the Fraser Valley, the Capital Region, Central Okanagan and Nanaimo, and can't claim the first-time buyer or newly built home exemptions; most non-Canadians are also barred from buying residential property in Canada until January 1, 2027 (federal ban, with some exceptions).</p>
+    <p class="note">Estimate only. First-time buyer exemption: up to $8,000 off for homes up to $835,000, phasing out to $860,000. Newly built home exemption: whole tax waived up to $1,100,000, phasing out to $1,150,000 (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Home inspection is for resale homes only (none when New build GST or the newly built home exemption is ticked). Home insurance is a typical first-year premium for a house (condos usually cost less); lenders require it before closing. Excludes adjustments. In BC, closing costs are paid in cash on or before completion and cannot be added to your mortgage (only the CMHC mortgage insurance premium can be, and the 7% PST on that premium is paid at closing). Plan your down payment plus these closing costs as cash on hand. Cash needed to close assumes 10% down (20% at $1,500,000 or more, the minimum there); under 20% down, CMHC insurance is added to the mortgage and its 7% PST is paid in cash.</p>
   </section>
   <section id="list" hidden>
     <h1>Buyer checklist (<span id="count">0</span>/10)</h1>
@@ -70,9 +69,9 @@ const $=id=>document.getElementById(id);
 function fmtPrice(){const el=$('price'),n=el.value.replace(/[^0-9]/g,'');el.value=n?'$'+(+n).toLocaleString('en-CA'):'';calc()}
 function calc(){
   const p=parseFloat($('price').value.replace(/[^0-9.]/g,''))||0;
-  const fb=$('fb').checked,f=$('ftb').checked&&!fb,n=$('nb').checked&&!fb,c=f||n,e=f?ex(p):n?nbx(p):0;
+  const f=$('ftb').checked,n=$('nb').checked,c=f||n,e=f?ex(p):n?nbx(p):0;
   $('nx').textContent=c&&e===0?`No exemption applies at ${f?'$860,000':'$1,150,000'} or more.`:'';
-  const items=[['Property transfer tax',ptt(p)],...(fb?[['Foreign buyer tax (additional 20% PTT)',p*.2]]:[]),...(c?[[f?'First-time buyer exemption':'Newly built home exemption',-e]]:[]),['Legal fees & disbursements',1800],...($('gst').checked||n?[]:[['Home inspection',500]]),['Appraisal',400],['Home insurance (first year)',1500]];
+  const items=[['Property transfer tax',ptt(p)],...(c?[[f?'First-time buyer exemption':'Newly built home exemption',-e]]:[]),['Legal fees & disbursements',1800],...($('gst').checked||n?[]:[['Home inspection',500]]),['Appraisal',400],['Home insurance (first year)',1500]];
   $('items').innerHTML=items.map(([l,a])=>`<div class="row"><span>${l}</span><span>${money(a)}</span></div>`).join('');
   const cc=items.reduce((s,i)=>s+i[1],0);
   const g=$('gst').checked?p*.05:0;
@@ -90,7 +89,7 @@ function renderSteps(){
   $('count').textContent=done.filter(Boolean).length;
 }
 $('steps').onclick=e=>{const d=e.target.closest('.step');if(!d)return;const i=+d.dataset.i;done[i]=!done[i];try{localStorage.setItem('cc-done',JSON.stringify(done))}catch(e){}renderSteps()};
-$('gst').onchange=calc;$('fb').onchange=()=>{if($('fb').checked){$('ftb').checked=false;$('nb').checked=false}calc()};$('price').oninput=fmtPrice;$('ftb').onchange=()=>{if($('ftb').checked){$('nb').checked=false;$('fb').checked=false}calc()};$('nb').onchange=()=>{if($('nb').checked){$('ftb').checked=false;$('fb').checked=false}calc()};
+$('gst').onchange=calc;$('price').oninput=fmtPrice;$('ftb').onchange=()=>{if($('ftb').checked)$('nb').checked=false;calc()};$('nb').onchange=()=>{if($('nb').checked)$('ftb').checked=false;calc()};
 function tab(t){$('costs').hidden=t!=='costs';$('list').hidden=t!=='list';$('t-costs').className=t==='costs'?'on':'';$('t-list').className=t==='list'?'on':''}
 $('t-costs').onclick=()=>tab('costs');$('t-list').onclick=()=>tab('list');
 // Prefill from the link, e.g. ?price=1299000 from a listing card; ?new=1 (presale or new build) ticks GST.
