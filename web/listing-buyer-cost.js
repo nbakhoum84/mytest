@@ -16,7 +16,7 @@ document.head.appendChild(cw);
 if (typeof document !== 'undefined' && !document.getElementById('hn-app-width')) {
 var aw = document.createElement('style');
 aw.id = 'hn-app-width';
-aw.textContent = '.hn-app{max-width:1300px!important}@media(min-width:701px){#hn-bc-card,#hn-sc-card,#hn-mc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide{box-sizing:border-box!important;width:1300px!important;max-width:100%!important}#mh-app,#sc-app{max-width:1300px!important}}';
+aw.textContent = '.hn-app{max-width:1300px!important}@media(min-width:701px){#hn-bc-card,#hn-sc-card,#hn-mc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide{box-sizing:border-box!important;width:1300px!important;max-width:100%!important}#mh-app,#sc-app,#fh-app,#pd-app{max-width:1300px!important}}';
 (document.head || document.documentElement).appendChild(aw);
 // Other pages have their own "Get the ... app" cards (the calculator page scripts, or blocks built in Lofty): find each by its
 // heading and its "Scan with your phone" line, and widen the box holding both. The page scripts add their cards late, so look for a while.
@@ -38,8 +38,8 @@ fitCalc();
 // The Buyer/Seller Cost calculator blocks sit in a narrower Lofty column than the app card under them, so the 1300px max-width alone
 // leaves them narrower (Nader, 2026-10-22). Line the calculator's edges up with that card's edges instead.
 function fitCalc() {
-var calcs = document.querySelectorAll('#mh-app,#sc-app');
-var card = document.querySelector('#hn-bc-card,#hn-sc-card,.hn-app-card-wide,.hn-app');
+var calcs = document.querySelectorAll('#mh-app,#sc-app,#fh-app,#pd-app');
+var card = document.querySelector('#hn-bc-card,#hn-sc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide,.hn-app');
 for (var j = 0; j < calcs.length; j++) {
 var el = calcs[j];
 if (!card || innerWidth <= 700) { el.style.removeProperty('width'); el.style.removeProperty('margin-left'); el.style.removeProperty('max-width'); el.style.removeProperty('padding-left'); el.style.removeProperty('padding-right'); continue; }
