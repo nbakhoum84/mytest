@@ -149,7 +149,15 @@ if (!head || head.offsetWidth < innerWidth * 0.8 || head.closest('#hn-bcp-modal'
 var below = Math.round(head.getBoundingClientRect().bottom);
 var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null), n, prev = null;
 while ((n = w.nextNode())) if (/^\s*(<|‹)?\s*prev\s*$/i.test(n.nodeValue) && !head.contains(n)) { prev = n.parentElement; break; }
+// Phones have no PREV / NEXT bar; there the listing's address (e.g. "1526 FINLAY ST" from the page address) is what hides under the menu.
+if (!prev) {
+var words = (path.split('/')[3] || '').split('-').slice(0, 2);
+if (words.length < 2 || !words[0]) return;
+var addr = new RegExp('^\\s*' + words.map(function (x) { return x.replace(/[^\w]/g, ''); }).join('\\s+'), 'i');
+w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+while ((n = w.nextNode())) if (addr.test(n.nodeValue) && !head.contains(n) && !n.parentElement.closest('title,script,style,#hn-bcp-modal')) { prev = n.parentElement; break; }
 if (!prev) return;
+}
 var bar = fixedTop(prev);
 if (bar && bar !== head) {
 if (parseFloat(getComputedStyle(bar).top) < below) bar.style.setProperty('top', below + 'px', 'important');
@@ -217,9 +225,10 @@ best = a;
 }
 if (!best || !cardOf(best)) continue;
 // On a single listing's page only the big headline price gets the buttons (not similar listings, payments or offers).
+// Phones draw that price smaller, so the size bar is lower there.
 if (DETAIL) {
 var size = fontOf(best);
-if (size >= 24 && size > topSize) { top = best; topSize = size; }
+if (size >= (innerWidth < 768 ? 18 : 24) && size > topSize) { top = best; topSize = size; }
 continue;
 }
 mark(best, parsePrice(priceText(best)));
