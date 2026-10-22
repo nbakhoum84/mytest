@@ -167,7 +167,8 @@ if (parseFloat(getComputedStyle(bar).top) < below) bar.style.setProperty('top', 
 return;
 }
 // Not a sticky bar: push the block holding PREV down once if it starts under the menu with the page scrolled to the top.
-for (bar = prev; bar.parentElement && bar.parentElement !== document.body && bar.offsetWidth < innerWidth * 0.6; bar = bar.parentElement);
+// A text span can't be pushed down (margins don't move inline text), so start from the block holding it, e.g. the address heading.
+for (bar = prev; bar.parentElement && bar.parentElement !== document.body && (bar.offsetWidth < innerWidth * 0.6 || /^inline/.test(getComputedStyle(bar).display)); bar = bar.parentElement);
 if (bar.hasAttribute('data-hn-clear')) return;
 var gap = below - (bar.getBoundingClientRect().top + scrollY);
 if (gap > 0) { bar.setAttribute('data-hn-clear', ''); bar.style.setProperty('margin-top', (parseFloat(getComputedStyle(bar).marginTop) + gap + 8) + 'px', 'important'); }
@@ -231,7 +232,8 @@ if (!best || !cardOf(best)) continue;
 // Phones draw that price smaller, so the size bar is lower there.
 if (DETAIL) {
 var size = fontOf(best);
-if (size >= (innerWidth < 768 ? 18 : 24) && size > topSize) { top = best; topSize = size; }
+// The site keeps a hidden copy of the price for the other screen size; only the one on screen counts.
+if (size >= (innerWidth < 768 ? 18 : 24) && size > topSize && shown(best)) { top = best; topSize = size; }
 continue;
 }
 mark(best, parsePrice(priceText(best)));
