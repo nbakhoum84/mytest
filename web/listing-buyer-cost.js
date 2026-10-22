@@ -25,6 +25,8 @@ var widen = setInterval(function () {
 if (++wideTries > 30) clearInterval(widen);
 var hs = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
 for (var i = 0; i < hs.length; i++) {
+// Nader renamed the Buyer Cost page's titles (the page heading and the calculator's own) to "Cash to Close", matching the listing button (2026-10-22).
+if (/^\/buyer-cost\/?$/i.test(location.pathname) && /^\s*buyer cost\s*$/i.test(hs[i].textContent)) hs[i].textContent = 'Cash to Close';
 if (!/^\s*get the .{1,40} app\s*$/i.test(hs[i].textContent)) continue;
 for (var c = hs[i].parentElement, k = 0; c && c !== document.body && k < 8; c = c.parentElement, k++) {
 if (c.closest('.hn-app')) break;
