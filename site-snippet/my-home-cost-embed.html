@@ -34,7 +34,10 @@
     <div class="mh-row"><span>Closing costs subtotal (cash, not mortgageable)</span><span id="mh-sub"></span></div>
     <div class="mh-row" id="mh-gr" hidden><span>GST on new build (5%, before rebate)</span><span id="mh-gv"></span></div>
     <div class="mh-row mh-total"><span>Total cost (price + closing costs)</span><span id="mh-total"></span></div>
-    <p class="mh-note">Estimate only. First-time buyer exemption: up to $8,000 off for homes up to $835,000, phasing out to $860,000. Newly built home exemption: whole tax waived up to $1,100,000, phasing out to $1,150,000 (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Home insurance is a typical first-year premium for a house (condos usually cost less); lenders require it before closing. Excludes adjustments. In BC, closing costs are paid in cash on or before completion and cannot be added to your mortgage (only the CMHC mortgage insurance premium can be, and the 7% PST on that premium is paid at closing). Plan your down payment plus these closing costs as cash on hand.</p>
+    <div class="mh-row"><span id="mh-dl">Down payment</span><span id="mh-dv"></span></div>
+    <div class="mh-row" id="mh-pr" hidden><span>PST on CMHC insurance (7%, paid at closing)</span><span id="mh-pv"></span></div>
+    <div class="mh-row mh-total"><span>Cash needed to close (down payment + closing costs)</span><span id="mh-cash"></span></div>
+    <p class="mh-note">Estimate only. First-time buyer exemption: up to $8,000 off for homes up to $835,000, phasing out to $860,000. Newly built home exemption: whole tax waived up to $1,100,000, phasing out to $1,150,000 (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Home insurance is a typical first-year premium for a house (condos usually cost less); lenders require it before closing. Excludes adjustments. In BC, closing costs are paid in cash on or before completion and cannot be added to your mortgage (only the CMHC mortgage insurance premium can be, and the 7% PST on that premium is paid at closing). Plan your down payment plus these closing costs as cash on hand. Cash needed to close assumes 10% down (20% at $1,500,000 or more, the minimum there); under 20% down, CMHC insurance is added to the mortgage and its 7% PST is paid in cash.</p>
   </section>
   <section id="mh-list" hidden>
     <h2>Buyer checklist (<span id="mh-count">0</span>/10)</h2>
@@ -62,6 +65,9 @@
     var g=$('gst').checked?p*.05:0;
     $('gr').hidden=!$('gst').checked;$('gv').textContent=money(g);
     $('hp').textContent=money(p);$('sub').textContent=money(cc);$('total').textContent=money(p+cc+g);
+    // Cash to close: 10% down (20% at $1.5M+), plus closing costs, GST and the PST on the CMHC premium.
+    var dp=p>=15e5?20:10,dn=p*dp/100,pst=dp<20?(p-dn)*.031*.07:0;
+    $('dl').textContent='Down payment ('+dp+'%)';$('dv').textContent=money(dn);$('pr').hidden=!pst;$('pv').textContent=money(pst);$('cash').textContent=money(dn+cc+g+pst);
   }
   var done=[];try{done=JSON.parse(localStorage.getItem('mhc-done')||'[]')}catch(e){}
   function renderSteps(){
