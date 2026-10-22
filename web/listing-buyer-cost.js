@@ -12,11 +12,12 @@ cw.src = 'https://nbakhoum84.github.io/mytest/chat-welcome.js?v=' + Math.floor(D
 cw.async = true;
 document.head.appendChild(cw);
 }
+// Calculator blocks: Lofty wraps each HTML block in a narrower .mg-container (overflow hidden), so that box is widened (.hn-calc-wide) to match the app cards.
 // The "Get the home-nader app" card (website/install-app-block.html, pasted on many Lofty pages): Nader wants it 1300px wide everywhere (2026-10-22).
 if (typeof document !== 'undefined' && !document.getElementById('hn-app-width')) {
 var aw = document.createElement('style');
 aw.id = 'hn-app-width';
-aw.textContent = '.hn-app{max-width:1300px!important}@media(min-width:701px){#hn-bc-card,#hn-sc-card,#hn-mc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide{box-sizing:border-box!important;width:1300px!important;max-width:100%!important}#mh-app,#sc-app,#fh-app,#pd-app{max-width:1300px!important}}';
+aw.textContent = '.hn-app{max-width:1300px!important}@media(min-width:701px){#hn-bc-card,#hn-sc-card,#hn-mc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide{box-sizing:border-box!important;width:1300px!important;max-width:100%!important}#mh-app,#sc-app,#fh-app,#pd-app{max-width:1300px!important;padding-left:0!important;padding-right:0!important}.hn-calc-wide{box-sizing:border-box!important;width:1300px!important;max-width:100%!important;padding-left:0!important;padding-right:0!important;margin-left:auto!important;margin-right:auto!important}}';
 (document.head || document.documentElement).appendChild(aw);
 // Other pages have their own "Get the ... app" cards (the calculator page scripts, or blocks built in Lofty): find each by its
 // heading and its "Scan with your phone" line, and widen the box holding both. The page scripts add their cards late, so look for a while.
@@ -33,29 +34,9 @@ if (c.closest('.hn-app')) break;
 if (/scan with your phone/i.test(c.textContent)) { c.classList.add('hn-app-card-wide'); break; }
 }
 }
-fitCalc();
-}, 500);
-// The Buyer/Seller Cost calculator blocks sit in a narrower Lofty column than the app card under them, so the 1300px max-width alone
-// leaves them narrower (Nader, 2026-10-22). Line the calculator's edges up with that card's edges instead.
-function fitCalc() {
-// Switched off 2026-10-22: on the live site it hid the calculator's text. Kept until the Lofty layout is known.
-return;
 var calcs = document.querySelectorAll('#mh-app,#sc-app,#fh-app,#pd-app');
-var card = document.querySelector('#hn-bc-card,#hn-sc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide,.hn-app');
-for (var j = 0; j < calcs.length; j++) {
-var el = calcs[j];
-if (!card || innerWidth <= 700) { el.style.removeProperty('width'); el.style.removeProperty('margin-left'); el.style.removeProperty('max-width'); el.style.removeProperty('padding-left'); el.style.removeProperty('padding-right'); continue; }
-var r = card.getBoundingClientRect(), par = el.parentElement, pr = par.getBoundingClientRect(), ps = getComputedStyle(par);
-var inner = pr.left + par.clientLeft + parseFloat(ps.paddingLeft);
-if (!r.width) continue;
-el.style.setProperty('max-width', 'none', 'important');
-el.style.setProperty('width', r.width + 'px', 'important');
-el.style.setProperty('margin-left', (r.left - inner) + 'px', 'important');
-el.style.setProperty('padding-left', '0', 'important');
-el.style.setProperty('padding-right', '0', 'important');
-}
-}
-addEventListener('resize', fitCalc);
+for (var j = 0; j < calcs.length; j++) { var box = calcs[j].closest('.mg-container'); if (box) box.classList.add('hn-calc-wide'); }
+}, 500);
 }
 var path = typeof location === 'undefined' ? '' : location.pathname.toLowerCase();
 // Commercial pages open the Commercial Buyer Cost app (BC commercial rules); everything else the residential one.
