@@ -38,6 +38,8 @@ fitCalc();
 // The Buyer/Seller Cost calculator blocks sit in a narrower Lofty column than the app card under them, so the 1300px max-width alone
 // leaves them narrower (Nader, 2026-10-22). Line the calculator's edges up with that card's edges instead.
 function fitCalc() {
+// Switched off 2026-10-22: on the live site it hid the calculator's text. Kept until the Lofty layout is known.
+return;
 var calcs = document.querySelectorAll('#mh-app,#sc-app,#fh-app,#pd-app');
 var card = document.querySelector('#hn-bc-card,#hn-sc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide,.hn-app');
 for (var j = 0; j < calcs.length; j++) {
