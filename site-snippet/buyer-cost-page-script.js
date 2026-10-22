@@ -28,7 +28,7 @@ style.textContent =
 var card = document.createElement('div');
 card.id = 'hn-bc-card';
 card.innerHTML =
-'<div><h3>Get the Buyer Cost app</h3>' +
+'<div><h3>Get the Cash to Close app</h3>' +
 '<p>Estimate your closing costs, property transfer tax, legal fees and the total cost to buy a home. Free, no app store needed.</p>' +
 '<a class="hn-bc-btn" href="' + URL + '" target="_blank" rel="noopener">Open the app</a>' +
 '<div class="hn-bc-how"><b>iPhone:</b> open it in Safari, tap Share, then "Add to Home Screen".<br>' +
@@ -56,7 +56,7 @@ if (!ref && !footer && tries++ < 20) return false;
 var card = build();
 if (ref) {
 var cs = getComputedStyle(ref);
-[['width', ref.offsetWidth + 'px'], ['max-width', '100%'],
+[['width', '1300px'], ['max-width', innerWidth <= 700 ? ref.offsetWidth + 'px' : '100%'],
 ['margin', cs.marginTop + ' auto ' + cs.marginBottom], ['position', 'static'], ['transform', 'none'],
 ['background-color', cs.backgroundColor], ['border', cs.border], ['border-radius', cs.borderRadius],
 ['padding', cs.padding]].forEach(function (r) { card.style.setProperty(r[0], r[1], 'important'); });
