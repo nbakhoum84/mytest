@@ -501,6 +501,40 @@ if (/sold/.test(path) || (/detail/.test(path) && !DETAIL)) return false;
 LISTING_PAGE = DETAIL || COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)/.test(path);
 return true;
 }
+// Nader (2026-10-22): the site's "Create Your Free Account" form can't be closed. Hide its close button, and ignore
+// clicks outside it and the Escape key while it's open. Runs on every page the loader is on.
+function regBox() {
+var hs = document.querySelectorAll('h1, h2, h3, h4, h5, h6, div, p, span');
+for (var i = 0; i < hs.length; i++) {
+if (hs[i].children.length || !/^create your free account$/i.test(hs[i].textContent.trim()) || !hs[i].offsetParent) continue;
+// The form's box: the nearest ancestor that also holds the e-mail field.
+for (var el = hs[i].parentElement; el && el !== document.body; el = el.parentElement) {
+if (el.querySelector('input')) return el;
+}
+}
+return null;
+}
+var regOpen = null;
+setInterval(function () {
+var box = regBox();
+regOpen = box;
+if (!box) return;
+// Close controls in or just around the box (some sites put the × on the overlay beside it).
+var scope = box.parentElement && box.parentElement !== document.body ? box.parentElement : box;
+[].forEach.call(scope.querySelectorAll('[class*="close" i], [aria-label*="close" i], [title*="close" i], button, a, span, i'), function (x) {
+if (x.closest('form') && !/close/i.test((x.className && x.className.baseVal !== undefined ? x.className.baseVal : x.className) + ' ' + (x.getAttribute('aria-label') || ''))) return;
+var t = x.textContent.trim();
+if (/close/i.test(String(x.className.baseVal !== undefined ? x.className.baseVal : x.className) + (x.getAttribute('aria-label') || '') + (x.getAttribute('title') || '')) || /^[\u00d7\u2715\u2716xX]$/.test(t)) {
+x.style.setProperty('display', 'none', 'important');
+}
+});
+}, 300);
+document.addEventListener('click', function (e) {
+if (regOpen && document.contains(regOpen) && !regOpen.contains(e.target)) { e.stopPropagation(); e.preventDefault(); }
+}, true);
+document.addEventListener('keydown', function (e) {
+if (regOpen && document.contains(regOpen) && e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); }
+}, true);
 if (route()) {
 if (document.readyState === 'complete') later();
 else window.addEventListener('load', later);
