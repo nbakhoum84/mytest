@@ -344,7 +344,54 @@ var reg = registerLink();
 if (!reg || !was) return;
 track('hn_calculator_signup_prompt', { calculator: was.mortgage ? 'mortgage' : 'buyer_cost', listing_price: was.price });
 reg.click();
+hideFormClose();
 }
+// Nader: no close button on the registration form we open. Only hides the form's × (nothing is blocked), and only
+// while the form is really on screen, so it can't stop the form from opening.
+function shown(el) {
+var r = el.getBoundingClientRect();
+if (!r.width || !r.height) return false;
+for (var x = el; x && x.nodeType === 1; x = x.parentElement) {
+var cs = getComputedStyle(x);
+if (cs.visibility === 'hidden' || cs.display === 'none' || +cs.opacity === 0) return false;
+}
+return true;
+}
+function formBox() {
+var hs = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, div, span');
+for (var i = 0; i < hs.length; i++) {
+if (hs[i].children.length || !/^create your free account$/i.test(hs[i].textContent.trim()) || !shown(hs[i])) continue;
+for (var el = hs[i].parentElement; el && el !== document.body; el = el.parentElement) {
+if (el.querySelector('input')) return { card: el, box: el.parentElement && el.parentElement !== document.body ? el.parentElement : el };
+}
+}
+return null;
+}
+function hideFormClose() {
+var tries = 0;
+var t = setInterval(function () {
+var f = hideCloseOnce();
+if (++tries > 100 || (f && tries > 20)) clearInterval(t);
+}, 100);
+}
+function hideCloseOnce() {
+var f = formBox(), box = f && f.box;
+if (box) {
+var b = f.card.getBoundingClientRect();
+[].forEach.call(box.querySelectorAll('*'), function (x) {
+if (x.closest('form') || /^(INPUT|LABEL|TEXTAREA|SELECT)$/.test(x.tagName)) return;
+var cls = String(x.className && x.className.baseVal !== undefined ? x.className.baseVal : x.className) + ' ' + (x.getAttribute('aria-label') || '') + ' ' + (x.getAttribute('title') || '');
+var r = x.getBoundingClientRect(), small = r.width > 0 && r.width < 60 && r.height < 60;
+var corner = small && Math.abs(r.top - b.top) < 80 && Math.abs(b.right - r.right) < 80;
+if (/close/i.test(cls) || (small && /^[\u00d7\u2715\u2716]$/.test(x.textContent.trim())) || (corner && !x.textContent.trim() && x.querySelector && (x.tagName === 'svg' || x.querySelector('svg')))) {
+x.style.setProperty('display', 'none', 'important');
+}
+});
+}
+return f;
+}
+// The site also opens the form by itself (e.g. after a few listings); hide its × then too.
+setInterval(hideCloseOnce, 700);
 // City from the listing page address, e.g. /south-surrey-listings -> "South Surrey" (empty on pages without one, like /new-homes-under-construction).
 function cityOf() {
 // A single listing, e.g. /listing-detail/1189480162/1342-JOHNSTON-RD-804-White-Rock-BC -> "White Rock".
