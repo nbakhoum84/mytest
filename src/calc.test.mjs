@@ -31,4 +31,10 @@ assert.strictEqual(bcTransferTax({ price: 1000000, newBuild: true }).payable, 0)
 assert.strictEqual(bcTransferTax({ price: 700000, firstTime: true, newBuild: true }).payable, 0);
 assert.strictEqual(bcTransferTax({ price: 4000000 }).full, 2000 + 36000 + 60000 + 20000);
 
+// Foreign buyer: extra 20% PTT, no exemptions; same total as the standalone app.
+for (const price of [700000, 1200000]) {
+  near(buyerCost({ price, firstTime: true, newBuild: false, addGst: false, foreign: true }).total, estimateClosingCosts({ price, firstTimeBuyer: true, foreignBuyer: true }).total);
+}
+near(buyerCost({ price: 700000, firstTime: false, newBuild: false, addGst: false, foreign: true }).foreignTax, 140000);
+
 console.log('calc tests passed');

@@ -61,24 +61,49 @@ el.setAttribute('data-hn-price', price);
 addButton(el, price);
 }
 
+// Rough numbers shown on the buttons, with the same defaults the popups open with: 10% down (20% at $1.5M or more),
+// 4.5% over 25 years, CMHC premium under 20% down (its 7% PST is paid in cash at closing), and the Buyer Cost app's
+// default closing costs (BC property transfer tax, legal $1,800, inspection $500 on resale, appraisal $400, insurance $1,500, 5% GST on new builds).
+var EST = { rate: 4.5, years: 25 };
+function ptt(p) {
+var band = function (from, to, rate) { return Math.max(0, Math.min(p, to) - from) * rate; };
+return band(0, 2e5, 0.01) + band(2e5, 2e6, 0.02) + band(2e6, Infinity, 0.03) + band(3e6, Infinity, 0.02);
+}
+function estimate(price, isNewBuild) {
+var downPct = price >= 1.5e6 ? 20 : 10;
+var down = price * downPct / 100, loan = price - down;
+var premium = downPct < 20 ? loan * 0.031 : 0;
+var closing = ptt(price) + 1800 + (isNewBuild ? 0 : 500) + 400 + 1500 + (isNewBuild ? price * 0.05 : 0);
+var r = Math.pow(1 + EST.rate / 200, 1 / 6) - 1, n = EST.years * 12, total = loan + premium;
+return { downPct: downPct, cash: down + closing + premium * 0.07, monthly: total * r / (1 - Math.pow(1 + r, -n)) };
+}
+function short(n) { return n >= 1e6 ? '$' + (n / 1e6).toFixed(n >= 1e7 ? 0 : 1).replace(/\.0$/, '') + 'M' : '$' + Math.round(n / 1e3) + 'K'; }
+function labels(price, isNewBuild) {
+if (COMMERCIAL) return { buyer: 'Buyer cost', mortgage: 'Mortgage' };
+var e = estimate(price, isNewBuild);
+return { buyer: 'Cash to close \u2248 ' + short(e.cash), mortgage: 'Est. $' + Math.round(e.monthly).toLocaleString('en-CA') + '/mo' };
+}
+
 // One "Buyer cost" button per card, on its own line right below the price. Re-added if the site redraws the card.
 function addButton(el, price) {
 var card = cardOf(el);
 if (!card) return;
 var oldRow = card.querySelector('.hn-bcp-row');
 if (oldRow) {
-var olds = oldRow.querySelectorAll('.hn-bcp-btn');
+var olds = oldRow.querySelectorAll('.hn-bcp-btn'), lb = labels(price, isNew(el));
 for (var o = 0; o < olds.length; o++) {
 olds[o].setAttribute('data-hn-price', price);
+var want = olds[o].getAttribute('data-hn-kind') === 'mortgage' ? lb.mortgage : lb.buyer;
+if (olds[o].textContent !== want) olds[o].textContent = want;
 olds[o].setAttribute('aria-label', (olds[o].getAttribute('data-hn-kind') === 'mortgage' ? 'Mortgage calculator for $' : 'Buyer cost for $') + price.toLocaleString('en-CA'));
 }
 return;
 }
 // "Buyer cost" and "Mortgage" sit side by side in one row (Mortgage not on Commercial pages); the mortgage calculator starts from the same price.
-var b = document.createElement('div');
+var b = document.createElement('div'), lb = labels(price, isNew(el));
 b.className = 'hn-bcp-row';
-b.innerHTML = '<button type="button" class="hn-bcp-btn" data-hn-kind="buyer" data-hn-price="' + price + '" aria-label="Buyer cost for $' + price.toLocaleString('en-CA') + '">Buyer cost</button>' +
-(COMMERCIAL ? '' : '<button type="button" class="hn-bcp-btn hn-bcp-mtg" data-hn-kind="mortgage" data-hn-price="' + price + '" aria-label="Mortgage calculator for $' + price.toLocaleString('en-CA') + '">Mortgage</button>');
+b.innerHTML = '<button type="button" class="hn-bcp-btn" data-hn-kind="buyer" data-hn-price="' + price + '" aria-label="Buyer cost for $' + price.toLocaleString('en-CA') + '">' + lb.buyer + '</button>' +
+(COMMERCIAL ? '' : '<button type="button" class="hn-bcp-btn hn-bcp-mtg" data-hn-kind="mortgage" data-hn-price="' + price + '" aria-label="Mortgage calculator for $' + price.toLocaleString('en-CA') + '">' + lb.mortgage + '</button>');
 // After the whole line the price sits on (e.g. price + open house tag), so it lands just below it.
 var line = el;
 while (line.parentElement && line.parentElement !== card && /^inline/.test(getComputedStyle(line).display)) line = line.parentElement;
@@ -223,6 +248,46 @@ var card = cardOf(el);
 return !!(card && NEW_CARD.test(card.textContent));
 }
 
+// Each button click (and each sign-up prompt click) is sent to whatever analytics the site runs: Google Tag Manager / GA4
+// (dataLayer, gtag) and the Meta pixel (fbq), so they can be counted as conversions for ad campaigns.
+function track(name, data) {
+data.page_path = location.pathname;
+data.city = cityOf() || '';
+try { (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: name }, data)); } catch (e) {}
+try { if (typeof window.gtag === 'function') window.gtag('event', name, data); } catch (e) {}
+try { if (typeof window.fbq === 'function') window.fbq('trackCustom', name, data); } catch (e) {}
+}
+// The site's own "Register/Sign In" link; it's only there while the visitor isn't signed in.
+function registerLink() {
+var els = document.querySelectorAll('header a, header span, header li, header div, nav a, nav span, [class*="nav" i] a, [class*="menu" i] a');
+for (var i = 0; i < els.length; i++) {
+if (/^\s*register\s*\/\s*sign\s*in\s*$/i.test(els[i].textContent) && els[i].offsetParent) return els[i];
+}
+return null;
+}
+// The listing's own "Save" button (single listing page only); saving asks a visitor to register.
+function saveButton() {
+if (!DETAIL) return null;
+var els = document.querySelectorAll('button, a, [role="button"], div, span');
+for (var i = 0; i < els.length; i++) {
+if (/^\s*save\s*$/i.test(els[i].textContent) && els[i].offsetParent && !els[i].closest('#hn-bcp-modal')) return els[i].closest('button,a,[role="button"]') || els[i];
+}
+return null;
+}
+var ctaTimer = null;
+// After the visitor has spent a little time in the calculator, offer the full breakdown (and saving the listing) for registering.
+function showCta(m) {
+clearTimeout(ctaTimer);
+var cta = m.querySelector('.hn-bcp-cta');
+cta.hidden = true;
+if (!registerLink()) return;
+ctaTimer = setTimeout(function () {
+if (!m.classList.contains('hn-bcp-on') || !registerLink()) return;
+m.querySelector('.hn-bcp-save').hidden = !saveButton();
+cta.hidden = false;
+}, 8000);
+}
+
 function modal() {
 var m = document.getElementById('hn-bcp-modal');
 if (m) return m;
@@ -233,10 +298,21 @@ m.innerHTML =
 '<div class="hn-bcp-bar"><b class="hn-bcp-title">Buyer Cost</b><span class="hn-bcp-alts"></span>' +
 '<a class="hn-bcp-open" target="_blank" rel="noopener">Open in new tab</a>' +
 '<button type="button" class="hn-bcp-x" aria-label="Close">&times;</button></div>' +
-'<iframe title="Buyer Cost calculator"></iframe></div>';
+'<iframe title="Buyer Cost calculator"></iframe>' +
+'<div class="hn-bcp-cta" hidden><span>Want the full breakdown for this home?</span>' +
+'<button type="button" class="hn-bcp-cta-btn" data-hn-cta="register">Email me the breakdown</button>' +
+'<button type="button" class="hn-bcp-cta-btn hn-bcp-save" data-hn-cta="save">Save this listing</button></div></div>';
 document.body.appendChild(m);
 m.addEventListener('click', function (e) {
 if (e.target === m || e.target.closest('.hn-bcp-x')) close();
+var cta = e.target.closest('[data-hn-cta]');
+if (cta && current) {
+var kind = cta.getAttribute('data-hn-cta'), target = kind === 'save' ? saveButton() : registerLink();
+track('hn_calculator_signup_click', { action: kind, calculator: current.mortgage ? 'mortgage' : 'buyer_cost', listing_price: current.price });
+close();
+if (target) target.click();
+return;
+}
 // A price range: switch the calculator between the low and high price.
 var alt = e.target.closest('.hn-bcp-alt');
 if (alt && current) openCalc(+alt.getAttribute('data-hn-price'), current.isNewBuild, current.mortgage, current.prices);
@@ -270,10 +346,10 @@ if (d && d.hnBuyerCost && f && e.source === f.contentWindow && d.price > 0 && d.
 });
 var current = null;
 function openCalc(price, isNewBuild, mortgage, prices) {
-current = { isNewBuild: isNewBuild, mortgage: mortgage, prices: prices || [price] };
+current = { isNewBuild: isNewBuild, mortgage: mortgage, prices: prices || [price], price: price };
 var city = mortgage ? cityOf() : '';
 var total = mortgage && lastTotal && lastTotal.price === price ? lastTotal.total : 0;
-var url = (mortgage ? MORTGAGE_APP : APP) + '?price=' + price + (isNewBuild ? '&new=1' : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + '&v=' + Math.floor(Date.now() / 6e4);
+var url = (mortgage ? MORTGAGE_APP : APP) + '?price=' + price + (isNewBuild ? '&new=1' : '') + (mortgage ? '&down=' + estimate(price, isNewBuild).downPct : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + '&v=' + Math.floor(Date.now() / 6e4);
 var m = modal();
 m.querySelector('.hn-bcp-title').textContent = mortgage ? 'Mortgage for $' + price.toLocaleString('en-CA') + (city ? ' in ' + city : '') :
 (COMMERCIAL ? 'Commercial Buyer Cost for $' : 'Buyer Cost for $') + price.toLocaleString('en-CA');
@@ -285,6 +361,7 @@ return '<button type="button" class="hn-bcp-alt' + (p === price ? ' hn-bcp-alt-o
 m.querySelector('.hn-bcp-open').href = url;
 m.querySelector('iframe').src = url;
 m.classList.add('hn-bcp-on');
+showCta(m);
 document.documentElement.style.overflow = 'hidden';
 m.querySelector('.hn-bcp-x').focus();
 }
@@ -302,7 +379,9 @@ if (!price) return;
 e.preventDefault();
 e.stopPropagation();
 if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-openCalc(price, isNew(el), el.getAttribute('data-hn-kind') === 'mortgage', prices.length ? prices : [price]);
+var isMortgage = el.getAttribute('data-hn-kind') === 'mortgage';
+track(isMortgage ? 'hn_mortgage_click' : 'hn_buyer_cost_click', { listing_price: price, listing_type: COMMERCIAL ? 'commercial' : isNew(el) ? 'new_build' : 'residential', button_text: el.classList.contains('hn-bcp-btn') ? el.textContent : 'price' });
+openCalc(price, isNew(el), isMortgage, prices.length ? prices : [price]);
 }
 
 var started = false;
@@ -328,6 +407,11 @@ style.textContent =
 '#hn-bcp-modal .hn-bcp-open{color:#8a6a35;font-size:13px;text-decoration:underline}' +
 '#hn-bcp-modal .hn-bcp-x{border:0;background:none;font-size:28px;line-height:1;padding:0 6px;cursor:pointer;color:#111}' +
 '#hn-bcp-modal iframe{flex:1;width:100%;border:0;background:#fff}' +
+'#hn-bcp-modal .hn-bcp-cta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid #e6e2d9;background:#f4f2ee;color:#111;font-family:inherit;font-size:14px;line-height:1.3}' +
+'#hn-bcp-modal .hn-bcp-cta[hidden],#hn-bcp-modal .hn-bcp-cta-btn[hidden]{display:none}' +
+'#hn-bcp-modal .hn-bcp-cta span{flex:1 1 100%;font-weight:600}' +
+'#hn-bcp-modal .hn-bcp-cta-btn{border:0;border-radius:8px;padding:8px 14px;background:#dbae77;color:#111;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}' +
+'#hn-bcp-modal .hn-bcp-save{background:#fff;border:1px solid #dbae77}' +
 '@media(max-width:640px){#hn-bcp-modal{padding:0}#hn-bcp-modal .hn-bcp-box{height:100%;border-radius:0}}';
 (document.head || document.documentElement).appendChild(style);
 // Capture phase, so the price click is handled before the card's link or Lofty's own click handler.

@@ -200,6 +200,9 @@ document.querySelector('nav').onclick = (e) => {
     closingCash = Math.round(closing);
     $('p-min').insertAdjacentHTML('beforebegin', `<p class="note">Closing costs of ${money(closing)} (Buyer Cost total ${money(price + closing)}) are paid in cash, not added to the mortgage.</p>`);
     if (q.get('new') === '1') $('t-nb').checked = true;
+    // &down= is the down payment % the listing's button estimate used (10%, or 20% at $1.5M or more).
+    const dq = num(q.get('down'));
+    if (dq >= 5 && dq <= 100) for (const id of ['p-down', 'c-down']) $(id).value = dq;
     const city = (q.get('city') || '').replace(/[^A-Za-z .'-]/g, '').slice(0, 40);
     if (city) $('p-min').insertAdjacentHTML('beforebegin', `<p class="note">Listing in ${city}, BC</p>`);
     const key = Object.keys(CITY_TAX).find((c) => c.toLowerCase() === city.toLowerCase());

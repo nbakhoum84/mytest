@@ -30,11 +30,18 @@ export function newBuildExemption(price) {
 }
 
 // Estimate only: legal, inspection, appraisal, first-year home insurance and adjustments are typical ranges.
-export function estimateClosingCosts({ price, legal = 1800, inspection = 500, appraisal = 400, insurance = 1500, firstTimeBuyer = false, newBuild = false, gst = false }) {
+// Foreign buyers (not Canadian citizens or permanent residents) pay an additional 20% property transfer tax on
+// residential property in Metro Vancouver, the Fraser Valley, the Capital Region, Central Okanagan and Nanaimo
+// (gov.bc.ca, checked October 2026), and can't claim either exemption.
+export const FOREIGN_BUYER_RATE = 0.2;
+
+export function estimateClosingCosts({ price, legal = 1800, inspection = 500, appraisal = 400, insurance = 1500, firstTimeBuyer = false, newBuild = false, gst = false, foreignBuyer = false }) {
+  if (foreignBuyer) { firstTimeBuyer = false; newBuild = false; }
   const claimed = firstTimeBuyer || newBuild;
   const exemption = firstTimeBuyer ? firstTimeBuyerExemption(price) : newBuild ? newBuildExemption(price) : 0;
   const items = [
     { label: 'Property transfer tax', amount: propertyTransferTax(price) },
+    ...(foreignBuyer ? [{ label: 'Foreign buyer tax (additional 20% PTT)', amount: price * FOREIGN_BUYER_RATE }] : []),
     ...(claimed ? [{ label: firstTimeBuyer ? 'First-time buyer exemption' : 'Newly built home exemption', amount: -exemption }] : []),
     { label: 'Legal fees & disbursements', amount: legal },
     // Presales and new builds under construction (GST applies) need no home inspection.
