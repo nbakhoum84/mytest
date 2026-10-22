@@ -16,8 +16,22 @@ document.head.appendChild(cw);
 if (typeof document !== 'undefined' && !document.getElementById('hn-app-width')) {
 var aw = document.createElement('style');
 aw.id = 'hn-app-width';
-aw.textContent = '.hn-app{max-width:1300px!important}';
+aw.textContent = '.hn-app{max-width:1300px!important}@media(min-width:701px){#hn-bc-card,#hn-sc-card,#hn-mc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide{box-sizing:border-box!important;width:1300px!important;max-width:100%!important}}';
 (document.head || document.documentElement).appendChild(aw);
+// Other pages have their own "Get the ... app" cards (the calculator page scripts, or blocks built in Lofty): find each by its
+// heading and its "Scan with your phone" line, and widen the box holding both. The page scripts add their cards late, so look for a while.
+var wideTries = 0;
+var widen = setInterval(function () {
+if (++wideTries > 30) clearInterval(widen);
+var hs = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+for (var i = 0; i < hs.length; i++) {
+if (!/^\s*get the .{1,40} app\s*$/i.test(hs[i].textContent)) continue;
+for (var c = hs[i].parentElement, k = 0; c && c !== document.body && k < 8; c = c.parentElement, k++) {
+if (c.closest('.hn-app')) break;
+if (/scan with your phone/i.test(c.textContent)) { c.classList.add('hn-app-card-wide'); break; }
+}
+}
+}, 500);
 }
 var path = typeof location === 'undefined' ? '' : location.pathname.toLowerCase();
 // Commercial pages open the Commercial Buyer Cost app (BC commercial rules); everything else the residential one.
