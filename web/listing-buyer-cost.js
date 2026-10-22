@@ -26,14 +26,33 @@ if (++wideTries > 30) clearInterval(widen);
 var hs = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
 for (var i = 0; i < hs.length; i++) {
 // Nader renamed the Buyer Cost page's titles (the page heading and the calculator's own) to "Cash to Close", matching the listing button (2026-10-22).
-if (/^\/buyer-cost\/?$/i.test(location.pathname) && /^\s*buyer cost\s*$/i.test(hs[i].textContent)) hs[i].textContent = 'Cash to Close';
+if (/^\/(buyer-cost|cash-to-close)\/?$/i.test(location.pathname) && /^\s*buyer cost\s*$/i.test(hs[i].textContent)) hs[i].textContent = 'Cash to Close';
 if (!/^\s*get the .{1,40} app\s*$/i.test(hs[i].textContent)) continue;
 for (var c = hs[i].parentElement, k = 0; c && c !== document.body && k < 8; c = c.parentElement, k++) {
 if (c.closest('.hn-app')) break;
 if (/scan with your phone/i.test(c.textContent)) { c.classList.add('hn-app-card-wide'); break; }
 }
 }
+fitCalc();
 }, 500);
+// The Buyer/Seller Cost calculator blocks sit in a narrower Lofty column than the app card under them, so the 1300px max-width alone
+// leaves them narrower (Nader, 2026-10-22). Line the calculator's edges up with that card's edges instead.
+function fitCalc() {
+var calcs = document.querySelectorAll('#mh-app,#sc-app');
+var card = document.querySelector('#hn-bc-card,#hn-sc-card,.hn-app-card-wide,.hn-app');
+for (var j = 0; j < calcs.length; j++) {
+var el = calcs[j];
+if (!card || innerWidth <= 700) { el.style.removeProperty('width'); el.style.removeProperty('margin-left'); el.style.removeProperty('max-width'); el.style.removeProperty('padding-left'); el.style.removeProperty('padding-right'); continue; }
+var r = card.getBoundingClientRect(), pr = el.parentElement.getBoundingClientRect();
+if (!r.width) continue;
+el.style.setProperty('max-width', 'none', 'important');
+el.style.setProperty('width', r.width + 'px', 'important');
+el.style.setProperty('margin-left', (r.left - pr.left) + 'px', 'important');
+el.style.setProperty('padding-left', '0', 'important');
+el.style.setProperty('padding-right', '0', 'important');
+}
+}
+addEventListener('resize', fitCalc);
 }
 var path = typeof location === 'undefined' ? '' : location.pathname.toLowerCase();
 // Commercial pages open the Commercial Buyer Cost app (BC commercial rules); everything else the residential one.
