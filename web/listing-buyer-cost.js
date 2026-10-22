@@ -16,7 +16,7 @@ document.head.appendChild(cw);
 if (typeof document !== 'undefined' && !document.getElementById('hn-app-width')) {
 var aw = document.createElement('style');
 aw.id = 'hn-app-width';
-aw.textContent = '.hn-app{max-width:1300px!important}@media(min-width:701px){#hn-bc-card,#hn-sc-card,#hn-mc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide{box-sizing:border-box!important;width:1300px!important;max-width:100%!important}#mh-app,#sc-app{max-width:1300px!important}}';
+aw.textContent = '.hn-app{max-width:1300px!important}@media(min-width:701px){#hn-bc-card,#hn-sc-card,#hn-mc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide{box-sizing:border-box!important;width:1300px!important;max-width:100%!important}#mh-app,#sc-app,#fh-app,#pd-app{max-width:1300px!important}}';
 (document.head || document.documentElement).appendChild(aw);
 // Other pages have their own "Get the ... app" cards (the calculator page scripts, or blocks built in Lofty): find each by its
 // heading and its "Scan with your phone" line, and widen the box holding both. The page scripts add their cards late, so look for a while.
@@ -26,14 +26,34 @@ if (++wideTries > 30) clearInterval(widen);
 var hs = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
 for (var i = 0; i < hs.length; i++) {
 // Nader renamed the Buyer Cost page's titles (the page heading and the calculator's own) to "Cash to Close", matching the listing button (2026-10-22).
-if (/^\/buyer-cost\/?$/i.test(location.pathname) && /^\s*buyer cost\s*$/i.test(hs[i].textContent)) hs[i].textContent = 'Cash to Close';
+if (/^\/(buyer-cost|cash-to-close)\/?$/i.test(location.pathname) && /^\s*buyer cost\s*$/i.test(hs[i].textContent)) hs[i].textContent = 'Cash to Close';
 if (!/^\s*get the .{1,40} app\s*$/i.test(hs[i].textContent)) continue;
 for (var c = hs[i].parentElement, k = 0; c && c !== document.body && k < 8; c = c.parentElement, k++) {
 if (c.closest('.hn-app')) break;
 if (/scan with your phone/i.test(c.textContent)) { c.classList.add('hn-app-card-wide'); break; }
 }
 }
+fitCalc();
 }, 500);
+// The Buyer/Seller Cost calculator blocks sit in a narrower Lofty column than the app card under them, so the 1300px max-width alone
+// leaves them narrower (Nader, 2026-10-22). Line the calculator's edges up with that card's edges instead.
+function fitCalc() {
+var calcs = document.querySelectorAll('#mh-app,#sc-app,#fh-app,#pd-app');
+var card = document.querySelector('#hn-bc-card,#hn-sc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide,.hn-app');
+for (var j = 0; j < calcs.length; j++) {
+var el = calcs[j];
+if (!card || innerWidth <= 700) { el.style.removeProperty('width'); el.style.removeProperty('margin-left'); el.style.removeProperty('max-width'); el.style.removeProperty('padding-left'); el.style.removeProperty('padding-right'); continue; }
+var r = card.getBoundingClientRect(), par = el.parentElement, pr = par.getBoundingClientRect(), ps = getComputedStyle(par);
+var inner = pr.left + par.clientLeft + parseFloat(ps.paddingLeft);
+if (!r.width) continue;
+el.style.setProperty('max-width', 'none', 'important');
+el.style.setProperty('width', r.width + 'px', 'important');
+el.style.setProperty('margin-left', (r.left - inner) + 'px', 'important');
+el.style.setProperty('padding-left', '0', 'important');
+el.style.setProperty('padding-right', '0', 'important');
+}
+}
+addEventListener('resize', fitCalc);
 }
 var path = typeof location === 'undefined' ? '' : location.pathname.toLowerCase();
 // Commercial pages open the Commercial Buyer Cost app (BC commercial rules); everything else the residential one.
