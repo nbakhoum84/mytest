@@ -258,12 +258,22 @@ try { if (typeof window.gtag === 'function') window.gtag('event', name, data); }
 try { if (typeof window.fbq === 'function') window.fbq('trackCustom', name, data); } catch (e) {}
 }
 // The site's own "Register/Sign In" link; it's only there while the visitor isn't signed in.
+// On phones it sits in the collapsed menu (hidden), so hidden links count too. Picks the innermost match,
+// preferring a real link or button, then one that says Register, then a visible one.
+var REG = /^(register|sign\s*in|log\s*in|sign\s*up)(\s*(\/|\||or|&)\s*(register|sign\s*in|log\s*in|sign\s*up))?$/i;
 function registerLink() {
-var els = document.querySelectorAll('header a, header span, header li, header div, nav a, nav span, [class*="nav" i] a, [class*="menu" i] a');
-for (var i = 0; i < els.length; i++) {
-if (/^\s*register\s*\/\s*sign\s*in\s*$/i.test(els[i].textContent) && els[i].offsetParent) return els[i];
+var els = document.querySelectorAll('a, button, [role="button"], li, span, div');
+var best = null, bestScore = -1;
+for (var i = els.length - 1; i >= 0; i--) {
+var t = els[i].textContent;
+if (t.length > 40) continue;
+t = t.replace(/\s+/g, ' ').trim();
+if (!REG.test(t) || els[i].closest('#hn-bcp-modal, footer')) continue;
+var el = els[i].closest('a, button, [role="button"]') || els[i];
+var score = (el !== els[i] || /^(A|BUTTON)$/.test(el.tagName) || el.getAttribute('role') === 'button' ? 4 : 0) + (/register/i.test(t) ? 2 : 0) + (el.offsetParent ? 1 : 0);
+if (score > bestScore) { best = el; bestScore = score; }
 }
-return null;
+return best;
 }
 // The listing's own "Save" button (single listing page only); saving asks a visitor to register.
 function saveButton() {
