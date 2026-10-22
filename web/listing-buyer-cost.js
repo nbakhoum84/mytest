@@ -17,7 +17,7 @@ document.head.appendChild(cw);
 if (typeof document !== 'undefined' && !document.getElementById('hn-app-width')) {
 var aw = document.createElement('style');
 aw.id = 'hn-app-width';
-aw.textContent = '.hn-app{max-width:1300px!important}@media(min-width:701px){#hn-bc-card,#hn-sc-card,#hn-mc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide{box-sizing:border-box!important;width:1300px!important;max-width:100%!important}#mh-app,#sc-app,#fh-app,#pd-app{max-width:1300px!important;padding-left:0!important;padding-right:0!important}.hn-calc-wide{box-sizing:border-box!important;width:1300px!important;max-width:100%!important;padding-left:0!important;padding-right:0!important;margin-left:auto!important;margin-right:auto!important}}';
+aw.textContent = '.hn-app{max-width:1300px!important}@media(min-width:701px){#hn-bc-card,#hn-sc-card,#hn-mc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide{box-sizing:border-box!important;width:1300px!important;max-width:100%!important}#mh-app,#sc-app,#fh-app,#pd-app{max-width:1300px!important;padding-left:25px!important;padding-right:25px!important}.hn-calc-wide{box-sizing:border-box!important;width:1300px!important;max-width:100%!important;padding-left:0!important;padding-right:0!important;margin-left:auto!important;margin-right:auto!important}}';
 (document.head || document.documentElement).appendChild(aw);
 // Other pages have their own "Get the ... app" cards (the calculator page scripts, or blocks built in Lofty): find each by its
 // heading and its "Scan with your phone" line, and widen the box holding both. The page scripts add their cards late, so look for a while.
