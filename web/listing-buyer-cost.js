@@ -148,7 +148,7 @@ var head = fixedTop(document.elementFromPoint(innerWidth / 2, 2));
 if (!head || head.offsetWidth < innerWidth * 0.8 || head.closest('#hn-bcp-modal')) return;
 var below = Math.round(head.getBoundingClientRect().bottom);
 var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null), n, prev = null;
-while ((n = w.nextNode())) if (/^\s*(<|‹)?\s*prev\s*$/i.test(n.nodeValue) && !head.contains(n)) { prev = n.parentElement; break; }
+while ((n = w.nextNode())) if (/^\s*(<|‹)?\s*prev\s*$/i.test(n.nodeValue) && !head.contains(n) && shown(n.parentElement)) { prev = n.parentElement; break; }
 // Phones have no PREV / NEXT bar; there the listing's address (e.g. "1526 FINLAY ST" from the page address) is what hides under the menu.
 if (!prev) {
 var words = (path.split('/')[3] || '').split('-').slice(0, 2);
@@ -158,7 +158,7 @@ if (words.length < 2 || !words[0]) { var tm = /\b(\d+[A-Za-z]?)\s+([A-Za-z0-9]+)
 if (words.length < 2 || !words[0]) return;
 var addr = new RegExp('^\\s*' + words.map(function (x) { return x.replace(/[^\w]/g, ''); }).join('\\s+'), 'i');
 w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
-while ((n = w.nextNode())) if (addr.test(n.nodeValue) && !head.contains(n) && !n.parentElement.closest('title,script,style,#hn-bcp-modal')) { prev = n.parentElement; break; }
+while ((n = w.nextNode())) if (addr.test(n.nodeValue) && !head.contains(n) && !n.parentElement.closest('title,script,style,#hn-bcp-modal') && shown(n.parentElement)) { prev = n.parentElement; break; }
 if (!prev) return;
 }
 var bar = fixedTop(prev);
@@ -166,10 +166,10 @@ if (bar && bar !== head) {
 if (parseFloat(getComputedStyle(bar).top) < below) bar.style.setProperty('top', below + 'px', 'important');
 return;
 }
-// Not a sticky bar: push the block holding PREV down once if it starts under the menu with the page scrolled to the top.
+// Not a sticky bar: push the block holding PREV down if it starts under the menu (again if the menu grows later).
+// The site keeps hidden copies of the address and PREV for the other screen size; only the ones on screen count.
 // A text span can't be pushed down (margins don't move inline text), so start from the block holding it, e.g. the address heading.
 for (bar = prev; bar.parentElement && bar.parentElement !== document.body && (bar.offsetWidth < innerWidth * 0.6 || /^inline/.test(getComputedStyle(bar).display)); bar = bar.parentElement);
-if (bar.hasAttribute('data-hn-clear')) return;
 var gap = below - (bar.getBoundingClientRect().top + scrollY);
 if (gap > 0) { bar.setAttribute('data-hn-clear', ''); bar.style.setProperty('margin-top', (parseFloat(getComputedStyle(bar).marginTop) + gap + 8) + 'px', 'important'); }
 }
@@ -179,6 +179,10 @@ if (!DETAIL || !active || clearing) return;
 clearing = true;
 requestAnimationFrame(function () { clearing = false; clearHeader(); });
 }, { passive: true });
+// The menu can grow after the page first draws (its logo and fonts load late), so look again for a while and when the window resizes.
+var clearTries = 0;
+setInterval(function () { if (DETAIL && active && clearTries++ < 30) clearHeader(); }, 500);
+addEventListener('resize', function () { if (DETAIL && active) clearHeader(); });
 
 // Nader asked to drop the Ratehub mortgage payment calculator from single listing pages.
 // Hide its frame, and the wrapper around it as long as the wrapper holds nothing else but Ratehub's title.
@@ -553,6 +557,7 @@ window.hnBuyerCostLoaded = true;
 var LISTING_PAGE = false, active = false;
 function route() {
 active = false;
+clearTries = 0;
 path = location.pathname.toLowerCase();
 DETAIL = /^\/listing-detail\//.test(path);
 COMMERCIAL = window.hnBuyerCostMode === 'commercial' || /commercial/.test(path);
