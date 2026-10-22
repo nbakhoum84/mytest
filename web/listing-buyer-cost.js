@@ -12,6 +12,13 @@ cw.src = 'https://nbakhoum84.github.io/mytest/chat-welcome.js?v=' + Math.floor(D
 cw.async = true;
 document.head.appendChild(cw);
 }
+// The "Get the home-nader app" card (website/install-app-block.html, pasted on many Lofty pages): Nader wants it 1300px wide everywhere (2026-10-22).
+if (typeof document !== 'undefined' && !document.getElementById('hn-app-width')) {
+var aw = document.createElement('style');
+aw.id = 'hn-app-width';
+aw.textContent = '.hn-app{max-width:1300px!important}';
+(document.head || document.documentElement).appendChild(aw);
+}
 var path = typeof location === 'undefined' ? '' : location.pathname.toLowerCase();
 // Commercial pages open the Commercial Buyer Cost app (BC commercial rules); everything else the residential one.
 // Commercial city pages have plain addresses (e.g. /abbotsford), so their loader sets window.hnBuyerCostMode = 'commercial'.
