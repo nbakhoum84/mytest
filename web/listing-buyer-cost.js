@@ -304,7 +304,7 @@ m.innerHTML =
 '<button type="button" class="hn-bcp-cta-btn hn-bcp-save" data-hn-cta="save">Save this listing</button></div></div>';
 document.body.appendChild(m);
 m.addEventListener('click', function (e) {
-if (e.target === m || e.target.closest('.hn-bcp-x')) close();
+if (e.target === m || e.target.closest('.hn-bcp-x')) { closeAndOffer(); return; }
 var cta = e.target.closest('[data-hn-cta]');
 if (cta && current) {
 var kind = cta.getAttribute('data-hn-cta'), target = kind === 'save' ? saveButton() : registerLink();
@@ -325,6 +325,16 @@ if (!m) return;
 m.classList.remove('hn-bcp-on');
 m.querySelector('iframe').src = 'about:blank';
 document.documentElement.style.overflow = '';
+}
+// When a signed-out visitor closes the calculator, open the site's registration form (once per visit).
+function closeAndOffer() {
+var was = current;
+close();
+var reg = registerLink();
+if (!reg || !was) return;
+try { if (sessionStorage.getItem('hn-bcp-offered')) return; sessionStorage.setItem('hn-bcp-offered', '1'); } catch (e) {}
+track('hn_calculator_signup_prompt', { calculator: was.mortgage ? 'mortgage' : 'buyer_cost', listing_price: was.price });
+reg.click();
 }
 // City from the listing page address, e.g. /south-surrey-listings -> "South Surrey" (empty on pages without one, like /new-homes-under-construction).
 function cityOf() {
@@ -416,7 +426,7 @@ style.textContent =
 (document.head || document.documentElement).appendChild(style);
 // Capture phase, so the price click is handled before the card's link or Lofty's own click handler.
 document.addEventListener('click', onClick, true);
-document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && document.querySelector('#hn-bcp-modal.hn-bcp-on')) closeAndOffer(); });
 // Listing cards load and change as visitors search, filter and page, so rescan (throttled) when the page changes.
 // Our own buttons coming and going are ignored, so adding them never triggers another round.
 var timer = null;
