@@ -43,11 +43,12 @@ var card = document.querySelector('#hn-bc-card,#hn-sc-card,.hn-app-card-wide,.hn
 for (var j = 0; j < calcs.length; j++) {
 var el = calcs[j];
 if (!card || innerWidth <= 700) { el.style.removeProperty('width'); el.style.removeProperty('margin-left'); el.style.removeProperty('max-width'); el.style.removeProperty('padding-left'); el.style.removeProperty('padding-right'); continue; }
-var r = card.getBoundingClientRect(), pr = el.parentElement.getBoundingClientRect();
+var r = card.getBoundingClientRect(), par = el.parentElement, pr = par.getBoundingClientRect(), ps = getComputedStyle(par);
+var inner = pr.left + par.clientLeft + parseFloat(ps.paddingLeft);
 if (!r.width) continue;
 el.style.setProperty('max-width', 'none', 'important');
 el.style.setProperty('width', r.width + 'px', 'important');
-el.style.setProperty('margin-left', (r.left - pr.left) + 'px', 'important');
+el.style.setProperty('margin-left', (r.left - inner) + 'px', 'important');
 el.style.setProperty('padding-left', '0', 'important');
 el.style.setProperty('padding-right', '0', 'important');
 }
