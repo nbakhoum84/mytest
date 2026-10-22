@@ -152,6 +152,9 @@ while ((n = w.nextNode())) if (/^\s*(<|‹)?\s*prev\s*$/i.test(n.nodeValue) && !
 // Phones have no PREV / NEXT bar; there the listing's address (e.g. "1526 FINLAY ST" from the page address) is what hides under the menu.
 if (!prev) {
 var words = (path.split('/')[3] || '').split('-').slice(0, 2);
+// Links in Lofty's listing alert e-mails have no street in the address (/listing-detail/1191174657); take it from the page title then,
+// e.g. "Homes for sale - 1526 FINLAY ST #410 ...".
+if (words.length < 2 || !words[0]) { var tm = /\b(\d+[A-Za-z]?)\s+([A-Za-z0-9]+)/.exec(document.title || ''); words = tm ? [tm[1], tm[2]] : []; }
 if (words.length < 2 || !words[0]) return;
 var addr = new RegExp('^\\s*' + words.map(function (x) { return x.replace(/[^\w]/g, ''); }).join('\\s+'), 'i');
 w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
