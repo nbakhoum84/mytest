@@ -336,13 +336,12 @@ m.classList.remove('hn-bcp-on');
 m.querySelector('iframe').src = 'about:blank';
 document.documentElement.style.overflow = '';
 }
-// When a signed-out visitor closes the calculator, open the site's registration form (once per visit).
+// When a signed-out visitor closes the calculator, open the site's registration form (every time).
 function closeAndOffer() {
 var was = current;
 close();
 var reg = registerLink();
 if (!reg || !was) return;
-try { if (sessionStorage.getItem('hn-bcp-offered')) return; sessionStorage.setItem('hn-bcp-offered', '1'); } catch (e) {}
 track('hn_calculator_signup_prompt', { calculator: was.mortgage ? 'mortgage' : 'buyer_cost', listing_price: was.price });
 reg.click();
 }
