@@ -30,6 +30,14 @@ hu.id = 'hn-hero-up';
 hu.textContent = '@media(max-width:700px) and (orientation:portrait){body.home .md-hero .media-content-search-group{position:relative!important;top:-56px!important}}';
 (document.head || document.documentElement).appendChild(hu);
 }
+// Phones: no "scroll to top" button. It is the round #scrollToTopBtn made by hn.js (nbakhoum84.github.io), which only shows it on screens wider
+// than 768px; the site's own CSS styles it, so on small screens it is overridden here. A short touch screen (phone sideways) counts as a phone.
+if (typeof document !== 'undefined' && !document.getElementById('hn-no-goto-top')) {
+var gt = document.createElement('style');
+gt.id = 'hn-no-goto-top';
+gt.textContent = '@media(max-width:768px),(max-height:500px) and (pointer:coarse){#scrollToTopBtn{display:none!important}}';
+(document.head || document.documentElement).appendChild(gt);
+}
 // On every screen, phones included: the chat window opens with the same greeting and answer buttons.
 if (typeof document !== 'undefined' && !window.hnChatWelcomeLoading) {
 window.hnChatWelcomeLoading = true;
