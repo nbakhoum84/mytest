@@ -5,21 +5,30 @@
 // Presale / new-build cards (or a page whose address mentions presale/new) also tick "New build: add 5% GST".
 (function () {
 // The virtual assistant chat's greeting line (web/chat-welcome.js) rides along on every page.
-// Phones: the language selector is moved below the home page's search field (web/lang-selector-position.js; leaves the chat alone).
-if (typeof document !== 'undefined' && innerWidth <= 700 && !window.hnLangPosLoading) {
+// Phones held upright: the language selector and the AI chat bubble are moved below the home page's search field
+// (web/lang-selector-position.js, web/chat-bubble-position.js; leaves the rest of the chat alone). Both scripts load at any width and decide
+// for themselves from the current size, so turning the phone sideways (or back) switches them off (or on) without reloading the page.
+if (typeof document !== 'undefined' && !window.hnLangPosLoading) {
 window.hnLangPosLoading = true;
 var lp = document.createElement('script');
 lp.src = 'https://nbakhoum84.github.io/mytest/lang-selector-position.js?v=' + Math.floor(Date.now() / 6e4);
 lp.async = true;
 document.head.appendChild(lp);
 }
-// Phones: the AI chat bubble is moved below the home page's search field (web/chat-bubble-position.js).
-if (typeof document !== 'undefined' && innerWidth <= 700 && !window.hnBubblePosLoading) {
+if (typeof document !== 'undefined' && !window.hnBubblePosLoading) {
 window.hnBubblePosLoading = true;
 var bp = document.createElement('script');
 bp.src = 'https://nbakhoum84.github.io/mytest/chat-bubble-position.js?v=' + Math.floor(Date.now() / 6e4);
 bp.async = true;
 document.head.appendChild(bp);
+}
+// Phones held upright, home page: the titles and the search bar sit 56px higher, so the chat bubble parked under the search field has room
+// above the bottom of the screen. Done here in CSS (this loader runs first) so the move is already there when the bubble is placed.
+if (typeof document !== 'undefined' && !document.getElementById('hn-hero-up')) {
+var hu = document.createElement('style');
+hu.id = 'hn-hero-up';
+hu.textContent = '@media(max-width:700px) and (orientation:portrait){body.home .md-hero .media-content-search-group{position:relative!important;top:-56px!important}}';
+(document.head || document.documentElement).appendChild(hu);
 }
 // Not on phones: the chat bubble vanished there (2026-10-23), so the chat is left completely alone on small screens.
 if (typeof document !== 'undefined' && innerWidth > 700 && !window.hnChatWelcomeLoading) {
