@@ -18,11 +18,11 @@ APPS = [
 
 CSS = '''<style>
   #P-app{--P-accent:#dbae77;--P-border:rgba(128,128,128,.3);--P-card:rgba(128,128,128,.12);--P-muted:rgba(128,128,128,.95);--P-warn:#b91c1c;
-    max-width:700px;margin:0 auto;padding:16px;font-family:inherit;font-size:16px;line-height:1.4;color:inherit;box-sizing:border-box}
+    max-width:700px;margin:0 auto;padding:16px;font-family:inherit;font-size:15px;line-height:1.5;color:inherit;box-sizing:border-box}
   #P-app *{box-sizing:border-box;font-family:inherit}
   /* Same 700px desktop layout the site script sets, here so the first paint already matches (no flash). */
   @media(min-width:701px){#P-app{padding-left:25px!important;padding-right:25px!important}.mg-container:has(#P-app){box-sizing:border-box!important;width:700px!important;max-width:100%!important;padding-left:0!important;padding-right:0!important;margin-left:auto!important;margin-right:auto!important}}
-  #P-app h2{font-size:22px;margin:0 0 16px;color:inherit}
+  #P-app h2{font-size:26px;font-weight:300;line-height:1.2;margin:0 0 16px;color:inherit}
   #P-app h3{font-size:17px;margin:24px 0 4px;color:inherit}
   #P-app label{display:block;color:var(--P-muted);margin:0 0 6px;font-weight:normal}
   #P-app input[type=text],#P-app input[type=date]{width:100%;height:auto;font-size:18px;padding:12px;margin:0 0 16px;border:1px solid var(--P-border);border-radius:8px;background:transparent;color:inherit}

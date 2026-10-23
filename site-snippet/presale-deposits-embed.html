@@ -3,11 +3,11 @@
      Everything is scoped to #pd-app. It inherits your page's font and text colour; the gold accent is --pd-accent below. -->
 <style>
   #pd-app{--pd-accent:#dbae77;--pd-border:rgba(128,128,128,.3);--pd-card:rgba(128,128,128,.12);--pd-muted:rgba(128,128,128,.95);--pd-warn:#b91c1c;
-    max-width:700px;margin:0 auto;padding:16px;font-family:inherit;font-size:16px;line-height:1.4;color:inherit;box-sizing:border-box}
+    max-width:700px;margin:0 auto;padding:16px;font-family:inherit;font-size:15px;line-height:1.5;color:inherit;box-sizing:border-box}
   #pd-app *{box-sizing:border-box;font-family:inherit}
   /* Same 700px desktop layout the site script sets, here so the first paint already matches (no flash). */
   @media(min-width:701px){#pd-app{padding-left:25px!important;padding-right:25px!important}.mg-container:has(#pd-app){box-sizing:border-box!important;width:700px!important;max-width:100%!important;padding-left:0!important;padding-right:0!important;margin-left:auto!important;margin-right:auto!important}}
-  #pd-app h2{font-size:22px;margin:0 0 16px;color:inherit}
+  #pd-app h2{font-size:26px;font-weight:300;line-height:1.2;margin:0 0 16px;color:inherit}
   #pd-app h3{font-size:17px;margin:24px 0 4px;color:inherit}
   #pd-app label{display:block;color:var(--pd-muted);margin:0 0 6px;font-weight:normal}
   #pd-app input[type=text],#pd-app input[type=date]{width:100%;height:auto;font-size:18px;padding:12px;margin:0 0 16px;border:1px solid var(--pd-border);border-radius:8px;background:transparent;color:inherit}
