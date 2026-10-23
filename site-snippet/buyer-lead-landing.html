@@ -1,8 +1,9 @@
-<!-- Home Nader: buyer lead-capture landing page. Paste into a Lofty CMS page as a Custom HTML / Code block.
+<!-- Home Nader: buyer's guide + home search landing page. Paste into a Lofty CMS page as a Custom HTML / Code block.
      Everything is scoped under #hn-lp so it won't restyle the rest of the Lofty site.
-     FORM: set data-lead-endpoint on the <form> to your Lofty lead-form submit URL (or replace the <form> with
-     Lofty's native lead-capture form block and keep the surrounding sections). Until it is set, the form
-     falls back to opening an email to the agent. -->
+     FORM: this page has no form of its own. In the Lofty page editor, add the native lead-capture form (the same one
+     used on /home-buyers-guide, with the PDF download and consent checkbox) and place it where the dashed
+     "Lofty lead form appears here" box sits, then delete that box (the #hn-form-slot div). If Lofty cannot
+     place a block inside custom HTML, put the form block directly under this one and drop the hero card. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
@@ -24,15 +25,6 @@
   #hn-lp .card{background:#fff;color:var(--ink);border-radius:14px;padding:28px;box-shadow:0 18px 50px rgba(0,0,0,.25)}
   #hn-lp .card h2{font-size:24px}
   #hn-lp .card p{color:var(--mute);margin:0 0 16px;font-size:15px}
-  #hn-lp label{display:block;font-size:13px;font-weight:600;margin:12px 0 4px}
-  #hn-lp input,#hn-lp select{width:100%;padding:12px;border:1px solid #cfd6df;border-radius:8px;font:inherit;background:#fff}
-  #hn-lp input:focus,#hn-lp select:focus{outline:2px solid var(--navy);border-color:var(--navy)}
-  #hn-lp .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  #hn-lp button{width:100%;margin-top:18px;padding:14px;border:0;border-radius:8px;background:var(--gold);color:#1a1202;
-    font:700 16px 'Inter',sans-serif;cursor:pointer}
-  #hn-lp button:hover{filter:brightness(.95)}
-  #hn-lp .fine{font-size:12px;color:var(--mute);margin-top:10px}
-  #hn-lp .ok{display:none;padding:14px;border-radius:8px;background:#e8f5ec;color:#14532d;margin-top:14px}
   #hn-lp section.block{padding:56px 0}
   #hn-lp section.alt{background:var(--bg)}
   #hn-lp .block h2{font-size:clamp(26px,3.5vw,34px);text-align:center}
@@ -48,6 +40,7 @@
   #hn-lp .agent{display:flex;gap:24px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:center}
   #hn-lp .cta{display:inline-block;padding:13px 26px;border-radius:8px;background:var(--navy);color:#fff!important;text-decoration:none;font-weight:600}
   #hn-lp .cta.alt{background:transparent;color:var(--navy)!important;border:2px solid var(--navy)}
+  #hn-lp .slot-note{border:2px dashed #cfd6df;border-radius:8px;padding:28px;text-align:center;color:var(--mute);font-size:14px}
   @media(max-width:820px){
     #hn-lp .hero{padding:40px 0}
     #hn-lp .hero .wrap,#hn-lp .grid3{grid-template-columns:1fr}
@@ -60,51 +53,22 @@
     <div class="wrap">
       <div>
         <div class="eyebrow">Metro Vancouver Home Buyers</div>
-        <h1>Find the right home, and know the real cost before you buy.</h1>
-        <p>Get new listings matched to your budget, plus a clear breakdown of closing costs, taxes and mortgage insurance. No pressure, no obligation.</p>
+        <h1>Get your free Buyer's Guide, then find the right home.</h1>
+        <p>Avoid costly mistakes and buy with confidence. Download "How to buy a home", then search live listings and see your real closing costs. No pressure, no obligation.</p>
         <ul class="bullets">
-          <li>Instant alerts for new listings in your price range</li>
-          <li>Free buyer cost estimate: transfer tax, legal, insurance</li>
-          <li>Presales, resale and commercial, all in one search</li>
+          <li>Free PDF: the step-by-step guide to buying in Metro Vancouver</li>
+          <li>Free buyer cost calculators: transfer tax, legal, insurance</li>
+          <li>Presales, resale and commercial listings in one search</li>
         </ul>
       </div>
 
       <div class="card">
-        <h2>Start your home search</h2>
-        <p>Tell us what you're looking for and we'll send matching homes today.</p>
-        <form id="hn-lead" data-lead-endpoint="">
-          <label for="hn-name">Full name</label>
-          <input id="hn-name" name="name" autocomplete="name" required>
-          <div class="row">
-            <div><label for="hn-email">Email</label><input id="hn-email" name="email" type="email" autocomplete="email" required></div>
-            <div><label for="hn-phone">Phone</label><input id="hn-phone" name="phone" type="tel" autocomplete="tel" required></div>
-          </div>
-          <div class="row">
-            <div>
-              <label for="hn-city">City</label>
-              <select id="hn-city" name="city">
-                <option>Surrey</option><option>Vancouver</option><option>Burnaby</option><option>Richmond</option>
-                <option>Coquitlam</option><option>Langley</option><option>Delta</option><option>White Rock</option>
-                <option>South Surrey</option><option>Abbotsford</option><option>Port Coquitlam</option>
-                <option>Port Moody</option><option>New Westminster</option>
-              </select>
-            </div>
-            <div>
-              <label for="hn-budget">Budget</label>
-              <select id="hn-budget" name="budget">
-                <option>Under $600K</option><option>$600K to $900K</option><option>$900K to $1.2M</option>
-                <option>$1.2M to $2M</option><option>$2M+</option>
-              </select>
-            </div>
-          </div>
-          <label for="hn-type">Looking for</label>
-          <select id="hn-type" name="type">
-            <option>Condo / Townhome</option><option>Detached home</option><option>Presale / New construction</option><option>Commercial</option>
-          </select>
-          <button type="submit">Send me matching homes</button>
-          <div class="ok" id="hn-ok" role="status">Thanks! We'll be in touch shortly.</div>
-          <div class="fine">By submitting you agree to be contacted by Nader Bakhoum, eXp Realty, about your home search. You can unsubscribe any time.</div>
-        </form>
+        <h2>Get Your Buyer's Guide</h2>
+        <p>Enter your details and the guide downloads right away.</p>
+        <div id="hn-form-slot">
+          <!-- LOFTY NATIVE FORM GOES HERE -->
+          <div class="slot-note">Lofty lead form appears here.</div>
+        </div>
       </div>
     </div>
   </header>
@@ -114,15 +78,22 @@
       <h2>How it works</h2>
       <p class="sub">Three simple steps from first search to keys in hand.</p>
       <div class="grid3">
-        <div class="tile"><div class="n">1</div><h3>Tell us your goals</h3><p>Share your budget, area and must-haves in under a minute.</p></div>
-        <div class="tile"><div class="n">2</div><h3>Get matched listings</h3><p>Receive hand-picked homes and instant alerts as new ones hit the market.</p></div>
-        <div class="tile"><div class="n">3</div><h3>Buy with confidence</h3><p>See your full cost up front and get expert help through offer and closing.</p></div>
+        <div class="tile"><div class="n">1</div><h3>Download the guide</h3><p>Learn the steps, costs and pitfalls of buying in BC.</p></div>
+        <div class="tile"><div class="n">2</div><h3>Run your numbers</h3><p>Use our calculators to see payments, taxes and closing costs.</p></div>
+        <div class="tile"><div class="n">3</div><h3>Search and buy</h3><p>Browse live listings and get expert help through offer and closing.</p></div>
       </div>
     </div>
   </section>
 
   <section class="block alt">
     <div class="wrap">
+      <h2>Next: see what you can afford</h2>
+      <p class="sub">Free tools to plan your purchase before you start touring.</p>
+      <div class="cities" style="margin-bottom:48px">
+        <a href="https://nbakhoum84.github.io/mytest/my-home-cost/" target="_blank" rel="noopener">Buyer closing costs</a>
+        <a href="https://nbakhoum84.github.io/mytest/mortgage-calculator/" target="_blank" rel="noopener">Mortgage calculator</a>
+        <a href="https://nbakhoum84.github.io/mytest/home-nader/" target="_blank" rel="noopener">Home Nader app</a>
+      </div>
       <h2>Browse by city</h2>
       <p class="sub">Jump straight into live listings.</p>
       <div class="cities">
@@ -152,22 +123,3 @@
   </section>
 </div>
 
-<script>
-  (function(){
-    var f=document.getElementById('hn-lead'); if(!f) return;
-    f.addEventListener('submit',function(e){
-      e.preventDefault();
-      var d={}; new FormData(f).forEach(function(v,k){d[k]=v;});
-      var ep=f.getAttribute('data-lead-endpoint');
-      function done(){document.getElementById('hn-ok').style.display='block';f.reset();}
-      if(ep){
-        fetch(ep,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)})
-          .then(done).catch(function(){done();});
-      } else {
-        var body=Object.keys(d).map(function(k){return k+': '+d[k];}).join('\n');
-        location.href='mailto:info@home-nader.com?subject='+encodeURIComponent('Buyer inquiry')+'&body='+encodeURIComponent(body);
-        done();
-      }
-    });
-  })();
-</script>
