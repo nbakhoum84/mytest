@@ -13,11 +13,11 @@ cw.async = true;
 document.head.appendChild(cw);
 }
 // Calculator blocks: Lofty wraps each HTML block in a narrower .mg-container (overflow hidden), so that box is widened (.hn-calc-wide) to match the app cards.
-// The "Get the home-nader app" card (website/install-app-block.html, pasted on many Lofty pages): Nader wants it 1300px wide everywhere (2026-10-22).
+// The "Get the home-nader app" card (website/install-app-block.html, pasted on many Lofty pages): Nader wants it 700px wide everywhere (2026-10-23; was 1300px).
 if (typeof document !== 'undefined' && !document.getElementById('hn-app-width')) {
 var aw = document.createElement('style');
 aw.id = 'hn-app-width';
-aw.textContent = '.hn-app{max-width:1300px!important}@media(min-width:701px){#hn-bc-card,#hn-sc-card,#hn-mc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide{box-sizing:border-box!important;width:1300px!important;max-width:100%!important}#mh-app,#sc-app,#fh-app,#pd-app{max-width:1300px!important;padding-left:25px!important;padding-right:25px!important}.hn-calc-wide{box-sizing:border-box!important;width:1300px!important;max-width:100%!important;padding-left:0!important;padding-right:0!important;margin-left:auto!important;margin-right:auto!important}}';
+aw.textContent = '.hn-app{max-width:700px!important}@media(min-width:701px){#hn-bc-card,#hn-sc-card,#hn-mc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide{box-sizing:border-box!important;width:700px!important;max-width:100%!important}#mh-app,#sc-app,#fh-app,#pd-app{max-width:700px!important;padding-left:25px!important;padding-right:25px!important}.hn-calc-wide{box-sizing:border-box!important;width:700px!important;max-width:100%!important;padding-left:0!important;padding-right:0!important;margin-left:auto!important;margin-right:auto!important}}';
 (document.head || document.documentElement).appendChild(aw);
 // Other pages have their own "Get the ... app" cards (the calculator page scripts, or blocks built in Lofty): find each by its
 // heading and its "Scan with your phone" line, and widen the box holding both. The page scripts add their cards late, so look for a while.
@@ -34,6 +34,9 @@ if (c.closest('.hn-app')) break;
 if (/scan with your phone/i.test(c.textContent)) { c.classList.add('hn-app-card-wide'); break; }
 }
 }
+// The Seller Cost and Mortgage page scripts are pasted in Lofty and still set 1300px inline, which the style above can't beat.
+var pc = innerWidth > 700 ? document.querySelectorAll('#hn-bc-card,#hn-sc-card,#hn-mc-card,#hn-fh-card,#hn-pd-card') : [];
+for (var q = 0; q < pc.length; q++) pc[q].style.setProperty('width', '700px', 'important');
 var calcs = document.querySelectorAll('#mh-app,#sc-app,#fh-app,#pd-app');
 for (var j = 0; j < calcs.length; j++) { var box = calcs[j].closest('.mg-container'); if (box) box.classList.add('hn-calc-wide'); }
 }, 500);

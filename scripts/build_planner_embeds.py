@@ -18,7 +18,7 @@ APPS = [
 
 CSS = '''<style>
   #P-app{--P-accent:#dbae77;--P-border:rgba(128,128,128,.3);--P-card:rgba(128,128,128,.12);--P-muted:rgba(128,128,128,.95);--P-warn:#b91c1c;
-    max-width:1300px;margin:0 auto;padding:16px;font-family:inherit;font-size:16px;line-height:1.4;color:inherit;box-sizing:border-box}
+    max-width:700px;margin:0 auto;padding:16px;font-family:inherit;font-size:16px;line-height:1.4;color:inherit;box-sizing:border-box}
   #P-app *{box-sizing:border-box;font-family:inherit}
   #P-app h2{font-size:22px;margin:0 0 16px;color:inherit}
   #P-app h3{font-size:17px;margin:24px 0 4px;color:inherit}
