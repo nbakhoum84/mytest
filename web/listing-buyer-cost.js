@@ -13,6 +13,14 @@ lp.src = 'https://nbakhoum84.github.io/mytest/lang-selector-position.js?v=' + Ma
 lp.async = true;
 document.head.appendChild(lp);
 }
+// Phones: the AI chat bubble is moved below the home page's search field (web/chat-bubble-position.js).
+if (typeof document !== 'undefined' && innerWidth <= 700 && !window.hnBubblePosLoading) {
+window.hnBubblePosLoading = true;
+var bp = document.createElement('script');
+bp.src = 'https://nbakhoum84.github.io/mytest/chat-bubble-position.js?v=' + Math.floor(Date.now() / 6e4);
+bp.async = true;
+document.head.appendChild(bp);
+}
 // Not on phones: the chat bubble vanished there (2026-10-23), so the chat is left completely alone on small screens.
 if (typeof document !== 'undefined' && innerWidth > 700 && !window.hnChatWelcomeLoading) {
 window.hnChatWelcomeLoading = true;
