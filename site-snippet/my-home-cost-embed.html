@@ -4,9 +4,11 @@
      This copy matches what is live on the Buyer Cost page (checked 2026-10-18). -->
 <style>
   #mh-app{--mh-accent:#0f4c81;--mh-border:rgba(128,128,128,.3);--mh-card:rgba(128,128,128,.12);--mh-muted:rgba(128,128,128,.95);
-    max-width:700px;margin:0 auto;padding:16px;font-family:inherit;font-size:16px;line-height:1.4;color:inherit;box-sizing:border-box}
+    max-width:700px;margin:0 auto;padding:16px;font-family:inherit;font-size:15px;line-height:1.5;color:inherit;box-sizing:border-box}
   #mh-app *{box-sizing:border-box;font-family:inherit}
-  #mh-app h2{font-size:22px;margin:0 0 16px;color:inherit}
+  /* Same 700px desktop layout the site script sets, here so the first paint already matches (no flash). */
+  @media(min-width:701px){#mh-app{padding-left:25px!important;padding-right:25px!important}.mg-container:has(#mh-app){box-sizing:border-box!important;width:700px!important;max-width:100%!important;padding-left:0!important;padding-right:0!important;margin-left:auto!important;margin-right:auto!important}}
+  #mh-app h2{font-size:26px;font-weight:300;line-height:1.2;margin:0 0 16px;color:inherit}
   #mh-app label{display:block;color:var(--mh-muted);margin:0 0 6px}
   #mh-app input[type=text]{width:100%;font-size:18px;padding:12px;margin:0 0 16px;border:1px solid var(--mh-border);border-radius:8px;background:transparent;color:inherit}
   #mh-app input[type=checkbox]{width:20px;height:20px;margin:0}

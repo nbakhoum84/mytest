@@ -3,9 +3,11 @@
      set the variables below (or override them from your page CSS), e.g. #sc-app{--sc-accent:#c8102e}. -->
 <style>
   #sc-app{--sc-accent:#0f4c81;--sc-bad:#b91c1c;--sc-border:rgba(128,128,128,.3);--sc-card:rgba(128,128,128,.12);--sc-muted:rgba(128,128,128,.95);
-    max-width:700px;margin:0 auto;padding:16px;font-family:inherit;font-size:16px;line-height:1.4;color:inherit;box-sizing:border-box}
+    max-width:700px;margin:0 auto;padding:16px;font-family:inherit;font-size:15px;line-height:1.5;color:inherit;box-sizing:border-box}
   #sc-app *{box-sizing:border-box;font-family:inherit}
-  #sc-app h2{font-size:22px;margin:0 0 16px;color:inherit}
+  /* Same 700px desktop layout the site script sets, here so the first paint already matches (no flash). */
+  @media(min-width:701px){#sc-app{padding-left:25px!important;padding-right:25px!important}.mg-container:has(#sc-app){box-sizing:border-box!important;width:700px!important;max-width:100%!important;padding-left:0!important;padding-right:0!important;margin-left:auto!important;margin-right:auto!important}}
+  #sc-app h2{font-size:26px;font-weight:300;line-height:1.2;margin:0 0 16px;color:inherit}
   #sc-app label{display:block;color:var(--sc-muted);margin:0 0 6px}
   #sc-app input{width:100%;font-size:18px;padding:12px;margin:0 0 16px;border:1px solid var(--sc-border);border-radius:8px;background:transparent;color:inherit}
   #sc-app .sc-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--sc-border)}
