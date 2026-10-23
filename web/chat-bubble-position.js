@@ -5,16 +5,27 @@
 if (window.hnBubblePos || innerWidth > 700) return;
 window.hnBubblePos = true;
 
-// The bubble is the round agent photo near the right edge; its fixed-position holder is what gets moved.
-function find() {
-var imgs = document.body.querySelectorAll('img');
-for (var i = 0; i < imgs.length; i++) {
-var r = imgs[i].getBoundingClientRect();
-if (r.width < 40 || r.width > 120 || Math.abs(r.width - r.height) > 12 || r.right < innerWidth - 40 || r.top < innerHeight * 0.3) continue;
-if (imgs[i].closest('#hn-bcp-modal')) continue;
-for (var b = imgs[i]; b && b !== document.body; b = b.parentElement) {
-if (getComputedStyle(b).position === 'fixed') return b;
+// The bubble's fixed-position holder, found by where it sits: a fixed box hugging the right edge in the lower half of the screen,
+// at most a preview card in size. Looks inside shadow roots too, and the frame itself when the chat is drawn in an iframe.
+function fixedBoxes(root, out) {
+var all = root.querySelectorAll('*');
+for (var i = 0; i < all.length; i++) {
+var el = all[i];
+if (el.shadowRoot) fixedBoxes(el.shadowRoot, out);
+if (el.closest && el.closest('#hn-bcp-modal')) continue;
+if (getComputedStyle(el).position !== 'fixed') continue;
+var r = el.getBoundingClientRect();
+if (r.right >= innerWidth - 40 && r.left > innerWidth * 0.2 && r.width >= 40 && r.width <= 340 &&
+r.height >= 40 && r.height <= 260 && r.top > innerHeight * 0.4) out.push(el);
 }
+return out;
+}
+function find() {
+var c = fixedBoxes(document, []);
+for (var i = 0; i < c.length; i++) {
+var outer = true;
+for (var j = 0; j < c.length; j++) if (j !== i && c[j].contains(c[i])) outer = false;
+if (outer) return c[i];
 }
 return null;
 }
