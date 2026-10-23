@@ -3,7 +3,7 @@
 // Lofty's assistant only writes after the visitor does, so the window opens empty; this shows a greeting above
 // the message box until the conversation starts. A button types its answer into the chat box and sends it, like a visitor would.
 (function () {
-if (window.hnChatWelcome || innerWidth <= 700) return;
+if (window.hnChatWelcome) return;
 window.hnChatWelcome = true;
 
 var GREETING = 'Hi! Are you looking to buy or sell? And is it a home or a commercial property?';
