@@ -30,8 +30,8 @@ hu.id = 'hn-hero-up';
 hu.textContent = '@media(max-width:700px) and (orientation:portrait){body.home .md-hero .media-content-search-group{position:relative!important;top:-56px!important}}';
 (document.head || document.documentElement).appendChild(hu);
 }
-// Not on phones: the chat bubble vanished there (2026-10-23), so the chat is left completely alone on small screens.
-if (typeof document !== 'undefined' && innerWidth > 700 && !window.hnChatWelcomeLoading) {
+// On every screen, phones included: the chat window opens with the same greeting and answer buttons.
+if (typeof document !== 'undefined' && !window.hnChatWelcomeLoading) {
 window.hnChatWelcomeLoading = true;
 var cw = document.createElement('script');
 cw.src = 'https://nbakhoum84.github.io/mytest/chat-welcome.js?v=' + Math.floor(Date.now() / 6e4);
