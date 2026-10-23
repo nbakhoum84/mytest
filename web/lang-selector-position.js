@@ -1,12 +1,17 @@
-// Phones, home page: Lofty's floating language selector ("EN") sat on top of the search field.
-// Park it just below the search field instead (it scrolls with the page there). Served from GitHub Pages, loaded by listing-buyer-cost.js.
+// Phones held upright, home page: Lofty's floating language selector ("EN") sat on top of the search field.
+// Park it just below the search field instead (it scrolls with the page there). Lying on its side, or on a wide window, it keeps Lofty's
+// own spot (rotating switches at once). Served from GitHub Pages, loaded by listing-buyer-cost.js.
 // No timers: it is moved the moment Lofty draws it, and put back the moment Lofty resets it, both before the next paint, so it never shows
 // in two places (a timer that re-applied the spot every half second made it jump whenever Lofty redrew it in between).
 (function () {
-if (window.hnLangPos || innerWidth > 700) return;
+if (window.hnLangPos) return;
 window.hnLangPos = true;
 
-var box = null, mo = null, queued = false;
+var PROPS = ['position', 'bottom', 'left', 'top'];
+var box = null, saved = null, parked = false, mo = null, queued = false;
+
+// Upright phone (or a narrow window): the only layout the selector is moved in.
+function upright() { return innerWidth <= 700 && innerHeight > innerWidth; }
 
 // The floating box that holds the "EN" selector: a small fixed box at the left edge.
 function find() {
@@ -37,8 +42,12 @@ if (box.style.getPropertyValue(name) !== value || box.style.getPropertyPriority(
 
 // Put the box just under the search field. Only writes what differs, so it never triggers itself.
 function apply() {
+if (!box) return;
+if (!upright()) { restore(); return; }
 var inp = document.querySelector('input[placeholder*="Subdivision"]');
-if (!box || !inp || !inp.offsetParent) return;
+if (!inp || !inp.offsetParent) return;
+if (!saved) saved = PROPS.map(function (p) { return [p, box.style.getPropertyValue(p), box.style.getPropertyPriority(p)]; });
+parked = true;
 var r = inp.getBoundingClientRect();
 var left = Math.round(Math.max(0, r.left - 4)), top = Math.round(r.bottom + scrollY + 14);
 set('position', 'absolute');
@@ -48,6 +57,14 @@ set('top', top + 'px');
 // Whatever the page offsets absolute boxes by, correct for it.
 var off = top - (box.getBoundingClientRect().top + scrollY);
 if (Math.abs(off) > 1) set('top', Math.round(top + off) + 'px');
+}
+
+// Lofty's own spot again (rotated sideways, or the window got wide).
+function restore() {
+if (!parked) return;
+parked = false;
+saved.forEach(function (x) { if (x[1]) box.style.setProperty(x[0], x[1], x[2]); else box.style.removeProperty(x[0]); });
+saved = null;
 }
 
 function later() {
@@ -80,6 +97,9 @@ try { look(); } catch (e) {}
 wait.observe(document.documentElement, { childList: true, subtree: true });
 try { look(); } catch (e) {}
 
-addEventListener('resize', later);
+// Turning the phone: the new size can arrive a moment after the event on iOS, so look again shortly after.
+function turned() { later(); setTimeout(later, 350); }
+addEventListener('resize', turned);
+addEventListener('orientationchange', turned);
 addEventListener('load', later);
 })();
