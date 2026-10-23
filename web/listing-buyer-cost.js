@@ -17,13 +17,12 @@ document.head.appendChild(cw);
 if (typeof document !== 'undefined' && !document.getElementById('hn-app-width')) {
 var aw = document.createElement('style');
 aw.id = 'hn-app-width';
-aw.textContent = '.hn-app{max-width:700px!important}@media(min-width:701px){#hn-bc-card,#hn-sc-card,#hn-mc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide{box-sizing:border-box!important;width:700px!important;max-width:100%!important}#mh-app,#sc-app,#fh-app,#pd-app{max-width:700px!important;padding-left:25px!important;padding-right:25px!important}.hn-calc-wide{box-sizing:border-box!important;width:700px!important;max-width:100%!important;padding-left:0!important;padding-right:0!important;margin-left:auto!important;margin-right:auto!important}}';
+aw.textContent = '.hn-app{max-width:700px!important}@media(min-width:701px){#hn-bc-card,#hn-sc-card,#hn-mc-card,#hn-fh-card,#hn-pd-card,.hn-app-card-wide{box-sizing:border-box!important;width:700px!important;max-width:100%!important}#mh-app,#sc-app,#fh-app,#pd-app{max-width:700px!important;padding-left:25px!important;padding-right:25px!important}.hn-calc-wide,.mg-container:has(#mh-app,#sc-app,#fh-app,#pd-app){box-sizing:border-box!important;width:700px!important;max-width:100%!important;padding-left:0!important;padding-right:0!important;margin-left:auto!important;margin-right:auto!important}}';
 (document.head || document.documentElement).appendChild(aw);
 // Other pages have their own "Get the ... app" cards (the calculator page scripts, or blocks built in Lofty): find each by its
 // heading and its "Scan with your phone" line, and widen the box holding both. The page scripts add their cards late, so look for a while.
-var wideTries = 0;
-var widen = setInterval(function () {
-if (++wideTries > 30) clearInterval(widen);
+// Runs at once and on every page change for the first 15s, so the new width shows before the page paints the old one.
+function fitWidths() {
 var hs = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
 for (var i = 0; i < hs.length; i++) {
 // Nader renamed the Buyer Cost page's titles (the page heading and the calculator's own) to "Cash to Close", matching the listing button (2026-10-22).
@@ -39,7 +38,11 @@ var pc = innerWidth > 700 ? document.querySelectorAll('#hn-bc-card,#hn-sc-card,#
 for (var q = 0; q < pc.length; q++) pc[q].style.setProperty('width', '700px', 'important');
 var calcs = document.querySelectorAll('#mh-app,#sc-app,#fh-app,#pd-app');
 for (var j = 0; j < calcs.length; j++) { var box = calcs[j].closest('.mg-container'); if (box) box.classList.add('hn-calc-wide'); }
-}, 500);
+}
+fitWidths();
+var fitWatch = new MutationObserver(fitWidths);
+fitWatch.observe(document.documentElement, { childList: true, subtree: true });
+setTimeout(function () { fitWatch.disconnect(); fitWidths(); }, 15000);
 }
 var path = typeof location === 'undefined' ? '' : location.pathname.toLowerCase();
 // Commercial pages open the Commercial Buyer Cost app (BC commercial rules); everything else the residential one.
