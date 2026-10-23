@@ -1,5 +1,7 @@
 // First Home Savings Planner card: copies the look and width of the other "Get the ... app" cards, or sits above the footer. Loaded by site-snippet/first-home-savings-loader.js from Lofty Page Script (JavaScript).
 (function () {
+// Switched off 2026-10-23: Nader wants only the home-nader app card at the bottom of this page.
+return;
 var URL = 'https://nbakhoum84.github.io/mytest/first-home-savings/';
 var N = 33;
 var ROWS = '1fd61327f,105254641,174de605d,175c0a75d,174e9e95d,1043f6941,1fd55557f,1c3a500,16e07ca4b,10aec7e6f,ec89077b,2ae252e8,8565c39a,3aac21aa,e5a4307c,e3624dfc,85407cd4,1283adfdb,7c938c36,1c3a8e691,1dc7f080c,1f0bf76cd,474ad79b,9b2651f1,167a083f2,1d3371a,1fd31ef50,10565df1e,17417cff4,175751d2d,175b3d968,1041893f1,1fd85bc94'.split(',');
