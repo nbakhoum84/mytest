@@ -5,6 +5,14 @@
 // Presale / new-build cards (or a page whose address mentions presale/new) also tick "New build: add 5% GST".
 (function () {
 // The virtual assistant chat's greeting line (web/chat-welcome.js) rides along on every page.
+// Phones: the language selector is moved below the home page's search field (web/lang-selector-position.js; leaves the chat alone).
+if (typeof document !== 'undefined' && innerWidth <= 700 && !window.hnLangPosLoading) {
+window.hnLangPosLoading = true;
+var lp = document.createElement('script');
+lp.src = 'https://nbakhoum84.github.io/mytest/lang-selector-position.js?v=' + Math.floor(Date.now() / 6e4);
+lp.async = true;
+document.head.appendChild(lp);
+}
 // Not on phones: the chat bubble vanished there (2026-10-23), so the chat is left completely alone on small screens.
 if (typeof document !== 'undefined' && innerWidth > 700 && !window.hnChatWelcomeLoading) {
 window.hnChatWelcomeLoading = true;
