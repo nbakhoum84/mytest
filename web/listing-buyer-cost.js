@@ -5,7 +5,8 @@
 // Presale / new-build cards (or a page whose address mentions presale/new) also tick "New build: add 5% GST".
 (function () {
 // The virtual assistant chat's greeting line (web/chat-welcome.js) rides along on every page.
-if (typeof document !== 'undefined' && !window.hnChatWelcomeLoading) {
+// Not on phones: the chat bubble vanished there (2026-10-23), so the chat is left completely alone on small screens.
+if (typeof document !== 'undefined' && innerWidth > 700 && !window.hnChatWelcomeLoading) {
 window.hnChatWelcomeLoading = true;
 var cw = document.createElement('script');
 cw.src = 'https://nbakhoum84.github.io/mytest/chat-welcome.js?v=' + Math.floor(Date.now() / 6e4);
@@ -39,10 +40,12 @@ for (var q = 0; q < pc.length; q++) pc[q].style.setProperty('width', '700px', 'i
 var calcs = document.querySelectorAll('#mh-app,#sc-app,#fh-app,#pd-app');
 for (var j = 0; j < calcs.length; j++) { var box = calcs[j].closest('.mg-container'); if (box) box.classList.add('hn-calc-wide'); }
 }
-fitWidths();
+if (innerWidth > 700) fitWidths();
+if (innerWidth > 700) {
 var fitWatch = new MutationObserver(fitWidths);
 fitWatch.observe(document.documentElement, { childList: true, subtree: true });
 setTimeout(function () { fitWatch.disconnect(); fitWidths(); }, 15000);
+}
 }
 var path = typeof location === 'undefined' ? '' : location.pathname.toLowerCase();
 // Commercial pages open the Commercial Buyer Cost app (BC commercial rules); everything else the residential one.
