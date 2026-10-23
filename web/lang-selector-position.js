@@ -1,6 +1,6 @@
-// Phones held upright, home page: Lofty's floating language selector ("EN") sat on top of the search field.
-// Park it just below the search field instead (it scrolls with the page there). Lying on its side, or on a wide window, it keeps Lofty's
-// own spot (rotating switches at once). Served from GitHub Pages, loaded by listing-buyer-cost.js.
+// Phones held upright, on the home page only: Lofty's floating language selector ("EN") sat on top of the search field.
+// Park it just below the search field instead (it scrolls with the page there). Lying on its side, on a wide window, or on any other page
+// (listing pages have a search field too) it keeps Lofty's own floating spot (rotating or changing page switches at once). Served from GitHub Pages, loaded by listing-buyer-cost.js.
 // No timers: it is moved the moment Lofty draws it, and put back the moment Lofty resets it, both before the next paint, so it never shows
 // in two places (a timer that re-applied the spot every half second made it jump whenever Lofty redrew it in between).
 (function () {
@@ -10,8 +10,8 @@ window.hnLangPos = true;
 var PROPS = ['position', 'bottom', 'left', 'top'];
 var box = null, saved = null, parked = false, mo = null, queued = false;
 
-// Upright phone (or a narrow window): the only layout the selector is moved in.
-function upright() { return innerWidth <= 700 && innerHeight > innerWidth; }
+// Upright phone (or a narrow window) on the home page (Lofty gives its <body> the class "home"): the only place the selector is moved.
+function upright() { return innerWidth <= 700 && innerHeight > innerWidth && !!document.body && document.body.classList.contains('home'); }
 
 // The floating box that holds the "EN" selector: a small fixed box at the left edge.
 function find() {
@@ -70,7 +70,7 @@ saved = null;
 function later() {
 if (queued) return;
 queued = true;
-requestAnimationFrame(function () { queued = false; try { apply(); } catch (e) {} });
+requestAnimationFrame(function () { queued = false; try { look(); apply(); } catch (e) {} });
 }
 
 function look() {
@@ -102,4 +102,6 @@ function turned() { later(); setTimeout(later, 350); }
 addEventListener('resize', turned);
 addEventListener('orientationchange', turned);
 addEventListener('load', later);
+// Lofty can switch pages without reloading: look again when the page type (the body's class) changes.
+if (document.body) new MutationObserver(later).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 })();

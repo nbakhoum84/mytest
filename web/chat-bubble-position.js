@@ -1,9 +1,10 @@
-// Phones held upright, home page: park Lofty's AI chat bubble just below the search field instead of over its search button.
+// Phones held upright, on the home page only: park Lofty's AI chat bubble just below the search field instead of over its search button.
 // Lofty draws the chat as a zero-size fixed box (#chat-app, pinned bottom right) and the bubble grows upward from it. The box stays
 // fixed, so the bubble keeps floating while the page scrolls, but its spot on the screen is moved from the bottom corner to where the
 // search field's bottom edge is at the top of the page, plus a gap (the greeting card is lined up to the bubble's top so it stays off
 // the field). The loader raises the titles and search bar a little (listing-buyer-cost.js) so the bubble fits above the screen's bottom.
-// A phone lying on its side, or a wide window, keeps Lofty's own layout: rotating puts the bubble back at once, and back again upright.
+// A phone lying on its side, a wide window, or any other page (listing pages have a search field too) keeps Lofty's own layout, with the
+// bubble floating in its corner: rotating or changing page puts it back at once, and parks it again on the upright home page.
 // Served from GitHub Pages, loaded by listing-buyer-cost.js.
 (function () {
 if (window.hnBubblePos) return;
@@ -12,8 +13,8 @@ window.hnBubblePos = true;
 var GAP = 14, PROPS = ['position', 'top', 'bottom'];
 var box = null, saved = null, parked = false, queued = false, mo = null;
 
-// Upright phone (or a narrow window): the only layout the bubble is moved in.
-function upright() { return innerWidth <= 700 && innerHeight > innerWidth; }
+// Upright phone (or a narrow window) on the home page (Lofty gives its <body> the class "home"): the only place the bubble is moved.
+function upright() { return innerWidth <= 700 && innerHeight > innerWidth && !!document.body && document.body.classList.contains('home'); }
 
 function place() {
 var el = document.getElementById('chat-app');
@@ -82,4 +83,6 @@ function turned() { later(); setTimeout(later, 350); }
 addEventListener('resize', turned);
 addEventListener('orientationchange', turned);
 addEventListener('load', later);
+// Lofty can switch pages without reloading: look again when the page type (the body's class) changes.
+if (document.body) new MutationObserver(later).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 })();
