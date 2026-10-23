@@ -1,5 +1,7 @@
 // Presale Deposit Schedule card: copies the look and width of the other "Get the ... app" cards, or sits above the footer. Loaded by site-snippet/presale-deposits-loader.js from Lofty Page Script (JavaScript).
 (function () {
+// Switched off 2026-10-23: Nader wants only the home-nader app card at the bottom of this page.
+return;
 var URL = 'https://nbakhoum84.github.io/mytest/presale-deposits/';
 var N = 33;
 var ROWS = '1fd51ba7f,105a54641,1741e645d,17550675d,17469b95d,1046f7941,1fd55557f,1b3b700,16e27ea4b,21bcfe6f,15c1947fb,b0a29228,1e75517ba,7a1424aa,17d80214c,143865cec,776c5ed4,1516e57db,175834836,305ce291,9e3f182c,1a35b324d,257ac68b,c83261d0,15678a3f2,16b3f1a,1fd31eb50,10509df1e,17493dff4,1759d192d,1754bd968,1048cb371,1fd75be1c'.split(',');
