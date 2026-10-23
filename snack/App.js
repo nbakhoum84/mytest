@@ -72,7 +72,7 @@ const CALCULATORS_PAGE = `${SITE_URL}/mortgage-calculators`;
 
 // Other pages in the website's Calculators menu (built into the website, not Ratehub widgets).
 const COST_PAGES = [
-  { key: 'buyer', title: 'Buyer cost', desc: 'Closing costs and total cost to buy a home', url: `${SITE_URL}/buyer-cost` },
+  { key: 'buyer', title: 'Cash to Close', desc: 'Closing costs and total cost to buy a home', url: `${SITE_URL}/cash-to-close` },
   { key: 'seller', title: 'Seller cost', desc: 'Selling costs and your estimated net proceeds', url: `${SITE_URL}/seller-cost` },
 ];
 
@@ -259,7 +259,7 @@ function affordability({ income, down, debts, years, ratePct, taxRatePct, insura
   };
 }
 
-// ---- Buyer cost (matches home-nader.com/buyer-cost) ---------------------------------
+// ---- Buyer cost (matches home-nader.com/cash-to-close) ---------------------------------
 // Fixed amounts and exemption rules are the ones shown on the website page.
 const BUYER = {
   legal: 1800,
@@ -752,8 +752,8 @@ const LIST = [
   { key: 'rates', title: 'Rate comparison', desc: 'Compare mortgage rates side by side', Comp: RatesCalc },
   { key: 'cmhc', title: 'CMHC insurance', desc: 'Mortgage default insurance premium', Comp: CmhcCalc },
   { key: 'ptt', title: 'Land transfer tax (BC)', desc: 'BC Property Transfer Tax', Comp: TransferTaxCalc },
-  // Built into the app; same figures as the website's Buyer Cost and Seller Cost pages.
-  { key: 'buyer', title: 'Buyer cost', desc: 'Closing costs and total cost to buy a home', Comp: BuyerCostCalc, native: true },
+  // Built into the app; same figures as the website's Cash to Close and Seller Cost pages.
+  { key: 'buyer', title: 'Cash to Close', desc: 'Closing costs and total cost to buy a home', Comp: BuyerCostCalc, native: true },
   { key: 'seller', title: 'Seller cost', desc: 'Selling costs and your estimated net proceeds', Comp: SellerCostCalc, native: true },
 ];
 
@@ -1083,7 +1083,7 @@ function BuyerCostCalc({ openWeb, url, checks, onChecks }) {
         Estimate only. First-time buyer exemption: up to ${BUYER.firstTimeMaxOff.toLocaleString('en-CA')} off for homes up to ${BC_PTT.firstTimeFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.firstTimePartialTo.toLocaleString('en-CA')}. Newly built home exemption: whole tax waived up to ${BC_PTT.newBuildFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.newBuildPartialTo.toLocaleString('en-CA')} (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Excludes adjustments.
       </Note>
       {url ? (
-        <TouchableOpacity style={calcsStyles.linkBtn} onPress={() => openWeb(url, 'Buyer cost')}>
+        <TouchableOpacity style={calcsStyles.linkBtn} onPress={() => openWeb(url, 'Cash to Close')}>
           <Text style={calcsStyles.linkText}>Open this page on the website</Text>
         </TouchableOpacity>
       ) : null}

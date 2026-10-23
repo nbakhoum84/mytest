@@ -131,7 +131,7 @@ export function affordability({ income, down, debts, years, ratePct, taxRatePct,
   };
 }
 
-// ---- Buyer cost (matches home-nader.com/buyer-cost) ---------------------------------
+// ---- Buyer cost (matches home-nader.com/cash-to-close) ---------------------------------
 // Fixed amounts and exemption rules are the ones shown on the website page.
 export const BUYER = {
   legal: 1800,

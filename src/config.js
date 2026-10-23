@@ -64,7 +64,7 @@ export const CALCULATORS_PAGE = `${SITE_URL}/mortgage-calculators`;
 
 // Other pages in the website's Calculators menu (built into the website, not Ratehub widgets).
 export const COST_PAGES = [
-  { key: 'buyer', title: 'Buyer cost', desc: 'Closing costs and total cost to buy a home', url: `${SITE_URL}/buyer-cost` },
+  { key: 'buyer', title: 'Cash to Close', desc: 'Closing costs and total cost to buy a home', url: `${SITE_URL}/cash-to-close` },
   { key: 'seller', title: 'Seller cost', desc: 'Selling costs and your estimated net proceeds', url: `${SITE_URL}/seller-cost` },
 ];
 

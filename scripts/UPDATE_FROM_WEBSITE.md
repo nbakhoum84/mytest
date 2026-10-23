@@ -28,12 +28,12 @@ branch `claude/home-nader-app-code-qq450r`. The web app is published from a seco
    - The two non-city pages in the Presales/New menu, kept in `CATEGORIES` (presales) `extras`:
      `/new-homes-under-construction` and `/foreclosures-listings`.
    - `RESOURCES`: buyer's guide `/home-buyers-guide`, `/faq`, `/blog` and the two PDF guide links.
-   - `COST_PAGES`: the Buyer Cost (`/buyer-cost`) and Seller Cost (`/seller-cost`) pages in the website's Calculators menu.
+   - `COST_PAGES`: the Cash to Close (`/cash-to-close`) and Seller Cost (`/seller-cost`) pages in the website's Calculators menu.
    - `RATEHUB`: the widget keys on the calculators page (`PaymentCalculator`, `ProductTableMortgages`,
      `AffordabilityCalculator`, `DownPaymentCalculator`, `LandTransferTaxCalculator`) and the calculator names.
    - Mortgage rules in `src/calc.js` (CMHC tiers, BC transfer tax) are NOT on the website. Do not change them.
-   - The built-in Buyer cost and Seller cost calculators (`BUYER`, `SELLER`, `buyerCost`, `sellerCost` in `src/calc.js`) copy the
-     figures on https://home-nader.com/buyer-cost and /seller-cost (fixed amounts, exemption notes, commission defaults, GST).
+   - The built-in Cash to Close and Seller cost calculators (`BUYER`, `SELLER`, `buyerCost`, `sellerCost` in `src/calc.js`) copy the
+     figures on https://home-nader.com/cash-to-close and /seller-cost (fixed amounts, exemption notes, commission defaults, GST).
      The website page text is the only thing the task can read. If the notes/defaults there clearly differ from the code, do NOT edit
      the calculators. Report the difference to the owner so they can confirm the new figures.
    - The 10-item checklists (`CHECKLISTS` in `src/config.js`) come from the Checklist tab of those pages, which the task cannot read. Leave them alone.
