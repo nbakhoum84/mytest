@@ -132,6 +132,8 @@ function pay() {
   $('p-out').innerHTML = ins.status === 'blocked' ? `<p class="warn">${ins.message}</p>` :
     row('Down payment', `${money(d)} (${ins.downPct.toFixed(1)}%)`) + row('CMHC insurance', money(ins.premium)) +
     row('Mortgage amount', money(r.loan)) +
+    // Property transfer tax on the price above (Nader, 2026-10-24). Commercial: none when "Business only" is ticked.
+    row('Property transfer tax', money(commercialLoan && window.CommercialCosts ? ($('p-biz').checked ? 0 : CommercialCosts.ptt(p)) : propertyTransferTax(p))) +
     (closingCash ? row('Closing costs (cash, Buyer Cost)', money(closingCash)) + row('Cash needed to close', money(d + closingCash + ins.premium * 0.07), true) : '') + row(`${FREQUENCIES[freq].label} payment`, money(r.amount), true) +
     (taxCity ? row(`Property tax in ${taxCity} (${CITY_TAX[taxCity]}%/yr, est.)`, `${money((p * CITY_TAX[taxCity]) / 100 / 12)}/mo`) : '') +
     row('Balance after 5-year term', money(r.termBalance)) + row('Total interest', money(r.totalInterest)) +
