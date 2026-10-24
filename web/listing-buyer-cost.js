@@ -4,6 +4,13 @@
 // calculator in a popup, prefilled with that price; the card's own link still works everywhere else on the card.
 // Presale / new-build cards (or a page whose address mentions presale/new) also tick "New build: add 5% GST".
 (function () {
+// Test switch: home-nader.com/?hnoff=1 loads the page with none of our code (buttons, chat greeting, hover lock, ...), to check whether
+// something on the site is Lofty's own. ?hnoff=0 turns it back on. Remembered for the browser tab only.
+try {
+var off = /[?&]hnoff=([01])/.exec(location.search);
+if (off) sessionStorage.setItem('hnOff', off[1]);
+if (sessionStorage.getItem('hnOff') === '1') { console.log('home-nader scripts are off (?hnoff=0 turns them on)'); return; }
+} catch (e) {}
 // The virtual assistant chat's greeting line (web/chat-welcome.js) rides along on every page.
 // Phones held upright: the language selector and the AI chat bubble are moved below the home page's search field
 // (web/lang-selector-position.js, web/chat-bubble-position.js; leaves the rest of the chat alone). Both scripts load at any width and decide
