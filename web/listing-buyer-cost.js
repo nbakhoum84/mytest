@@ -652,7 +652,7 @@ function openCalc(price, isNewBuild, mortgage, prices) {
 current = { isNewBuild: isNewBuild, mortgage: mortgage, prices: prices || [price], price: price };
 var city = mortgage ? cityOf() : '';
 var total = mortgage && lastTotal && lastTotal.price === price ? lastTotal.total : 0;
-var url = (mortgage ? MORTGAGE_APP : APP) + '?price=' + price + (isNewBuild ? '&new=1' : '') + (mortgage ? '&down=' + estimate(price, isNewBuild).downPct : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + '&v=' + Math.floor(Date.now() / 6e4);
+var url = (mortgage ? MORTGAGE_APP : APP) + '?price=' + price + (isNewBuild ? '&new=1' : '') + (mortgage ? '&down=' + estimate(price, isNewBuild).downPct : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + (mortgage && COMMERCIAL ? '&commercial=1' : '') + '&v=' + Math.floor(Date.now() / 6e4);
 var m = modal();
 m.querySelector('.hn-bcp-title').textContent = mortgage ? 'Mortgage for $' + price.toLocaleString('en-CA') + (city ? ' in ' + city : '') :
 (COMMERCIAL ? 'Commercial Buyer Cost for $' : 'Buyer Cost for $') + price.toLocaleString('en-CA');
