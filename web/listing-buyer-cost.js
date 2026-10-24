@@ -476,8 +476,10 @@ var b = f.card.getBoundingClientRect();
 if (x.closest('form') || /^(INPUT|LABEL|TEXTAREA|SELECT)$/.test(x.tagName)) return;
 var cls = String(x.className && x.className.baseVal !== undefined ? x.className.baseVal : x.className) + ' ' + (x.getAttribute('aria-label') || '') + ' ' + (x.getAttribute('title') || '');
 var r = x.getBoundingClientRect(), small = r.width > 0 && r.width < 60 && r.height < 60;
-var corner = small && Math.abs(r.top - b.top) < 80 && Math.abs(b.right - r.right) < 80;
-if (/close/i.test(cls) || (small && /^[\u00d7\u2715\u2716]$/.test(x.textContent.trim())) || (corner && !x.textContent.trim() && x.querySelector && (x.tagName === 'svg' || x.querySelector('svg')))) {
+// Never hide anything that holds the form's fields or heading (a wrapper whose class merely contains "close", e.g. "closeable", would hide the whole form).
+if (!small || x.contains(f.card.querySelector('input')) || x.querySelector('input,textarea,select,h1,h2,h3,h4,h5,h6')) return;
+var corner = Math.abs(r.top - b.top) < 80 && Math.abs(b.right - r.right) < 80;
+if (/close/i.test(cls) || /^[\u00d7\u2715\u2716]$/.test(x.textContent.trim()) || (corner && !x.textContent.trim() && x.querySelector && (x.tagName === 'svg' || x.querySelector('svg')))) {
 x.style.setProperty('display', 'none', 'important');
 }
 });
