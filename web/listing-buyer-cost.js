@@ -40,16 +40,25 @@ hb.textContent = '@media(max-width:700px){.hn-hide-bar{display:none!important}}'
 var hbQueued = false;
 var hideBar = function () {
 hbQueued = false;
-var els = document.querySelectorAll('a,button,[role="button"]');
+var els = document.querySelectorAll('a,button,[role="button"]'), call = null, value = null;
 for (var i = 0; i < els.length; i++) {
-if (!/^(call nader|value my home)$/i.test(els[i].textContent.replace(/\s+/g, ' ').trim())) continue;
-for (var bar = els[i].parentElement, n = 0; bar && bar !== document.body && n < 6; bar = bar.parentElement, n++) {
-if (getComputedStyle(bar).position !== 'fixed') continue;
-var t = bar.textContent.replace(/\s+/g, ' ').trim();
-if (t.length < 60 && /call nader/i.test(t) && /value my home/i.test(t)) bar.classList.add('hn-hide-bar');
-break;
+var t = els[i].textContent.replace(/\s+/g, ' ').trim();
+if (/^call nader$/i.test(t)) call = call || els[i];
+else if (/^value my home$/i.test(t)) value = value || els[i];
 }
+if (!call || !value) return;
+// Only the bar itself: the lowest element holding both buttons. If that bar is the whole fixed box (nothing else in it, e.g.
+// not the language selector), hide the fixed box too; otherwise leave everything else exactly as Lofty drew it.
+var bar = call.parentElement;
+while (bar && bar !== document.body && !bar.contains(value)) bar = bar.parentElement;
+if (!bar || bar === document.body || bar.textContent.replace(/\s+/g, ' ').trim().length > 40) return;
+var box = bar;
+for (var up = bar.parentElement, n = 0; up && up !== document.body && n < 4; up = up.parentElement, n++) {
+if (up.textContent.replace(/\s+/g, ' ').trim().length > 40 || up.querySelector('img,svg,input,select')) break;
+box = up;
+if (getComputedStyle(up).position === 'fixed') break;
 }
+box.classList.add('hn-hide-bar');
 };
 var hbWatch = function () {
 if (!hbQueued) { hbQueued = true; requestAnimationFrame(hideBar); }
