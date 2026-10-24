@@ -228,17 +228,17 @@ var want = olds[o].getAttribute('data-hn-kind') === 'mortgage' ? lb.mortgage : l
 if (olds[o].textContent !== want) olds[o].textContent = want;
 olds[o].setAttribute('aria-label', (olds[o].getAttribute('data-hn-kind') === 'mortgage' ? 'Mortgage calculator for $' : 'Buyer cost for $') + price.toLocaleString('en-CA'));
 }
-var oldHint = oldRow.querySelector('.hn-bcp-hint');
-if (oldHint) oldHint.setAttribute('data-hn-price', price);
+var oldHints = oldRow.querySelectorAll('.hn-bcp-hint');
+for (var h = 0; h < oldHints.length; h++) oldHints[h].setAttribute('data-hn-price', price);
 return;
 }
 // "Buyer cost" and "Mortgage" sit side by side in one row (Commercial pages too); the mortgage calculator starts from the same price.
 var b = document.createElement('div'), lb = labels(price, isNew(el));
 b.className = 'hn-bcp-row';
-b.innerHTML = '<button type="button" class="hn-bcp-btn" data-hn-kind="buyer" data-hn-price="' + price + '" aria-label="Buyer cost for $' + price.toLocaleString('en-CA') + '">' + lb.buyer + '</button>' +
-'<button type="button" class="hn-bcp-btn hn-bcp-mtg" data-hn-kind="mortgage" data-hn-price="' + price + '" aria-label="Mortgage calculator for $' + price.toLocaleString('en-CA') + '">' + lb.mortgage + '</button>' +
-// Nader asked for a line under the buttons telling visitors they can click them (2026-10-24); clicking it opens Cash to Close.
-'<div class="hn-bcp-hint" data-hn-kind="buyer" data-hn-price="' + price + '">These buttons are clickable. <u>Click here</u> for more information.</div>';
+// Under each button: "Click here for more information" (Nader, 2026-10-24); clicking it opens that button's calculator.
+var hint = function (kind) { return '<div class="hn-bcp-hint" data-hn-kind="' + kind + '" data-hn-price="' + price + '"><u>Click here</u> for more information</div>'; };
+b.innerHTML = '<div class="hn-bcp-col"><button type="button" class="hn-bcp-btn" data-hn-kind="buyer" data-hn-price="' + price + '" aria-label="Buyer cost for $' + price.toLocaleString('en-CA') + '">' + lb.buyer + '</button>' + hint('buyer') + '</div>' +
+'<div class="hn-bcp-col"><button type="button" class="hn-bcp-btn hn-bcp-mtg" data-hn-kind="mortgage" data-hn-price="' + price + '" aria-label="Mortgage calculator for $' + price.toLocaleString('en-CA') + '">' + lb.mortgage + '</button>' + hint('mortgage') + '</div>';
 // After the whole line the price sits on (e.g. price + open house tag), so it lands just below it.
 var line = el;
 while (line.parentElement && line.parentElement !== card && /^inline/.test(getComputedStyle(line).display)) line = line.parentElement;
@@ -767,7 +767,8 @@ style.textContent =
 'button.hn-bcp-btn{position:relative!important;top:auto!important;left:auto!important;z-index:2!important;display:flex!important;align-items:center!important;gap:7px!important;width:max-content!important;max-width:100%!important;height:auto!important;min-height:0!important;margin:0!important;padding:6px 12px!important;border:0!important;border-radius:8px!important;background:#1e8e3e!important;box-shadow:none!important;color:#fff!important;font-family:inherit!important;font-weight:700!important;font-size:14px!important;line-height:1.2!important;letter-spacing:0!important;text-transform:none!important;cursor:pointer!important;white-space:nowrap!important;opacity:1!important}' +
 '.hn-bcp-btn::before{content:"";width:16px;height:16px;flex:none;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Cpath d=%27M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v4h10V4H7zm1 7v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v6h2v-6h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2z%27/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Cpath d=%27M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v4h10V4H7zm1 7v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v6h2v-6h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2z%27/%3E%3C/svg%3E") center/contain no-repeat}' +
 'button.hn-bcp-btn:hover{background:#17702f!important}' +
-'.hn-bcp-hint{flex:0 0 100%!important;margin:0!important;padding:0!important;color:#555!important;font-family:inherit!important;font-size:12px!important;font-weight:400!important;line-height:1.3!important;text-decoration:none!important;text-transform:none!important;white-space:normal!important;cursor:pointer!important}' +
+'.hn-bcp-col{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:4px!important}' +
+'.hn-bcp-hint{margin:0!important;padding:0!important;color:#555!important;font-family:inherit!important;font-size:14px!important;text-align:left!important;font-weight:400!important;line-height:1.3!important;text-decoration:none!important;text-transform:none!important;white-space:normal!important;cursor:pointer!important}' +
 '.hn-bcp-hint u{color:#1e8e3e!important;font-weight:600!important;text-decoration:underline!important}' +
 '#hn-bcp-modal{display:none;position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:16px}' +
 '#hn-bcp-modal.hn-bcp-on{display:flex}' +
