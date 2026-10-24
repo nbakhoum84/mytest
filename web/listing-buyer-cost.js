@@ -430,6 +430,25 @@ m.classList.remove('hn-bcp-on');
 m.querySelector('iframe').src = 'about:blank';
 document.documentElement.style.overflow = '';
 }
+// Add ?hndebug=1 to a listings page address to see, on screen, what the script finds when a calculator is closed
+// (handy on a phone, where there is no console). Nothing is shown without it.
+var DEBUG = /[?&]hndebug=1/.test(location.search);
+function dbg(msg) {
+if (!DEBUG) return;
+var d = document.getElementById('hn-bcp-debug');
+if (!d) {
+d = document.createElement('div');
+d.id = 'hn-bcp-debug';
+d.style.cssText = 'position:fixed;left:0;right:0;bottom:0;max-height:45%;overflow:auto;z-index:2147483647;background:#000;color:#0f0;font:12px/1.4 monospace;padding:8px;white-space:pre-wrap';
+document.body.appendChild(d);
+}
+d.textContent += msg + '\n';
+}
+function describe(el) {
+if (!el) return 'none';
+var r = el.getBoundingClientRect();
+return el.tagName + (el.id ? '#' + el.id : '') + '.' + String(el.className && el.className.baseVal !== undefined ? el.className.baseVal : el.className).slice(0, 60) + ' text="' + el.textContent.replace(/\s+/g, ' ').trim().slice(0, 30) + '" size=' + Math.round(r.width) + 'x' + Math.round(r.height) + ' shown=' + !!el.offsetParent + (el.href ? ' href=' + el.getAttribute('href') : '');
+}
 // A real tap (pointer and mouse events, then the click) in case the site listens for those rather than a plain click.
 function press(el) {
 var o = { bubbles: true, cancelable: true, view: window };
@@ -444,13 +463,17 @@ var MENU = 'button[aria-label*="menu" i],[class*="hamburger" i],[class*="menu-to
 // once the menu is open), open the menu and try the link again.
 function openRegistration() {
 var reg = registerLink();
+dbg('register link: ' + describe(reg));
 if (reg) press(reg);
 setTimeout(function () {
+dbg('form open after 1.2s: ' + !!formBox());
 if (formBox()) return;
 var menu = document.querySelector(MENU);
+dbg('menu button: ' + describe(menu));
 if (menu && menu.offsetParent && !(reg && reg.offsetParent)) press(menu);
 setTimeout(function () {
 var again = registerLink();
+dbg('retry link: ' + describe(again) + ' | form open now: ' + !!formBox());
 if (again && !formBox()) press(again);
 }, 600);
 }, 1200);
@@ -460,6 +483,7 @@ function closeAndOffer() {
 var was = current;
 close();
 var reg = registerLink();
+dbg('closed calculator; register link found: ' + (reg ? describe(reg) : 'NO (treated as signed in, no form)'));
 if (!reg || !was) return;
 track('hn_calculator_signup_prompt', { calculator: was.mortgage ? 'mortgage' : 'buyer_cost', listing_price: was.price });
 openRegistration();
