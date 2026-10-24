@@ -1,5 +1,5 @@
 // Phones held upright, on the home page only: Lofty's floating language selector ("EN") sat on top of the search field.
-// Park it just below the search field instead (it scrolls with the page there). Lying on its side, on a wide window, or on any other page
+// Park it just below the search field instead (it keeps floating, like the AI chat bubble, from that spot). Lying on its side, on a wide window, or on any other page
 // (listing pages have a search field too) it keeps Lofty's own floating spot (rotating or changing page switches at once). Served from GitHub Pages, loaded by listing-buyer-cost.js.
 // No timers: it is moved the moment Lofty draws it, and put back the moment Lofty resets it, both before the next paint, so it never shows
 // in two places (a timer that re-applied the spot every half second made it jump whenever Lofty redrew it in between).
@@ -10,7 +10,7 @@ window.hnLangPos = true;
 var PROPS = ['position', 'bottom', 'left', 'top'];
 var box = null, saved = null, parked = false, mo = null, queued = false;
 
-// Upright phone (or a narrow window) on the home page, while scrolled to the top (Lofty gives its <body> the class "home"): the only place the selector is moved.
+// Upright phone (or a narrow window) on the home page (Lofty gives its <body> the class "home"): the only place the selector is moved.
 function upright() { return innerWidth <= 700 && innerHeight > innerWidth && !!document.body && document.body.classList.contains('home'); }
 
 // The floating box that holds the "EN" selector: a small fixed box at the left edge.
@@ -43,20 +43,21 @@ if (box.style.getPropertyValue(name) !== value || box.style.getPropertyPriority(
 // Put the box just under the search field. Only writes what differs, so it never triggers itself.
 function apply() {
 if (!box) return;
-// Parked under the search field only while the page is at the top; once the visitor scrolls it floats again (Lofty's own spot), following the screen.
-if (!upright() || scrollY > 8) { restore(); return; }
+if (!upright()) { restore(); return; }
 var inp = document.querySelector('input[placeholder*="Subdivision"]');
 if (!inp || !inp.offsetParent) return;
 if (!saved) saved = PROPS.map(function (p) { return [p, box.style.getPropertyValue(p), box.style.getPropertyPriority(p)]; });
 parked = true;
 var r = inp.getBoundingClientRect();
+// Like the AI chat bubble: the box stays position:fixed, so it keeps floating while the page scrolls, but its spot on the screen is
+// moved to where the search field's bottom edge is at the top of the page (plus a gap), whatever the scroll is now.
 var left = Math.round(Math.max(0, r.left - 4)), top = Math.round(r.bottom + scrollY + 14);
-set('position', 'absolute');
+set('position', 'fixed');
 set('bottom', 'auto');
 set('left', left + 'px');
 set('top', top + 'px');
-// Whatever the page offsets absolute boxes by, correct for it.
-var off = top - (box.getBoundingClientRect().top + scrollY);
+// Whatever the page offsets fixed boxes by, correct for it.
+var off = top - box.getBoundingClientRect().top;
 if (Math.abs(off) > 1) set('top', Math.round(top + off) + 'px');
 }
 
@@ -103,8 +104,6 @@ function turned() { later(); setTimeout(later, 350); }
 addEventListener('resize', turned);
 addEventListener('orientationchange', turned);
 addEventListener('load', later);
-// Scrolling away from the top lets it float; scrolling back to the top parks it again.
-addEventListener('scroll', later, { passive: true });
 // Lofty can switch pages without reloading: look again when the page type (the body's class) changes.
 if (document.body) new MutationObserver(later).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 })();
