@@ -220,13 +220,17 @@ var want = olds[o].getAttribute('data-hn-kind') === 'mortgage' ? lb.mortgage : l
 if (olds[o].textContent !== want) olds[o].textContent = want;
 olds[o].setAttribute('aria-label', (olds[o].getAttribute('data-hn-kind') === 'mortgage' ? 'Mortgage calculator for $' : 'Buyer cost for $') + price.toLocaleString('en-CA'));
 }
+var oldHint = oldRow.querySelector('.hn-bcp-hint');
+if (oldHint) oldHint.setAttribute('data-hn-price', price);
 return;
 }
 // "Buyer cost" and "Mortgage" sit side by side in one row (Commercial pages too); the mortgage calculator starts from the same price.
 var b = document.createElement('div'), lb = labels(price, isNew(el));
 b.className = 'hn-bcp-row';
 b.innerHTML = '<button type="button" class="hn-bcp-btn" data-hn-kind="buyer" data-hn-price="' + price + '" aria-label="Buyer cost for $' + price.toLocaleString('en-CA') + '">' + lb.buyer + '</button>' +
-'<button type="button" class="hn-bcp-btn hn-bcp-mtg" data-hn-kind="mortgage" data-hn-price="' + price + '" aria-label="Mortgage calculator for $' + price.toLocaleString('en-CA') + '">' + lb.mortgage + '</button>';
+'<button type="button" class="hn-bcp-btn hn-bcp-mtg" data-hn-kind="mortgage" data-hn-price="' + price + '" aria-label="Mortgage calculator for $' + price.toLocaleString('en-CA') + '">' + lb.mortgage + '</button>' +
+// Nader asked for a line under the buttons telling visitors they can click them (2026-10-24); clicking it opens Cash to Close.
+'<div class="hn-bcp-hint" data-hn-kind="buyer" data-hn-price="' + price + '">These buttons are clickable. <u>Click here</u> for more information.</div>';
 // After the whole line the price sits on (e.g. price + open house tag), so it lands just below it.
 var line = el;
 while (line.parentElement && line.parentElement !== card && /^inline/.test(getComputedStyle(line).display)) line = line.parentElement;
@@ -389,6 +393,10 @@ var card = cardOf(el);
 return !!(card && NEW_CARD.test(card.textContent));
 }
 
+// UTM tags for the listing buttons (Nader, 2026-10-24): sent with each click event to GA4 and added to the calculator's address.
+function utm(isMortgage, listingType) {
+return { utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaign: isMortgage ? 'est_monthly' : 'cash_to_close', utm_content: listingType };
+}
 // Each button click (and each sign-up prompt click) is sent to whatever analytics the site runs: Google Tag Manager / GA4
 // (dataLayer, gtag) and the Meta pixel (fbq), so they can be counted as conversions for ad campaigns.
 function track(name, data) {
@@ -663,7 +671,8 @@ function openCalc(price, isNewBuild, mortgage, prices) {
 current = { isNewBuild: isNewBuild, mortgage: mortgage, prices: prices || [price], price: price };
 var city = mortgage ? cityOf() : '';
 var total = mortgage && lastTotal && lastTotal.price === price ? lastTotal.total : 0;
-var url = (mortgage ? MORTGAGE_APP : APP) + '?price=' + price + (isNewBuild ? '&new=1' : '') + (mortgage ? '&down=' + estimate(price, isNewBuild).downPct : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + (mortgage && COMMERCIAL ? '&commercial=1' : '') + '&v=' + Math.floor(Date.now() / 6e4);
+var u = utm(mortgage, COMMERCIAL ? 'commercial' : isNewBuild ? 'new_build' : 'residential');
+var url = (mortgage ? MORTGAGE_APP : APP) + '?utm_source=' + u.utm_source + '&utm_medium=' + u.utm_medium + '&utm_campaign=' + u.utm_campaign + '&utm_content=' + u.utm_content + '&price=' + price + (isNewBuild ? '&new=1' : '') + (mortgage ? '&down=' + estimate(price, isNewBuild).downPct : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + (mortgage && COMMERCIAL ? '&commercial=1' : '') + '&v=' + Math.floor(Date.now() / 6e4);
 var m = modal();
 m.querySelector('.hn-bcp-title').textContent = mortgage ? 'Mortgage for $' + price.toLocaleString('en-CA') + (city ? ' in ' + city : '') :
 (COMMERCIAL ? 'Commercial Buyer Cost for $' : 'Buyer Cost for $') + price.toLocaleString('en-CA');
@@ -693,7 +702,7 @@ m.querySelector('.hn-bcp-x').focus();
 }
 
 function onClick(e) {
-var el = e.target && e.target.closest && e.target.closest('.hn-bcp,.hn-bcp-btn');
+var el = e.target && e.target.closest && e.target.closest('.hn-bcp,.hn-bcp-btn,.hn-bcp-hint');
 if (!el) return;
 // Use the price the card shows right now, not the one stored when the button was added.
 var card = cardOf(el.classList.contains('hn-bcp') ? el : el.parentElement);
@@ -706,7 +715,8 @@ e.preventDefault();
 e.stopPropagation();
 if (e.stopImmediatePropagation) e.stopImmediatePropagation();
 var isMortgage = el.getAttribute('data-hn-kind') === 'mortgage';
-track(isMortgage ? 'hn_mortgage_click' : 'hn_buyer_cost_click', { listing_price: price, listing_type: COMMERCIAL ? 'commercial' : isNew(el) ? 'new_build' : 'residential', button_text: el.classList.contains('hn-bcp-btn') ? el.textContent : 'price' });
+var listingType = COMMERCIAL ? 'commercial' : isNew(el) ? 'new_build' : 'residential';
+track(isMortgage ? 'hn_mortgage_click' : 'hn_buyer_cost_click', Object.assign({ listing_price: price, listing_type: listingType, button_text: el.classList.contains('hn-bcp-btn') ? el.textContent : el.classList.contains('hn-bcp-hint') ? 'hint line' : 'price' }, utm(isMortgage, listingType)));
 dbg('tap on ' + (isMortgage ? 'Mortgage' : 'Buyer cost') + ' button, price=' + price);
 try { openCalc(price, isNew(el), isMortgage, prices.length ? prices : [price]); } catch (err) { dbg('ERROR opening the calculator: ' + err.message); throw err; }
 var mm = document.getElementById('hn-bcp-modal');
@@ -746,9 +756,11 @@ var style = document.createElement('style');
 style.textContent =
 '.hn-bcp{cursor:pointer!important}' +
 '.hn-bcp-row{display:flex!important;flex-wrap:wrap;gap:8px;margin:8px 0 6px!important}' +
-'button.hn-bcp-btn{position:relative!important;top:auto!important;left:auto!important;z-index:2!important;display:flex!important;align-items:center!important;gap:7px!important;width:max-content!important;max-width:100%!important;height:auto!important;min-height:0!important;margin:0!important;padding:6px 12px!important;border:0!important;border-radius:8px!important;background:#dbae77!important;box-shadow:none!important;color:#111!important;font-family:inherit!important;font-weight:700!important;font-size:14px!important;line-height:1.2!important;letter-spacing:0!important;text-transform:none!important;cursor:pointer!important;white-space:nowrap!important;opacity:1!important}' +
+'button.hn-bcp-btn{position:relative!important;top:auto!important;left:auto!important;z-index:2!important;display:flex!important;align-items:center!important;gap:7px!important;width:max-content!important;max-width:100%!important;height:auto!important;min-height:0!important;margin:0!important;padding:6px 12px!important;border:0!important;border-radius:8px!important;background:#1e8e3e!important;box-shadow:none!important;color:#fff!important;font-family:inherit!important;font-weight:700!important;font-size:14px!important;line-height:1.2!important;letter-spacing:0!important;text-transform:none!important;cursor:pointer!important;white-space:nowrap!important;opacity:1!important}' +
 '.hn-bcp-btn::before{content:"";width:16px;height:16px;flex:none;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Cpath d=%27M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v4h10V4H7zm1 7v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v6h2v-6h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2z%27/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Cpath d=%27M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v4h10V4H7zm1 7v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2zm4 0v6h2v-6h-2zm-8 4v2h2v-2H8zm4 0v2h2v-2h-2z%27/%3E%3C/svg%3E") center/contain no-repeat}' +
-'button.hn-bcp-btn:hover{background:#c99a60!important}' +
+'button.hn-bcp-btn:hover{background:#17702f!important}' +
+'.hn-bcp-hint{flex:0 0 100%!important;margin:0!important;padding:0!important;color:#555!important;font-family:inherit!important;font-size:12px!important;font-weight:400!important;line-height:1.3!important;text-decoration:none!important;text-transform:none!important;white-space:normal!important;cursor:pointer!important}' +
+'.hn-bcp-hint u{color:#1e8e3e!important;font-weight:600!important;text-decoration:underline!important}' +
 '#hn-bcp-modal{display:none;position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:16px}' +
 '#hn-bcp-modal.hn-bcp-on{display:flex}' +
 '#hn-bcp-modal .hn-bcp-box{width:600px;max-width:100%;height:min(820px,100%);background:#fff;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.35)}' +
