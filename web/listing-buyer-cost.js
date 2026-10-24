@@ -59,6 +59,17 @@ box = up;
 if (getComputedStyle(up).position === 'fixed') break;
 }
 box.classList.add('hn-hide-bar');
+// ?hndebug=1 on a phone: show on screen which element the bar is (and its parents), so a CSS rule for Lofty's Style box can hide it from the first paint.
+if (/[?&]hndebug=1/.test(location.search) && !document.getElementById('hn-bar-debug')) {
+var dd = document.createElement('div'), out = [];
+for (var e = box, k = 0; e && e !== document.body && k < 4; e = e.parentElement, k++) {
+out.push(e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (typeof e.className === 'string' && e.className ? '.' + e.className.trim().split(/\s+/).join('.') : '') + ' [' + getComputedStyle(e).position + ']');
+}
+dd.id = 'hn-bar-debug';
+dd.style.cssText = 'position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#000;color:#0f0;font:12px/1.4 monospace;padding:8px;white-space:pre-wrap;word-break:break-all';
+dd.textContent = 'Bottom bar:\n' + out.join('\n');
+document.body.appendChild(dd);
+}
 };
 var hbWatch = function () {
 if (!hbQueued) { hbQueued = true; requestAnimationFrame(hideBar); }
