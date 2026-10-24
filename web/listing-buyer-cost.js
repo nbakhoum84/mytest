@@ -414,7 +414,7 @@ if (cta && current) {
 var kind = cta.getAttribute('data-hn-cta'), target = kind === 'save' ? saveButton() : registerLink();
 track('hn_calculator_signup_click', { action: kind, calculator: current.mortgage ? 'mortgage' : 'buyer_cost', listing_price: current.price });
 close();
-if (target) target.click();
+if (kind === 'save') { if (target) target.click(); } else openRegistration();
 return;
 }
 // A price range: switch the calculator between the low and high price.
@@ -430,6 +430,31 @@ m.classList.remove('hn-bcp-on');
 m.querySelector('iframe').src = 'about:blank';
 document.documentElement.style.overflow = '';
 }
+// A real tap (pointer and mouse events, then the click) in case the site listens for those rather than a plain click.
+function press(el) {
+var o = { bubbles: true, cancelable: true, view: window };
+['pointerdown', 'mousedown', 'pointerup', 'mouseup'].forEach(function (t) {
+try { el.dispatchEvent(new (/^pointer/.test(t) && window.PointerEvent ? PointerEvent : MouseEvent)(t, o)); } catch (e) {}
+});
+el.click();
+}
+// The site's menu button; on phones the Register link can sit inside the collapsed menu.
+var MENU = 'button[aria-label*="menu" i],[class*="hamburger" i],[class*="menu-toggle" i],[class*="menu-btn" i],[class*="navbar-toggl" i],[class*="burger" i]';
+// Open the site's registration form. If it hasn't appeared a moment later (phones: link hidden in the menu, or only drawn
+// once the menu is open), open the menu and try the link again.
+function openRegistration() {
+var reg = registerLink();
+if (reg) press(reg);
+setTimeout(function () {
+if (formBox()) return;
+var menu = document.querySelector(MENU);
+if (menu && menu.offsetParent && !(reg && reg.offsetParent)) press(menu);
+setTimeout(function () {
+var again = registerLink();
+if (again && !formBox()) press(again);
+}, 600);
+}, 1200);
+}
 // When a signed-out visitor closes the calculator, open the site's registration form (every time).
 function closeAndOffer() {
 var was = current;
@@ -437,7 +462,7 @@ close();
 var reg = registerLink();
 if (!reg || !was) return;
 track('hn_calculator_signup_prompt', { calculator: was.mortgage ? 'mortgage' : 'buyer_cost', listing_price: was.price });
-reg.click();
+openRegistration();
 hideFormClose();
 }
 // Nader: no close button on the registration form we open. Only hides the form's × (nothing is blocked), and only
