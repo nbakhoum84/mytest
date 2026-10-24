@@ -533,7 +533,9 @@ var MENU = 'button[aria-label*="menu" i],[class*="hamburger" i],[class*="menu-to
 function openRegistration() {
 var reg = registerLink();
 dbg('register link: ' + describe(reg));
-if (reg) { var before = snapshot(); watchRegistration(before); press(reg); }
+// No longer puts back what the site stored after the form is closed (watchRegistration): that made the site forget the visitor had
+// already seen its Quick Connection form, so the chat bubble showed the form again instead of the chat buttons (Nader, 2026-10-24).
+if (reg) press(reg);
 setTimeout(function () {
 dbg('form open after 1.2s: ' + !!formBox());
 if (formBox()) return;
