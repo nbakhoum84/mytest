@@ -1,6 +1,6 @@
 // Network-first: always fetch the latest version when online; use the cached copy only when offline.
-const CACHE = 'mortgage-calculator-v4';
-const FILES = ['./', 'index.html', 'icon.svg', 'manifest.webmanifest', 'mortgage.js'];
+const CACHE = 'mortgage-calculator-v5';
+const FILES = ['./', 'index.html', 'icon.svg', 'manifest.webmanifest', 'mortgage.js', '../commercial-cost/costs.js?v=3'];
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)));

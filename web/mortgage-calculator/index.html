@@ -46,6 +46,7 @@
   <section id="pay">
     <h1>Mortgage payment</h1>
     <label for="p-price">Purchase price (CAD)</label><input id="p-price" type="text" inputmode="numeric" value="$900,000">
+    <label class="check" for="p-biz" id="p-biz-row" hidden>Business only, no land or building (no property transfer tax)<input id="p-biz" type="checkbox"></label>
     <label for="p-down">Down payment</label>
     <div class="inline"><input id="p-down" type="text" inputmode="decimal" value="10"><div class="chips" id="p-mode"><button data-v="%" class="on">%</button><button data-v="$">$</button></div></div>
     <p class="note" id="p-min"></p>
@@ -99,6 +100,7 @@
 </main>
 <div class="contact"><a href="tel:+16046127228">Call Nader</a><a href="sms:+16046127228">Text Nader</a></div>
 <nav><button data-tab="pay" class="on">Payment</button><button data-tab="afford">Afford</button><button data-tab="cmhc">CMHC</button><button data-tab="tax">Tax</button><button data-tab="rates">Banks Rates</button></nav>
+<script src="../commercial-cost/costs.js?v=3"></script>
 <script type="module">
 import { propertyTransferTax, transferTax, AFFORD, CMHC, FREQUENCIES, affordability, cmhcInsurance, downInDollars, minimumDown, money, mortgagePayment, num } from './mortgage.js';
 const $ = (id) => document.getElementById(id);
@@ -193,12 +195,21 @@ document.querySelector('nav').onclick = (e) => {
     const gst = q.get('new') === '1';
     // &total= is the Total cost last shown in the Buyer Cost popup (with whatever boxes were ticked); otherwise the defaults are used.
     const sent = Math.round(num(q.get('total')));
-    const closing = sent > price ? sent - price : propertyTransferTax(price) + 1800 + (gst ? 0 : 500) + 400 + 1500 + (gst ? price * 0.05 : 0);
+    // &commercial=1: opened from a commercial listing card. Closing costs follow the Commercial Buyer Cost app, and the
+    // "Business only, no land or building" box drops the property transfer tax (PTT is only paid when land is bought).
+    const commercial = q.get('commercial') === '1' && window.CommercialCosts;
+    const commercialClosing = () => { const c = CommercialCosts.costs(price, { land: !$('p-biz').checked }); return c.closing + c.gstPaid; };
+    const closing = commercial ? commercialClosing() : sent > price ? sent - price : propertyTransferTax(price) + 1800 + (gst ? 0 : 500) + 400 + 1500 + (gst ? price * 0.05 : 0);
     for (const id of ['c-price', 't-price']) { $(id).value = price; fmtPrice(id); }
     // In BC closing costs are paid in cash and can't be added to the mortgage (only the CMHC premium can), so the mortgage stays on the price.
     $('p-price').value = price; fmtPrice('p-price');
     closingCash = Math.round(closing);
-    $('p-min').insertAdjacentHTML('beforebegin', `<p class="note">Closing costs of ${money(closing)} (Buyer Cost total ${money(price + closing)}) are paid in cash, not added to the mortgage.</p>`);
+    const closingNote = (c) => `Closing costs of ${money(c)} (Buyer Cost total ${money(price + c)}) are paid in cash, not added to the mortgage.`;
+    $('p-min').insertAdjacentHTML('beforebegin', `<p class="note" id="p-closing">${closingNote(closing)}</p>`);
+    if (commercial) {
+      $('p-biz-row').hidden = false;
+      $('p-biz').onchange = () => { closingCash = Math.round(commercialClosing()); $('p-closing').textContent = closingNote(closingCash); pay(); };
+    }
     if (q.get('new') === '1') $('t-nb').checked = true;
     // &down= is the down payment % the listing's button estimate used (10%, or 20% at $1.5M or more).
     const dq = num(q.get('down'));
