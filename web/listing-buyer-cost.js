@@ -576,6 +576,7 @@ var reg = registerLink();
 dbg('closed calculator; register link found: ' + (reg ? describe(reg) : 'NO (treated as signed in, no form)'));
 if (!reg || !was) return;
 track('hn_calculator_signup_prompt', { calculator: was.mortgage ? 'mortgage' : 'buyer_cost', listing_price: was.price });
+try { sessionStorage.setItem('hnCalcUsed', '1'); } catch (e) {}
 openRegistration();
 hideFormClose();
 }
@@ -701,6 +702,31 @@ var mm = document.getElementById('hn-bcp-modal');
 dbg('calculator open: ' + !!(mm && mm.classList.contains('hn-bcp-on')) + ', box ' + (mm ? Math.round(mm.getBoundingClientRect().width) + 'x' + Math.round(mm.getBoundingClientRect().height) : 'missing') + ', iframe ' + (mm ? mm.querySelector('iframe').src.slice(0, 70) : ''));
 }
 
+// A signed-out visitor who has used a calculator and then clicks a listing card gets the registration form (the card does not open until
+// they register), the same as when they close a calculator. Our own buttons, hearts and other buttons are left alone.
+function onCardClick(e) {
+var t = e.target;
+if (!t || !t.closest || t.closest('.hn-bcp-row,#hn-bcp-modal,button,[role="button"],input,select,textarea,label')) return;
+var used = false;
+try { used = sessionStorage.getItem('hnCalcUsed') === '1'; } catch (err) {}
+if (!used || !registerLink()) return;
+var link = t.closest('a[href*="/listing-detail/"]');
+if (!link) {
+for (var a = t.parentElement, i = 0; a && a !== document.body && i < 8; a = a.parentElement, i++) {
+var ls = a.querySelectorAll('a[href*="/listing-detail/"]');
+if (ls.length && a.querySelector('img,picture') && a.querySelectorAll('.hn-bcp-row').length <= 1) { link = ls[0]; break; }
+}
+}
+if (!link) return;
+e.preventDefault();
+e.stopPropagation();
+if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+track('hn_listing_signup_prompt', { listing_url: link.getAttribute('href') });
+dbg('listing card click: showing the registration form');
+openRegistration();
+hideFormClose();
+}
+
 var started = false;
 function start() {
 if (started) { scan(); return; }
@@ -736,6 +762,7 @@ style.textContent =
 (document.head || document.documentElement).appendChild(style);
 // Capture phase, so the price click is handled before the card's link or Lofty's own click handler.
 document.addEventListener('click', onClick, true);
+document.addEventListener('click', onCardClick, true);
 document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && document.querySelector('#hn-bcp-modal.hn-bcp-on')) closeAndOffer(); });
 // Listing cards load and change as visitors search, filter and page, so rescan (throttled) when the page changes.
 // Our own buttons coming and going are ignored, so adding them never triggers another round.
