@@ -67,9 +67,31 @@ for (i = 0; i < free.length; i++) {
 pin(free[i], cs[i]);
 }
 }
+// The gold hover colour comes from the site's own custom CSS (Lofty Custom Style box), a rule like
+// ":is(a, p, li, h1, h2, h3, h4, span):hover { color: rgb(219,174,119) !important }". Take the colour out of every such :hover rule
+// the page can read (button hovers that also change the background keep theirs), so hovered text keeps its colour no matter which element it sits in.
+function unhover(rules) {
+for (var i = 0; rules && i < rules.length; i++) {
+var ru = rules[i];
+if (ru.cssRules && !ru.selectorText) { unhover(ru.cssRules); continue; }
+var sel = ru.selectorText;
+// A hover rule that also changes the background is a button's hover look: left as is.
+if (!sel || sel.indexOf(':hover') < 0 || !ru.style || !ru.style.getPropertyValue('color') || ru.style.getPropertyValue('background-color') || ru.style.getPropertyValue('background')) continue;
+ru.style.removeProperty('color');
+ru.style.removeProperty('-webkit-text-fill-color');
+}
+}
+function stripHover() {
+for (var i = 0; i < document.styleSheets.length; i++) {
+var sh = document.styleSheets[i], rs = null;
+try { rs = sh.cssRules; } catch (e) { continue; }
+unhover(rs);
+}
+}
 var t = 0, r = 0;
-function later() { clearTimeout(t); t = setTimeout(function () { refresh(); scan(); }, 400); }
+function later() { clearTimeout(t); t = setTimeout(function () { stripHover(); refresh(); scan(); }, 400); }
 function start() {
+stripHover();
 scan();
 new MutationObserver(later).observe(document.body, { childList: true, subtree: true });
 new MutationObserver(guard).observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
