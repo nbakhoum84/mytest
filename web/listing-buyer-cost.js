@@ -30,12 +30,12 @@ hu.id = 'hn-hero-up';
 hu.textContent = '@media(max-width:700px) and (orientation:portrait){body.home .md-hero .media-content-search-group{position:relative!important;top:-56px!important}}';
 (document.head || document.documentElement).appendChild(hu);
 }
-// Phones: hide Lofty's fixed bottom bar with the "Call Nader" and "Value My Home" buttons (wider screens keep it).
-// Found by its two buttons' text, so it still works if Lofty renames its classes; the CSS only applies on screens up to 700px wide.
+// Hide the fixed bottom bar with the "Call Nader" and "Value My Home" buttons on every screen size (Nader 2026-10-24: it still
+// showed on narrow laptop windows, which were wider than the old 700px limit). Found by its two buttons' text.
 if (typeof document !== 'undefined' && !document.getElementById('hn-hide-bar')) {
 var hb = document.createElement('style');
 hb.id = 'hn-hide-bar';
-hb.textContent = '@media(max-width:700px){.hn-hide-bar{display:none!important}}';
+hb.textContent = '.hn-hide-bar{display:none!important}';
 (document.head || document.documentElement).appendChild(hb);
 var hbQueued = false;
 var hideBar = function () {
