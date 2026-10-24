@@ -439,6 +439,7 @@ m.innerHTML =
 '<a class="hn-bcp-open" target="_blank" rel="noopener">Open in new tab</a>' +
 '<button type="button" class="hn-bcp-x" aria-label="Close">&times;</button></div>' +
 '<iframe title="Buyer Cost calculator"></iframe>' +
+'<div class="hn-bcp-fail" hidden>The calculator is taking a while to load. <a class="hn-bcp-fail-open" target="_blank" rel="noopener">Open it in a new tab</a></div>' +
 '<div class="hn-bcp-cta" hidden><span>Want the full breakdown for this home?</span>' +
 '<button type="button" class="hn-bcp-cta-btn" data-hn-cta="register">Email me the breakdown</button>' +
 '<button type="button" class="hn-bcp-cta-btn hn-bcp-save" data-hn-cta="save">Save this listing</button></div></div>';
@@ -597,6 +598,7 @@ var d = e.data, m = document.getElementById('hn-bcp-modal'), f = m && m.querySel
 if (d && d.hnBuyerCost && f && e.source === f.contentWindow && d.price > 0 && d.total > 0) lastTotal = { price: d.price, total: d.total };
 });
 var current = null;
+var loadTimer = null;
 function openCalc(price, isNewBuild, mortgage, prices) {
 current = { isNewBuild: isNewBuild, mortgage: mortgage, prices: prices || [price], price: price };
 var city = mortgage ? cityOf() : '';
@@ -611,7 +613,19 @@ m.querySelector('.hn-bcp-alts').innerHTML = alts.map(function (p) {
 return '<button type="button" class="hn-bcp-alt' + (p === price ? ' hn-bcp-alt-on' : '') + '" data-hn-price="' + p + '">$' + p.toLocaleString('en-CA') + '</button>';
 }).join('');
 m.querySelector('.hn-bcp-open').href = url;
-m.querySelector('iframe').src = url;
+var fr = m.querySelector('iframe'), fail = m.querySelector('.hn-bcp-fail');
+fail.hidden = true;
+m.querySelector('.hn-bcp-fail-open').href = url;
+clearTimeout(loadTimer);
+fr.onload = function () {
+if (fr.getAttribute('src') === 'about:blank') return;
+clearTimeout(loadTimer);
+fail.hidden = true;
+dbg('calculator frame loaded, size ' + Math.round(fr.getBoundingClientRect().width) + 'x' + Math.round(fr.getBoundingClientRect().height));
+};
+// If the calculator hasn't loaded after a few seconds (slow or blocked network), offer it in a new tab instead of leaving a blank box.
+loadTimer = setTimeout(function () { if (m.classList.contains('hn-bcp-on')) { fail.hidden = false; dbg('calculator frame did not load in 6s'); } }, 6000);
+fr.src = url;
 m.classList.add('hn-bcp-on');
 showCta(m);
 document.documentElement.style.overflow = 'hidden';
@@ -661,7 +675,10 @@ style.textContent =
 '#hn-bcp-modal .hn-bcp-alt-on{background:#dbae77}' +
 '#hn-bcp-modal .hn-bcp-open{color:#8a6a35;font-size:13px;text-decoration:underline}' +
 '#hn-bcp-modal .hn-bcp-x{border:0;background:none;font-size:28px;line-height:1;padding:0 6px;cursor:pointer;color:#111}' +
-'#hn-bcp-modal iframe{flex:1;width:100%;border:0;background:#fff}' +
+'#hn-bcp-modal iframe{flex:1 1 auto;min-height:0;display:block;width:100%;border:0;background:#fff}' +
+'#hn-bcp-modal .hn-bcp-fail{padding:12px 16px;background:#fff7e8;color:#111;font-family:inherit;font-size:14px;border-top:1px solid #e6e2d9}' +
+'#hn-bcp-modal .hn-bcp-fail[hidden]{display:none}' +
+'#hn-bcp-modal .hn-bcp-fail a{color:#8a6a35;font-weight:600;text-decoration:underline}' +
 '#hn-bcp-modal .hn-bcp-cta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid #e6e2d9;background:#f4f2ee;color:#111;font-family:inherit;font-size:14px;line-height:1.3}' +
 '#hn-bcp-modal .hn-bcp-cta[hidden],#hn-bcp-modal .hn-bcp-cta-btn[hidden]{display:none}' +
 '#hn-bcp-modal .hn-bcp-cta span{flex:1 1 100%;font-weight:600}' +
