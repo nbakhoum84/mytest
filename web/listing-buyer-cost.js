@@ -506,7 +506,7 @@ var MENU = 'button[aria-label*="menu" i],[class*="hamburger" i],[class*="menu-to
 function openRegistration() {
 var reg = registerLink();
 dbg('register link: ' + describe(reg));
-if (reg) press(reg);
+if (reg) { var before = snapshot(); watchRegistration(before); press(reg); }
 setTimeout(function () {
 dbg('form open after 1.2s: ' + !!formBox());
 if (formBox()) return;
@@ -519,6 +519,54 @@ dbg('retry link: ' + describe(again) + ' | form open now: ' + !!formBox());
 if (again && !formBox()) press(again);
 }, 600);
 }, 1200);
+}
+// Opening and dismissing the registration form makes the site remember it ("already asked") in cookies or local storage, so its own
+// prompt (on clicking a listing card, after a few listings) then stays away until the cookies are cleared. When the visitor closes the form
+// and is still signed out, put back whatever the site stored while the form was open (never anything that looks like a sign-in), so the
+// site keeps asking as it normally would.
+var AUTHKEY = /token|auth|jwt|login|user|csrf|xsrf|refresh|lead|email|phone/i;
+function cookieMap() {
+var m = {};
+document.cookie.split(';').forEach(function (c) { var i = c.indexOf('='); if (i > 0) m[c.slice(0, i).trim()] = c.slice(i + 1).trim(); });
+return m;
+}
+function storeMap(st) {
+var m = {};
+try { for (var i = 0; i < st.length; i++) m[st.key(i)] = st.getItem(st.key(i)); } catch (e) {}
+return m;
+}
+function snapshot() { return { c: cookieMap(), l: storeMap(window.localStorage), s: storeMap(window.sessionStorage) }; }
+function dropCookie(name) {
+var host = location.hostname, parts = host.split('.');
+['', 'domain=' + host + ';', 'domain=.' + host + ';', 'domain=.' + parts.slice(-2).join('.') + ';'].forEach(function (d) {
+document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;' + d;
+});
+}
+function restoreStored(before) {
+var now = snapshot(), undone = [];
+function fix(label, was, is, put, drop) {
+Object.keys(is).forEach(function (k) {
+if (AUTHKEY.test(k) || was[k] === is[k]) return;
+try { if (k in was) put(k, was[k]); else drop(k); undone.push(label + ':' + k); } catch (e) {}
+});
+}
+fix('cookie', before.c, now.c, function (k, v) { document.cookie = k + '=' + v + ';path=/'; }, dropCookie);
+fix('local', before.l, now.l, function (k, v) { localStorage.setItem(k, v); }, function (k) { localStorage.removeItem(k); });
+fix('session', before.s, now.s, function (k, v) { sessionStorage.setItem(k, v); }, function (k) { sessionStorage.removeItem(k); });
+dbg('put back what the site remembered about the form: ' + (undone.join(', ') || 'nothing changed'));
+}
+var regWatch = null;
+function watchRegistration(before) {
+clearInterval(regWatch);
+var seen = false, t0 = Date.now();
+regWatch = setInterval(function () {
+if (Date.now() - t0 > 180000) { clearInterval(regWatch); return; }
+if (formBox()) { seen = true; return; }
+if (!seen) return;
+clearInterval(regWatch);
+// Form closed. Wait a moment: if the visitor registered, the site signs them in and the Register link goes away, so leave everything alone.
+setTimeout(function () { if (registerLink() && !formBox()) restoreStored(before); else dbg('form closed, visitor looks signed in: left everything as is'); }, 2500);
+}, 400);
 }
 // When a signed-out visitor closes the calculator, open the site's registration form (every time).
 function closeAndOffer() {
