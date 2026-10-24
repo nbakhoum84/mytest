@@ -211,11 +211,11 @@ olds[o].setAttribute('aria-label', (olds[o].getAttribute('data-hn-kind') === 'mo
 }
 return;
 }
-// "Buyer cost" and "Mortgage" sit side by side in one row (Mortgage not on Commercial pages); the mortgage calculator starts from the same price.
+// "Buyer cost" and "Mortgage" sit side by side in one row (Commercial pages too); the mortgage calculator starts from the same price.
 var b = document.createElement('div'), lb = labels(price, isNew(el));
 b.className = 'hn-bcp-row';
 b.innerHTML = '<button type="button" class="hn-bcp-btn" data-hn-kind="buyer" data-hn-price="' + price + '" aria-label="Buyer cost for $' + price.toLocaleString('en-CA') + '">' + lb.buyer + '</button>' +
-(COMMERCIAL ? '' : '<button type="button" class="hn-bcp-btn hn-bcp-mtg" data-hn-kind="mortgage" data-hn-price="' + price + '" aria-label="Mortgage calculator for $' + price.toLocaleString('en-CA') + '">' + lb.mortgage + '</button>');
+'<button type="button" class="hn-bcp-btn hn-bcp-mtg" data-hn-kind="mortgage" data-hn-price="' + price + '" aria-label="Mortgage calculator for $' + price.toLocaleString('en-CA') + '">' + lb.mortgage + '</button>';
 // After the whole line the price sits on (e.g. price + open house tag), so it lands just below it.
 var line = el;
 while (line.parentElement && line.parentElement !== card && /^inline/.test(getComputedStyle(line).display)) line = line.parentElement;
