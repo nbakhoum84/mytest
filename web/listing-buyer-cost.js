@@ -30,6 +30,33 @@ hu.id = 'hn-hero-up';
 hu.textContent = '@media(max-width:700px) and (orientation:portrait){body.home .md-hero .media-content-search-group{position:relative!important;top:-56px!important}}';
 (document.head || document.documentElement).appendChild(hu);
 }
+// Phones: hide Lofty's fixed bottom bar with the "Call Nader" and "Value My Home" buttons (wider screens keep it).
+// Found by its two buttons' text, so it still works if Lofty renames its classes; the CSS only applies on screens up to 700px wide.
+if (typeof document !== 'undefined' && !document.getElementById('hn-hide-bar')) {
+var hb = document.createElement('style');
+hb.id = 'hn-hide-bar';
+hb.textContent = '@media(max-width:700px){.hn-hide-bar{display:none!important}}';
+(document.head || document.documentElement).appendChild(hb);
+var hbQueued = false;
+var hideBar = function () {
+hbQueued = false;
+var els = document.querySelectorAll('a,button,[role="button"]');
+for (var i = 0; i < els.length; i++) {
+if (!/^(call nader|value my home)$/i.test(els[i].textContent.replace(/\s+/g, ' ').trim())) continue;
+for (var bar = els[i].parentElement, n = 0; bar && bar !== document.body && n < 6; bar = bar.parentElement, n++) {
+if (getComputedStyle(bar).position !== 'fixed') continue;
+var t = bar.textContent.replace(/\s+/g, ' ').trim();
+if (t.length < 60 && /call nader/i.test(t) && /value my home/i.test(t)) bar.classList.add('hn-hide-bar');
+break;
+}
+}
+};
+var hbWatch = function () {
+if (!hbQueued) { hbQueued = true; requestAnimationFrame(hideBar); }
+};
+new MutationObserver(hbWatch).observe(document.documentElement, { childList: true, subtree: true });
+hbWatch();
+}
 // Phones: no "scroll to top" button. It is the round #scrollToTopBtn made by hn.js (nbakhoum84.github.io), which only shows it on screens wider
 // than 768px; the site's own CSS styles it, so on small screens it is overridden here. A short touch screen (phone sideways) counts as a phone.
 if (typeof document !== 'undefined' && !document.getElementById('hn-no-goto-top')) {
