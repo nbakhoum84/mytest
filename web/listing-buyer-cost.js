@@ -93,6 +93,14 @@ cw.src = 'https://nbakhoum84.github.io/mytest/chat-welcome.js?v=' + Math.floor(D
 cw.async = true;
 document.head.appendChild(cw);
 }
+// Every page: dark text keeps its colour on hover (web/hover-color-lock.js; Nader, 2026-10-24).
+if (typeof document !== 'undefined' && !window.hnHoverLockLoading) {
+window.hnHoverLockLoading = true;
+var hl = document.createElement('script');
+hl.src = 'https://nbakhoum84.github.io/mytest/hover-color-lock.js?v=' + Math.floor(Date.now() / 6e4);
+hl.async = true;
+document.head.appendChild(hl);
+}
 // Calculator blocks: Lofty wraps each HTML block in a narrower .mg-container (overflow hidden), so that box is widened (.hn-calc-wide) to match the app cards.
 // The "Get the home-nader app" card (website/install-app-block.html, pasted on many Lofty pages): Nader wants it 700px wide everywhere (2026-10-23; was 1300px).
 if (typeof document !== 'undefined' && !document.getElementById('hn-app-width')) {
