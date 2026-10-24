@@ -25,8 +25,9 @@ test('closing costs are PTT plus the fixed estimates', () => {
   assert.equal(c.closing, ptt(3000000) + 3500 + 4000 + 3500 + 3000);
 });
 
-test('a business-only sale (no land) has no property transfer tax', () => {
+test('a business-only sale (no land) has no property transfer tax and no commercial appraisal', () => {
   const c = costs(1000000, { land: false });
   assert.equal(c.items[0][1], 0);
-  assert.equal(c.closing, 3500 + 4000 + 3500 + 3000);
+  assert.equal(c.items.find((i) => i[0] === 'Commercial appraisal')[1], 0);
+  assert.equal(c.closing, 3500 + 3500 + 3000);
 });
