@@ -733,6 +733,12 @@ var mm = document.getElementById('hn-bcp-modal');
 dbg('calculator open: ' + !!(mm && mm.classList.contains('hn-bcp-on')) + ', box ' + (mm ? Math.round(mm.getBoundingClientRect().width) + 'x' + Math.round(mm.getBoundingClientRect().height) : 'missing') + ', iframe ' + (mm ? mm.querySelector('iframe').src.slice(0, 70) : ''));
 }
 
+// Floating widgets (the AI chat bubble and its window, the language selector) sit in fixed boxes; clicks there are never card clicks.
+// Before this, a chat bubble click on the home page climbed to a section holding listings and opened the registration form (2026-10-24).
+function inFixed(el) {
+for (; el && el !== document.body; el = el.parentElement) if (getComputedStyle(el).position === 'fixed') return true;
+return false;
+}
 // A signed-out visitor who has used a calculator and then clicks a listing card gets the registration form (the card does not open until
 // they register), the same as when they close a calculator. Our own buttons, hearts and other buttons are left alone.
 function onCardClick(e) {
@@ -740,12 +746,13 @@ var t = e.target;
 if (!t || !t.closest || t.closest('.hn-bcp-row,#hn-bcp-modal,button,[role="button"],input,select,textarea,label')) return;
 var used = false;
 try { used = sessionStorage.getItem('hnCalcUsed') === '1'; } catch (err) {}
-if (!used || !registerLink()) return;
+if (!used || !registerLink() || inFixed(t)) return;
 var link = t.closest('a[href*="/listing-detail/"]');
 if (!link) {
 for (var a = t.parentElement, i = 0; a && a !== document.body && i < 8; a = a.parentElement, i++) {
 var ls = a.querySelectorAll('a[href*="/listing-detail/"]');
-if (ls.length && a.querySelector('img,picture') && a.querySelectorAll('.hn-bcp-row').length <= 1) { link = ls[0]; break; }
+// Exactly one listing link: a single card, never a whole section (the home page's wrapper holds many, but no button rows).
+if (ls.length === 1 && a.querySelector('img,picture') && a.querySelectorAll('.hn-bcp-row').length <= 1) { link = ls[0]; break; }
 }
 }
 if (!link) return;
