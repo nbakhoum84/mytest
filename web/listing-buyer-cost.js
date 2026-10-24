@@ -506,7 +506,7 @@ var MENU = 'button[aria-label*="menu" i],[class*="hamburger" i],[class*="menu-to
 function openRegistration() {
 var reg = registerLink();
 dbg('register link: ' + describe(reg));
-if (reg) press(reg);
+if (reg) { var before = snapshot(); watchRegistration(before); press(reg); }
 setTimeout(function () {
 dbg('form open after 1.2s: ' + !!formBox());
 if (formBox()) return;
@@ -520,6 +520,54 @@ if (again && !formBox()) press(again);
 }, 600);
 }, 1200);
 }
+// Opening and dismissing the registration form makes the site remember it ("already asked") in cookies or local storage, so its own
+// prompt (on clicking a listing card, after a few listings) then stays away until the cookies are cleared. When the visitor closes the form
+// and is still signed out, put back whatever the site stored while the form was open (never anything that looks like a sign-in), so the
+// site keeps asking as it normally would.
+var AUTHKEY = /token|auth|jwt|login|user|csrf|xsrf|refresh|lead|email|phone/i;
+function cookieMap() {
+var m = {};
+document.cookie.split(';').forEach(function (c) { var i = c.indexOf('='); if (i > 0) m[c.slice(0, i).trim()] = c.slice(i + 1).trim(); });
+return m;
+}
+function storeMap(st) {
+var m = {};
+try { for (var i = 0; i < st.length; i++) m[st.key(i)] = st.getItem(st.key(i)); } catch (e) {}
+return m;
+}
+function snapshot() { return { c: cookieMap(), l: storeMap(window.localStorage), s: storeMap(window.sessionStorage) }; }
+function dropCookie(name) {
+var host = location.hostname, parts = host.split('.');
+['', 'domain=' + host + ';', 'domain=.' + host + ';', 'domain=.' + parts.slice(-2).join('.') + ';'].forEach(function (d) {
+document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;' + d;
+});
+}
+function restoreStored(before) {
+var now = snapshot(), undone = [];
+function fix(label, was, is, put, drop) {
+Object.keys(is).forEach(function (k) {
+if (AUTHKEY.test(k) || was[k] === is[k]) return;
+try { if (k in was) put(k, was[k]); else drop(k); undone.push(label + ':' + k); } catch (e) {}
+});
+}
+fix('cookie', before.c, now.c, function (k, v) { document.cookie = k + '=' + v + ';path=/'; }, dropCookie);
+fix('local', before.l, now.l, function (k, v) { localStorage.setItem(k, v); }, function (k) { localStorage.removeItem(k); });
+fix('session', before.s, now.s, function (k, v) { sessionStorage.setItem(k, v); }, function (k) { sessionStorage.removeItem(k); });
+dbg('put back what the site remembered about the form: ' + (undone.join(', ') || 'nothing changed'));
+}
+var regWatch = null;
+function watchRegistration(before) {
+clearInterval(regWatch);
+var seen = false, t0 = Date.now();
+regWatch = setInterval(function () {
+if (Date.now() - t0 > 180000) { clearInterval(regWatch); return; }
+if (formBox()) { seen = true; return; }
+if (!seen) return;
+clearInterval(regWatch);
+// Form closed. Wait a moment: if the visitor registered, the site signs them in and the Register link goes away, so leave everything alone.
+setTimeout(function () { if (registerLink() && !formBox()) restoreStored(before); else dbg('form closed, visitor looks signed in: left everything as is'); }, 2500);
+}, 400);
+}
 // When a signed-out visitor closes the calculator, open the site's registration form (every time).
 function closeAndOffer() {
 var was = current;
@@ -528,6 +576,7 @@ var reg = registerLink();
 dbg('closed calculator; register link found: ' + (reg ? describe(reg) : 'NO (treated as signed in, no form)'));
 if (!reg || !was) return;
 track('hn_calculator_signup_prompt', { calculator: was.mortgage ? 'mortgage' : 'buyer_cost', listing_price: was.price });
+try { sessionStorage.setItem('hnCalcUsed', '1'); } catch (e) {}
 openRegistration();
 hideFormClose();
 }
@@ -653,6 +702,31 @@ var mm = document.getElementById('hn-bcp-modal');
 dbg('calculator open: ' + !!(mm && mm.classList.contains('hn-bcp-on')) + ', box ' + (mm ? Math.round(mm.getBoundingClientRect().width) + 'x' + Math.round(mm.getBoundingClientRect().height) : 'missing') + ', iframe ' + (mm ? mm.querySelector('iframe').src.slice(0, 70) : ''));
 }
 
+// A signed-out visitor who has used a calculator and then clicks a listing card gets the registration form (the card does not open until
+// they register), the same as when they close a calculator. Our own buttons, hearts and other buttons are left alone.
+function onCardClick(e) {
+var t = e.target;
+if (!t || !t.closest || t.closest('.hn-bcp-row,#hn-bcp-modal,button,[role="button"],input,select,textarea,label')) return;
+var used = false;
+try { used = sessionStorage.getItem('hnCalcUsed') === '1'; } catch (err) {}
+if (!used || !registerLink()) return;
+var link = t.closest('a[href*="/listing-detail/"]');
+if (!link) {
+for (var a = t.parentElement, i = 0; a && a !== document.body && i < 8; a = a.parentElement, i++) {
+var ls = a.querySelectorAll('a[href*="/listing-detail/"]');
+if (ls.length && a.querySelector('img,picture') && a.querySelectorAll('.hn-bcp-row').length <= 1) { link = ls[0]; break; }
+}
+}
+if (!link) return;
+e.preventDefault();
+e.stopPropagation();
+if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+track('hn_listing_signup_prompt', { listing_url: link.getAttribute('href') });
+dbg('listing card click: showing the registration form');
+openRegistration();
+hideFormClose();
+}
+
 var started = false;
 function start() {
 if (started) { scan(); return; }
@@ -688,6 +762,7 @@ style.textContent =
 (document.head || document.documentElement).appendChild(style);
 // Capture phase, so the price click is handled before the card's link or Lofty's own click handler.
 document.addEventListener('click', onClick, true);
+document.addEventListener('click', onCardClick, true);
 document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && document.querySelector('#hn-bcp-modal.hn-bcp-on')) closeAndOffer(); });
 // Listing cards load and change as visitors search, filter and page, so rescan (throttled) when the page changes.
 // Our own buttons coming and going are ignored, so adding them never triggers another round.
