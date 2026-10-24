@@ -208,18 +208,18 @@ document.querySelector('nav').onclick = (e) => {
     $('p-min').insertAdjacentHTML('beforebegin', `<p class="note" id="p-closing">${closingNote(closing)}</p>`);
     if (commercial) {
       $('p-biz-row').hidden = false;
-      // Commercial loans (not CMHC-insured): conventional A lenders price at the 5-year CMB (3.69%) plus a spread, about 4.75%-5.75%,
-      // with at least 25% down (75% loan-to-value). Checked Oct 22, 2026 (lendcity.ca, ishoprates.ca); update when rates move.
+      // BC commercial loans (not CMHC-insured): BC banks quote 5.89%-6.39% (5-year fixed) with 35%-40% down typical (jeremykresky.com,
+      // 2026); lenders go to 75% loan-to-value at most, so never under 25% down. Checked Oct 24, 2026; update when rates move.
       commercialLoan = true;
-      $('p-rate').value = '5.25';
-      for (const id of ['p-down', 'c-down']) $(id).value = Math.max(25, num($(id).value));
-      $('p-min').insertAdjacentHTML('beforebegin', '<p class="note">Commercial mortgage: 5.25% is a typical bank rate for commercial property (about 4.75% to 5.75%, October 2026) with at least 25% down. Your lender\'s quote may differ.</p>');
+      $('p-rate').value = '6';
+      for (const id of ['p-down', 'c-down']) $(id).value = 35;
+      $('p-min').insertAdjacentHTML('beforebegin', '<p class="note">BC commercial mortgage: 6% is a typical bank rate (BC banks about 5.89% to 6.39%, 5-year fixed), usually with 35% to 40% down. Your lender\'s quote may differ.</p>');
       $('p-biz').onchange = () => { closingCash = Math.round(commercialClosing()); $('p-closing').textContent = closingNote(closingCash); pay(); };
     }
     if (q.get('new') === '1') $('t-nb').checked = true;
     // &down= is the down payment % the listing's button estimate used (10%, or 20% at $1.5M or more).
     const dq = num(q.get('down'));
-    if (dq >= 5 && dq <= 100) for (const id of ['p-down', 'c-down']) $(id).value = commercial ? Math.max(25, dq) : dq;
+    if (dq >= 5 && dq <= 100) for (const id of ['p-down', 'c-down']) $(id).value = commercial ? Math.max(35, dq) : dq;
     const city = (q.get('city') || '').replace(/[^A-Za-z .'-]/g, '').slice(0, 40);
     if (city) $('p-min').insertAdjacentHTML('beforebegin', `<p class="note">Listing in ${city}, BC</p>`);
     const key = Object.keys(CITY_TAX).find((c) => c.toLowerCase() === city.toLowerCase());
