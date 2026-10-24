@@ -7,7 +7,9 @@ if (window.hnHoverLock) return;
 window.hnHoverLock = true;
 // Every element that shows its own text (links, menu items, and labels such as the listing cards' Townhouse / Condo tags).
 var NOT = 'script,style,noscript,button,input,select,textarea,option,svg,svg *';
-var SKIP = '.hn-bcp-row,#hn-bcp-modal,#hn-chat-welcome';
+// The AI chat (#chat-app) is left completely alone: the chat bubble started opening Lofty's sign-up form right after this script
+// went live (Nader, 2026-10-24).
+var SKIP = '.hn-bcp-row,#hn-bcp-modal,#hn-chat-welcome,#chat-app,[class*="chat"]';
 // Any visible colour counts (dark text, and light text such as on the home page's photos; Nader 2026-10-24).
 function visible(c) {
 var m = /rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+))?/.exec(c);
@@ -30,8 +32,23 @@ var el = els[i];
 if (el.hasAttribute('data-hn-hc') || !ownText(el) || el.matches(NOT) || el.matches(':hover') || el.closest(SKIP)) continue;
 var c = getComputedStyle(el).color;
 if (!visible(c) || buttonish(el)) continue;
+pin(el, c);
+}
+}
+// Also pins -webkit-text-fill-color, which some themes change on hover instead of color.
+function pin(el, c) {
 el.setAttribute('data-hn-hc', c);
 el.style.setProperty('color', c, 'important');
+el.style.setProperty('-webkit-text-fill-color', c, 'important');
+}
+// The home page's headings still changed on hover with the colour pinned (Nader, 2026-10-24): the site rewrites the element's own
+// style on hover, dropping the pin. Put it straight back. A colour another script sets as !important on purpose (the sticky
+// header's white text) is left alone.
+function guard(list) {
+for (var i = 0; i < list.length; i++) {
+var el = list[i].target, c = el.getAttribute && el.getAttribute('data-hn-hc');
+if (!c || el.style.getPropertyPriority('color') === 'important') continue;
+pin(el, c);
 }
 }
 // The site changes some colours on purpose when the page scrolls (e.g. the header turning sticky). Re-read every locked colour that
@@ -42,12 +59,12 @@ for (i = 0; i < els.length; i++) {
 var el = els[i];
 if (el.matches(':hover') || el.style.getPropertyValue('color') !== el.getAttribute('data-hn-hc')) continue;
 el.style.removeProperty('color');
+el.style.removeProperty('-webkit-text-fill-color');
 free.push(el);
 }
 var cs = free.map(function (el) { return getComputedStyle(el).color; });
 for (i = 0; i < free.length; i++) {
-free[i].setAttribute('data-hn-hc', cs[i]);
-free[i].style.setProperty('color', cs[i], 'important');
+pin(free[i], cs[i]);
 }
 }
 var t = 0, r = 0;
@@ -55,6 +72,7 @@ function later() { clearTimeout(t); t = setTimeout(function () { refresh(); scan
 function start() {
 scan();
 new MutationObserver(later).observe(document.body, { childList: true, subtree: true });
+new MutationObserver(guard).observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
 window.addEventListener('scroll', function () { clearTimeout(r); r = setTimeout(refresh, 150); }, { passive: true });
 window.addEventListener('resize', later);
 }
