@@ -480,6 +480,11 @@ document.body.appendChild(d);
 }
 d.textContent += msg + '\n';
 }
+// With ?hndebug=1, script errors on the page show up in the same box.
+if (DEBUG) {
+window.addEventListener('error', function (e) { dbg('ERROR: ' + e.message + (e.filename ? ' (' + String(e.filename).split('/').pop() + ':' + e.lineno + ')' : '')); });
+window.addEventListener('unhandledrejection', function (e) { dbg('ERROR (promise): ' + (e.reason && e.reason.message || e.reason)); });
+}
 function describe(el) {
 if (!el) return 'none';
 var r = el.getBoundingClientRect();
@@ -628,7 +633,10 @@ e.stopPropagation();
 if (e.stopImmediatePropagation) e.stopImmediatePropagation();
 var isMortgage = el.getAttribute('data-hn-kind') === 'mortgage';
 track(isMortgage ? 'hn_mortgage_click' : 'hn_buyer_cost_click', { listing_price: price, listing_type: COMMERCIAL ? 'commercial' : isNew(el) ? 'new_build' : 'residential', button_text: el.classList.contains('hn-bcp-btn') ? el.textContent : 'price' });
-openCalc(price, isNew(el), isMortgage, prices.length ? prices : [price]);
+dbg('tap on ' + (isMortgage ? 'Mortgage' : 'Buyer cost') + ' button, price=' + price);
+try { openCalc(price, isNew(el), isMortgage, prices.length ? prices : [price]); } catch (err) { dbg('ERROR opening the calculator: ' + err.message); throw err; }
+var mm = document.getElementById('hn-bcp-modal');
+dbg('calculator open: ' + !!(mm && mm.classList.contains('hn-bcp-on')) + ', box ' + (mm ? Math.round(mm.getBoundingClientRect().width) + 'x' + Math.round(mm.getBoundingClientRect().height) : 'missing') + ', iframe ' + (mm ? mm.querySelector('iframe').src.slice(0, 70) : ''));
 }
 
 var started = false;
