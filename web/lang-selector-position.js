@@ -10,7 +10,7 @@ window.hnLangPos = true;
 var PROPS = ['position', 'bottom', 'left', 'top'];
 var box = null, saved = null, parked = false, mo = null, queued = false;
 
-// Upright phone (or a narrow window) on the home page (Lofty gives its <body> the class "home"): the only place the selector is moved.
+// Upright phone (or a narrow window) on the home page, while scrolled to the top (Lofty gives its <body> the class "home"): the only place the selector is moved.
 function upright() { return innerWidth <= 700 && innerHeight > innerWidth && !!document.body && document.body.classList.contains('home'); }
 
 // The floating box that holds the "EN" selector: a small fixed box at the left edge.
@@ -43,7 +43,8 @@ if (box.style.getPropertyValue(name) !== value || box.style.getPropertyPriority(
 // Put the box just under the search field. Only writes what differs, so it never triggers itself.
 function apply() {
 if (!box) return;
-if (!upright()) { restore(); return; }
+// Parked under the search field only while the page is at the top; once the visitor scrolls it floats again (Lofty's own spot), following the screen.
+if (!upright() || scrollY > 8) { restore(); return; }
 var inp = document.querySelector('input[placeholder*="Subdivision"]');
 if (!inp || !inp.offsetParent) return;
 if (!saved) saved = PROPS.map(function (p) { return [p, box.style.getPropertyValue(p), box.style.getPropertyPriority(p)]; });
@@ -102,6 +103,8 @@ function turned() { later(); setTimeout(later, 350); }
 addEventListener('resize', turned);
 addEventListener('orientationchange', turned);
 addEventListener('load', later);
+// Scrolling away from the top lets it float; scrolling back to the top parks it again.
+addEventListener('scroll', later, { passive: true });
 // Lofty can switch pages without reloading: look again when the page type (the body's class) changes.
 if (document.body) new MutationObserver(later).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 })();
