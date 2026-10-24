@@ -1,6 +1,6 @@
 // Network-first: always fetch the latest version when online; use the cached copy only when offline.
-const CACHE = 'commercial-cost-v5';
-const FILES = ['./', 'index.html', 'costs.js?v=3', 'icon.svg', 'manifest.webmanifest'];
+const CACHE = 'commercial-cost-v6';
+const FILES = ['./', 'index.html', 'costs.js?v=4', 'icon.svg', 'manifest.webmanifest'];
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)));
