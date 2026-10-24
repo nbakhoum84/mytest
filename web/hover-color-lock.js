@@ -7,7 +7,9 @@ if (window.hnHoverLock) return;
 window.hnHoverLock = true;
 // Every element that shows its own text (links, menu items, and labels such as the listing cards' Townhouse / Condo tags).
 var NOT = 'script,style,noscript,button,input,select,textarea,option,svg,svg *';
-var SKIP = '.hn-bcp-row,#hn-bcp-modal,#hn-chat-welcome';
+// The AI chat (#chat-app) is left completely alone: the chat bubble started opening Lofty's sign-up form right after this script
+// went live (Nader, 2026-10-24).
+var SKIP = '.hn-bcp-row,#hn-bcp-modal,#hn-chat-welcome,#chat-app,[class*="chat"]';
 // Any visible colour counts (dark text, and light text such as on the home page's photos; Nader 2026-10-24).
 function visible(c) {
 var m = /rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+))?/.exec(c);
