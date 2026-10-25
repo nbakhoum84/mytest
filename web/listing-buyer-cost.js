@@ -994,12 +994,34 @@ if (VALUATION.test(label)) { track('hn_valuation_click', Object.assign({ link_lo
 }, true);
 var CALCS = { 'mh-app': 'cash_to_close', 'sc-app': 'seller_cost', 'mc-app': 'mortgage', 'fh-app': 'first_home_savings', 'pd-app': 'presale_deposits' };
 var calcUsed = {};
-document.addEventListener('change', function (e) {
+var calcUse = function (name) {
+if (calcUsed[name]) return;
+calcUsed[name] = true;
+track('hn_calculator_use', Object.assign({ calculator: name }, siteTags('calculator_page', name, '')));
+};
+// Mortgage calculators page (Nader 2026-10-25): each tab of our mortgage form counts on its own.
+var MC_TABS = { 'mc-pay': 'mortgage_payment', 'mc-afford': 'mortgage_affordability', 'mc-cmhc': 'mortgage_cmhc', 'mc-tax': 'mortgage_transfer_tax' };
+var calcInput = function (e) {
 var box = e.target && e.target.closest && e.target.closest('#mh-app, #sc-app, #mc-app, #fh-app, #pd-app');
-if (!box || calcUsed[box.id]) return;
-calcUsed[box.id] = true;
-track('hn_calculator_use', Object.assign({ calculator: CALCS[box.id] }, siteTags('calculator_page', CALCS[box.id], '')));
-}, true);
+if (!box) return;
+var tab = box.id === 'mc-app' && e.target.closest('#mc-pay, #mc-afford, #mc-cmhc, #mc-tax');
+calcUse(tab ? MC_TABS[tab.id] : CALCS[box.id]);
+};
+document.addEventListener('change', calcInput, true);
+document.addEventListener('input', calcInput, true);
+// Ratehub calculators are frames from another site, so their inputs can't be seen: count the first
+// time the visitor clicks into each one (focus moves into its frame).
+var RATEHUB = [[/LandTransfer|land transfer/i, 'ratehub_land_transfer_tax'], [/DownPayment|cmhc/i, 'ratehub_cmhc'],
+[/Affordab/i, 'ratehub_affordability'], [/ProductTable|rate (table|comparison)|rates/i, 'ratehub_rate_table'], [/Payment|mortgage calc/i, 'ratehub_payment']];
+setInterval(function () {
+var f = document.activeElement;
+if (!f || f.tagName !== 'IFRAME') return;
+var id = (f.getAttribute('src') || '') + ' ' + (f.getAttribute('title') || '');
+if (!/ratehub/i.test(id)) return;
+var name = 'ratehub_other';
+for (var i = 0; i < RATEHUB.length; i++) if (RATEHUB[i][0].test(id)) { name = RATEHUB[i][1]; break; }
+calcUse(name);
+}, 1000);
 }
 var LISTING_PAGE = false, active = false;
 function route() {
