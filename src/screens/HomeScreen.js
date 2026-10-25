@@ -3,6 +3,7 @@ import { Image, Linking, Platform, ScrollView, StyleSheet, Text, TouchableOpacit
 import { AGENT, APP_LINKS, CATEGORIES, COLORS, LOGO_URL } from '../config';
 import { HERO } from '../hero';
 import { LOGO } from '../logo';
+import { trackBooking, trackContact } from '../track';
 
 const POPULAR = ['Vancouver', 'Burnaby', 'Surrey', 'Richmond', 'Coquitlam', 'White Rock', 'Langley', 'Delta'];
 const residential = CATEGORIES[0];
@@ -30,7 +31,7 @@ export default function HomeScreen({ goTo, openWeb }) {
           <TouchableOpacity style={styles.btnGold} onPress={() => goTo('browse')}>
             <Text style={styles.btnGoldText}>Browse</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnGhost} onPress={() => openWeb(AGENT.calendly)}>
+          <TouchableOpacity style={styles.btnGhost} onPress={() => { trackBooking('home'); openWeb(AGENT.calendly); }}>
             <Text style={styles.btnGhostText}>Book a call</Text>
           </TouchableOpacity>
         </View>
@@ -86,9 +87,9 @@ export default function HomeScreen({ goTo, openWeb }) {
         <Text style={styles.contactTitle}>Let’s talk</Text>
         <Text style={styles.contactSub}>Free consultation on buying, selling and investing.</Text>
         <View style={styles.contactRow}>
-          <ContactBtn label="Call" onPress={() => Linking.openURL(`tel:${AGENT.phone}`)} />
-          <ContactBtn label="WhatsApp" onPress={() => Linking.openURL(AGENT.whatsapp)} />
-          <ContactBtn label="Email" onPress={() => Linking.openURL(`mailto:${AGENT.email}`)} />
+          <ContactBtn label="Call" onPress={() => { trackContact('call', 'home'); Linking.openURL(`tel:${AGENT.phone}`); }} />
+          <ContactBtn label="WhatsApp" onPress={() => { trackContact('whatsapp', 'home'); Linking.openURL(AGENT.whatsapp); }} />
+          <ContactBtn label="Email" onPress={() => { trackContact('email', 'home'); Linking.openURL(`mailto:${AGENT.email}`); }} />
         </View>
       </View>
 

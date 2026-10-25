@@ -9,7 +9,7 @@ import re
 from PIL import Image
 
 ORDER = [
-    ('src/config.js', ''), ('src/logo.js', 'logo'), ('src/hero.js', 'hero'), ('src/calc.js', 'calc'),
+    ('src/config.js', ''), ('src/track.js', ''), ('src/logo.js', 'logo'), ('src/hero.js', 'hero'), ('src/calc.js', 'calc'),
     ('src/components/Inputs.js', 'inputs'), ('src/components/RatehubWidget.js', 'rh'),
     ('src/screens/HomeScreen.js', 'home'), ('src/screens/BrowseScreen.js', 'browse'),
     ('src/screens/CalculatorsScreen.js', 'calcs'), ('src/screens/MoreScreen.js', 'more'), ('App.js', 'app'),

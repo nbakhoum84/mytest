@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Alert, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { AGENT, COLORS, RESOURCES } from '../config';
+import { trackContact } from '../track';
 
 export default function MoreScreen({ openWeb }) {
   const [name, setName] = useState('');
@@ -13,6 +14,7 @@ export default function MoreScreen({ openWeb }) {
       Alert.alert('Missing info', 'Please enter your name and a message.');
       return;
     }
+    trackContact('email', 'contact_form');
     const body = `${message}\n\n${name}${phone ? `\n${phone}` : ''}`;
     Linking.openURL(`mailto:${AGENT.email}?subject=${encodeURIComponent('Inquiry from the app')}&body=${encodeURIComponent(body)}`);
   };
