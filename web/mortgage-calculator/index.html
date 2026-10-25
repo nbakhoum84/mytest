@@ -227,7 +227,16 @@ document.querySelector('nav').onclick = (e) => {
     const dq = num(q.get('down'));
     if (dq >= 5 && dq <= 100) for (const id of ['p-down', 'c-down']) $(id).value = commercial ? Math.max(35, dq) : dq;
     // The listing's address for the BC Assessment link: copied when the link is clicked, ready to paste into BC Assessment's search.
-    const addr = (q.get('addr') || '').replace(/[^A-Za-z0-9 #.,'\/-]/g, '').slice(0, 80);
+    // BC Assessment's search finds "UNIT-STREET CITY" in capitals, e.g. "804-1342 JOHNSTON RD WHITE ROCK" (checked on its site, 2026-10-25);
+    // "#48", a unit after the street, or commas find nothing. Listings write "2891 MONTROSE AVE #48, Abbotsford" or "1342 JOHNSTON RD 804, White Rock".
+    const bcaFormat = (a) => {
+      let [street, city = ''] = a.split(',').map((x) => x.trim());
+      let unit = '';
+      street = street.replace(/\s*(?:#|unit\s+|suite\s+|apt\.?\s+)([A-Za-z0-9]+)\s*$/i, (m, u) => { unit = u; return ''; });
+      if (!unit) street = street.replace(/^(.*[A-Za-z]\.?)\s+(\d+[A-Za-z]?)$/, (m, s1, u) => (/\b(hwy|highway)$/i.test(s1) ? m : (unit = u, s1)));
+      return ((unit ? unit + '-' : '') + street + (city ? ' ' + city : '')).replace(/\s+/g, ' ').toUpperCase();
+    };
+    const addr = bcaFormat((q.get('addr') || '').replace(/[^A-Za-z0-9 #.,'\/-]/g, '').slice(0, 80));
     if (addr) {
       const hint = $('p-bca-addr');
       hint.textContent = `Address for BC Assessment: ${addr}. Clicking the link copies it; paste it (Ctrl+V) into their search box.`;
