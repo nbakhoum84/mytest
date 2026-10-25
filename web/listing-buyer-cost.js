@@ -47,17 +47,7 @@ g.style.removeProperty('top');
 var r = g.getBoundingClientRect(), y = window.pageYOffset || 0;
 var head = document.querySelector('header, .md-header');
 var headBottom = head ? head.getBoundingClientRect().bottom + y : 0;
-// The cookie banner (fixed to the bottom until accepted) counts as the bottom of the window while it shows.
-var bottom = window.innerHeight, els = document.querySelectorAll('body *');
-for (var i = 0; i < els.length; i++) {
-var el = els[i];
-if (el.children.length > 30 || !/cookie/i.test(el.className + ' ' + el.id) && !(el.textContent.length < 600 && /accept all cookies/i.test(el.textContent))) continue;
-var cs = getComputedStyle(el);
-if (cs.position !== 'fixed' || cs.display === 'none' || cs.visibility === 'hidden') continue;
-var cr = el.getBoundingClientRect();
-if (cr.height > 0 && cr.height < window.innerHeight / 2 && cr.bottom >= window.innerHeight - 2) bottom = Math.min(bottom, cr.top);
-}
-var up = Math.max(0, Math.min(r.bottom + y + 16 - bottom, r.top + y - headBottom - 16));
+var up = Math.max(0, Math.min(r.bottom + y + 16 - window.innerHeight, r.top + y - headBottom - 16));
 if (up > 0) { g.style.setProperty('position', 'relative', 'important'); g.style.setProperty('top', -Math.round(up) + 'px', 'important'); }
 };
 [0, 400, 1200, 3000].forEach(function (t) { setTimeout(window.hnHeroFit, t); });
