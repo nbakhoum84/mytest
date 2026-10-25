@@ -425,7 +425,7 @@ return false;
 function track(name, data) {
 data.page_path = location.pathname;
 data.city = cityOf() || '';
-// No dataLayer.push({event}): a site GTM tag forwards every dataLayer event to Nader-exp, which counted each click twice.
+try { (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: name }, data)); } catch (e) {}
 var viaSite = false;
 try { viaSite = naderExp('event', name, Object.assign({ send_to: 'G-N9D71PSLL6' }, data)); } catch (e) {}
 try { if (typeof window.gtag === 'function') window.gtag('event', name, Object.assign({ send_to: viaSite ? 'G-50BX6YT24D' : ['G-N9D71PSLL6', 'G-50BX6YT24D'] }, data)); } catch (e) {}
