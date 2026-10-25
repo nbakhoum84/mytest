@@ -82,7 +82,7 @@ var tbMoved = null, tbH = 0, tbStop = 0;
 var tbBack = function () {
 // Scrolling has stopped: slide the bar back down.
 if (!tbMoved) return;
-tbMoved.style.setProperty('transition', 'transform 1.2s ease', 'important');
+tbMoved.style.setProperty('transition', 'transform 1s ease', 'important');
 tbMoved.style.removeProperty('transform');
 };
 var tbFit = function (e) {
@@ -96,14 +96,14 @@ if (Math.abs(p.bar.getBoundingClientRect().top - p.pinned.getBoundingClientRect(
 tbH = Math.round(p.bar.getBoundingClientRect().height);
 }
 tbMoved = p.pinned;
-// While the page scrolls (up or down) the bar goes up out of sight; it comes back 1.8s after scrolling stops; both slides take 1.2s (Nader asked for slower).
+// While the page scrolls (up or down) the bar goes up out of sight; it comes back 1s after scrolling stops; both slides take 1s (Nader).
 clearTimeout(tbStop);
 if (!e || e.type !== 'scroll') { tbBack(); return; }
 var up = y > 0 ? tbH : 0;
-p.pinned.style.setProperty('transition', 'transform 1.2s ease', 'important');
+p.pinned.style.setProperty('transition', 'transform 1s ease', 'important');
 if (up > 0) p.pinned.style.setProperty('transform', 'translateY(' + -up + 'px)', 'important');
 else p.pinned.style.removeProperty('transform');
-tbStop = setTimeout(tbBack, 1800);
+tbStop = setTimeout(tbBack, 1000);
 };
 window.addEventListener('scroll', tbFit, { passive: true });
 window.addEventListener('resize', tbFit);
