@@ -56,9 +56,9 @@ window.addEventListener('resize', window.hnHeroFit);
 // After a click (e.g. Accept All Cookies closes the banner), fit again.
 document.addEventListener('click', function () { setTimeout(window.hnHeroFit, 400); }, true);
 }
-// Laptops and other wide screens, home page: the top bar of the header (phone, e-mail and the social icons) scrolls up and away with
-// the page instead of staying pinned, and comes back as the page is scrolled back to the top (Nader 2026-10-25). The pinned header
-// moves up by as much as the page has scrolled, at most the bar's height, so the menu below the bar stays at the top of the window.
+// Laptops and other wide screens, home page: the top bar of the header (phone, e-mail and the social icons) slides up out of sight
+// while the page is scrolling, up or down, and slides back as soon as scrolling stops (Nader 2026-10-25). The pinned header moves up
+// by the bar's height, so the menu below the bar stays at the top of the window.
 if (typeof document !== 'undefined' && !window.hnTopBarScroll) {
 window.hnTopBarScroll = true;
 var tbParts = function () {
@@ -78,22 +78,32 @@ if (pos === 'fixed' || pos === 'sticky') return { bar: bar, pinned: el };
 }
 return null;
 };
-var tbMoved = null, tbH = 0;
-var tbFit = function () {
+var tbMoved = null, tbH = 0, tbStop = 0;
+var tbBack = function () {
+// Scrolling has stopped: slide the bar back down.
+if (!tbMoved) return;
+tbMoved.style.setProperty('transition', 'transform .25s ease', 'important');
+tbMoved.style.removeProperty('transform');
+};
+var tbFit = function (e) {
 var p = tbParts();
-if (tbMoved && (!p || p.pinned !== tbMoved)) { tbMoved.style.removeProperty('transform'); tbMoved = null; }
+if (tbMoved && (!p || p.pinned !== tbMoved)) { tbMoved.style.removeProperty('transform'); tbMoved.style.removeProperty('transition'); tbMoved = null; }
 if (!p) return;
 var y = Math.max(0, window.pageYOffset || 0);
-if (!tbMoved || y === 0) {
+if (!tbMoved || !p.pinned.style.transform) {
 // Measure the bar with the header in its normal place; only slide when the bar is the top of the pinned header.
-p.pinned.style.removeProperty('transform');
 if (Math.abs(p.bar.getBoundingClientRect().top - p.pinned.getBoundingClientRect().top) > 2) return;
 tbH = Math.round(p.bar.getBoundingClientRect().height);
 }
 tbMoved = p.pinned;
-var up = Math.min(y, tbH);
+// While the page scrolls (up or down) the bar goes up out of sight; it comes back 0.3s after scrolling stops.
+clearTimeout(tbStop);
+if (!e || e.type !== 'scroll') { tbBack(); return; }
+var up = y > 0 ? tbH : 0;
+p.pinned.style.setProperty('transition', 'transform .2s ease', 'important');
 if (up > 0) p.pinned.style.setProperty('transform', 'translateY(' + -up + 'px)', 'important');
 else p.pinned.style.removeProperty('transform');
+tbStop = setTimeout(tbBack, 300);
 };
 window.addEventListener('scroll', tbFit, { passive: true });
 window.addEventListener('resize', tbFit);
