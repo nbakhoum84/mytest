@@ -56,15 +56,24 @@ window.addEventListener('resize', window.hnHeroFit);
 // After a click (e.g. Accept All Cookies closes the banner), fit again.
 document.addEventListener('click', function () { setTimeout(window.hnHeroFit, 400); }, true);
 }
-// Laptops and other wide screens, home page: the top bar of the header (phone, e-mail and the social icons) slides up out of sight
+// Home page, every screen size (phones too, Nader 2026-10-25): the top bar of the header (phone, e-mail and the social icons) slides up out of sight
 // while the page is scrolling, up or down, and slides back as soon as scrolling stops (Nader 2026-10-25). The pinned header moves up
 // by the bar's height, so the menu below the bar stays at the top of the window.
 if (typeof document !== 'undefined' && !window.hnTopBarScroll) {
 window.hnTopBarScroll = true;
+// Phones and narrow windows (up to 1024px): the site's own CSS hides the bar and pins the header at 86px once the page is scrolled
+// (.header-container.cc). Keep the bar there (header 86px + the bar's 36px) so it can slide away and back like on wide screens.
+var tbKeep = document.createElement('style');
+tbKeep.id = 'hn-topbar-keep';
+tbKeep.textContent = '@media(max-width:1024px){body.home .header-container.cc.hn-tb-keep{height:122px!important}' +
+'body.home .header-container.cc.hn-tb-keep .social-container{display:flex!important}}';
+(document.head || document.documentElement).appendChild(tbKeep);
 var tbParts = function () {
-if (!document.body || !document.body.classList.contains('home') || !window.matchMedia('(min-width:701px)').matches) return null;
+if (!document.body || !document.body.classList.contains('home')) return null;
 var head = document.querySelector('.md-header') || document.querySelector('header');
 if (!head) return null;
+var hc = head.querySelector('.header-container');
+if (hc && !hc.classList.contains('hn-tb-keep')) hc.classList.add('hn-tb-keep');
 // The bar is the row holding the e-mail address, as wide as it gets without taking in the menu.
 var w = document.createTreeWalker(head, NodeFilter.SHOW_TEXT, null), n, bar = null;
 while ((n = w.nextNode())) if (/info@home-nader\.com/i.test(n.nodeValue) && n.parentElement.getClientRects().length) { bar = n.parentElement; break; }
