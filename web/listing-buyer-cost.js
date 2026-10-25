@@ -56,7 +56,7 @@ window.addEventListener('resize', window.hnHeroFit);
 // After a click (e.g. Accept All Cookies closes the banner), fit again.
 document.addEventListener('click', function () { setTimeout(window.hnHeroFit, 400); }, true);
 }
-// Home page, every screen size (phones too, Nader 2026-10-25): the top bar of the header (phone, e-mail and the social icons) slides up out of sight
+// Every page (Nader 2026-10-25; was the home page only), every screen size (phones too): the top bar of the header (phone, e-mail and the social icons) slides up out of sight
 // while the page is scrolling, up or down, and slides back as soon as scrolling stops (Nader 2026-10-25). The pinned header moves up
 // by the bar's height, so the menu below the bar stays at the top of the window.
 if (typeof document !== 'undefined' && !window.hnTopBarScroll) {
@@ -65,11 +65,11 @@ window.hnTopBarScroll = true;
 // (.header-container.cc). Keep the bar there (header 86px + the bar's 36px) so it can slide away and back like on wide screens.
 var tbKeep = document.createElement('style');
 tbKeep.id = 'hn-topbar-keep';
-tbKeep.textContent = '@media(max-width:1024px){body.home .header-container.cc.hn-tb-keep{height:122px!important}' +
-'body.home .header-container.cc.hn-tb-keep .social-container{display:flex!important}}';
+tbKeep.textContent = '@media(max-width:1024px){.header-container.cc.hn-tb-keep{height:122px!important}' +
+'.header-container.cc.hn-tb-keep .social-container{display:flex!important}}';
 (document.head || document.documentElement).appendChild(tbKeep);
 var tbParts = function () {
-if (!document.body || !document.body.classList.contains('home')) return null;
+if (!document.body) return null;
 var head = document.querySelector('.md-header') || document.querySelector('header');
 if (!head) return null;
 var hc = head.querySelector('.header-container');
