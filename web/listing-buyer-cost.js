@@ -56,16 +56,11 @@ window.addEventListener('resize', window.hnHeroFit);
 // After a click (e.g. Accept All Cookies closes the banner), fit again.
 document.addEventListener('click', function () { setTimeout(window.hnHeroFit, 400); }, true);
 }
-// Laptops and other wide screens, home page: the top bar of the header (phone, e-mail and the social icons) hides while the page is
-// scrolling and comes back as soon as scrolling stops (Nader 2026-10-25). When the header is pinned to the top of the window it slides
-// up by the bar's height so the menu stays at the top; otherwise the bar just fades out, so nothing on the page moves.
-if (typeof document !== 'undefined' && !window.hnTopBarAutoHide) {
-window.hnTopBarAutoHide = true;
-var tbs = document.createElement('style');
-tbs.id = 'hn-topbar-hide';
-tbs.textContent = '.hn-tb-anim{transition:transform .25s ease,opacity .25s ease!important}' +
-'.hn-tb-slide{transform:translateY(calc(-1 * var(--hn-tb-h,0px)))!important}.hn-tb-fade{opacity:0!important;pointer-events:none!important}';
-(document.head || document.documentElement).appendChild(tbs);
+// Laptops and other wide screens, home page: the top bar of the header (phone, e-mail and the social icons) scrolls up and away with
+// the page instead of staying pinned, and comes back as the page is scrolled back to the top (Nader 2026-10-25). The pinned header
+// moves up by as much as the page has scrolled, at most the bar's height, so the menu below the bar stays at the top of the window.
+if (typeof document !== 'undefined' && !window.hnTopBarScroll) {
+window.hnTopBarScroll = true;
 var tbParts = function () {
 if (!document.body || !document.body.classList.contains('home') || !window.matchMedia('(min-width:701px)').matches) return null;
 var head = document.querySelector('.md-header') || document.querySelector('header');
@@ -76,36 +71,31 @@ while ((n = w.nextNode())) if (/info@home-nader\.com/i.test(n.nodeValue) && n.pa
 if (!bar) return null;
 while (bar.parentElement && bar.parentElement !== head && !/calculators/i.test(bar.parentElement.textContent)) bar = bar.parentElement;
 if (/calculators/i.test(bar.textContent)) return null;
-var pinned = null;
 for (var el = head; el && el !== document.body; el = el.parentElement) {
 var pos = getComputedStyle(el).position;
-if (pos === 'fixed' || pos === 'sticky') { pinned = el; break; }
+if (pos === 'fixed' || pos === 'sticky') return { bar: bar, pinned: el };
 }
-// Only slide when the bar is the top of the pinned header, so sliding hides the bar and nothing else.
-if (pinned && Math.abs(bar.getBoundingClientRect().top - pinned.getBoundingClientRect().top) > 2) pinned = null;
-return { bar: bar, pinned: pinned };
+return null;
 };
-var tbShown = null, tbTimer = 0;
-var tbShow = function () {
-if (!tbShown) return;
-tbShown.bar.classList.remove('hn-tb-fade');
-if (tbShown.pinned) tbShown.pinned.classList.remove('hn-tb-slide');
-tbShown = null;
-};
-window.addEventListener('scroll', function () {
-clearTimeout(tbTimer);
-tbTimer = setTimeout(tbShow, 300);
-if (tbShown) return;
+var tbMoved = null, tbH = 0;
+var tbFit = function () {
 var p = tbParts();
+if (tbMoved && (!p || p.pinned !== tbMoved)) { tbMoved.style.removeProperty('transform'); tbMoved = null; }
 if (!p) return;
-if (p.pinned) {
-p.pinned.style.setProperty('--hn-tb-h', Math.round(p.bar.getBoundingClientRect().height) + 'px');
-p.pinned.classList.add('hn-tb-anim', 'hn-tb-slide');
-} else {
-p.bar.classList.add('hn-tb-anim', 'hn-tb-fade');
+var y = Math.max(0, window.pageYOffset || 0);
+if (!tbMoved || y === 0) {
+// Measure the bar with the header in its normal place; only slide when the bar is the top of the pinned header.
+p.pinned.style.removeProperty('transform');
+if (Math.abs(p.bar.getBoundingClientRect().top - p.pinned.getBoundingClientRect().top) > 2) return;
+tbH = Math.round(p.bar.getBoundingClientRect().height);
 }
-tbShown = p;
-}, { passive: true });
+tbMoved = p.pinned;
+var up = Math.min(y, tbH);
+if (up > 0) p.pinned.style.setProperty('transform', 'translateY(' + -up + 'px)', 'important');
+else p.pinned.style.removeProperty('transform');
+};
+window.addEventListener('scroll', tbFit, { passive: true });
+window.addEventListener('resize', tbFit);
 }
 // Hide the fixed bottom bar with the "Call Nader" and "Value My Home" buttons on every screen size (Nader 2026-10-24: it still
 // showed on narrow laptop windows, which were wider than the old 700px limit). Found by its two buttons' text.
