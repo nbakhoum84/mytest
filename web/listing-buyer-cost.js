@@ -199,10 +199,11 @@ el.setAttribute('data-hn-price', price);
 addButton(el, price);
 }
 
-// Rough numbers shown on the buttons, with the same defaults the popups open with: 10% down (20% at $1.5M or more),
-// 4.5% over 25 years, CMHC premium under 20% down (its 7% PST is paid in cash at closing), and the Buyer Cost app's
-// default closing costs (BC property transfer tax, legal $1,800, inspection $500 on resale, appraisal $400, insurance $1,500, 5% GST on new builds).
-var EST = { rate: 4.5, years: 25 };
+// Rough numbers shown on the buttons, with the same defaults the popups open with. Cash to close: 10% down (20% at $1.5M or more),
+// CMHC premium under 20% down (its 7% PST is paid in cash at closing), and the Buyer Cost app's default closing costs (BC property
+// transfer tax, legal $1,800, inspection $500 on resale, appraisal $400, insurance $1,500, 5% GST on new builds).
+// Est./mo: the same settings as the site's own (Lofty) mortgage calculator: 20% down, 4%, 30 years, compounded monthly (Nader, 2026-10-24).
+var EST = { rate: 4, years: 30, downPct: 20 };
 function ptt(p) {
 var band = function (from, to, rate) { return Math.max(0, Math.min(p, to) - from) * rate; };
 return band(0, 2e5, 0.01) + band(2e5, 2e6, 0.02) + band(2e6, Infinity, 0.03) + band(3e6, Infinity, 0.02);
@@ -212,8 +213,8 @@ var downPct = price >= 1.5e6 ? 20 : 10;
 var down = price * downPct / 100, loan = price - down;
 var premium = downPct < 20 ? loan * 0.031 : 0;
 var closing = ptt(price) + 1800 + (isNewBuild ? 0 : 500) + 400 + 1500 + (isNewBuild ? price * 0.05 : 0);
-var r = Math.pow(1 + EST.rate / 200, 1 / 6) - 1, n = EST.years * 12, total = loan + premium;
-return { downPct: downPct, cash: down + closing + premium * 0.07, monthly: total * r / (1 - Math.pow(1 + r, -n)) };
+var r = EST.rate / 1200, n = EST.years * 12, mLoan = price * (1 - EST.downPct / 100);
+return { downPct: downPct, cash: down + closing + premium * 0.07, monthly: mLoan * r / (1 - Math.pow(1 + r, -n)) };
 }
 function short(n) { return n >= 1e6 ? '$' + (n / 1e6).toFixed(n >= 1e7 ? 0 : 1).replace(/\.0$/, '') + 'M' : '$' + Math.round(n / 1e3) + 'K'; }
 function labels(price, isNewBuild) {
@@ -414,13 +415,20 @@ return { utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaig
 }
 // Each button click (and each sign-up prompt click) is sent to whatever analytics the site runs: Google Tag Manager / GA4
 // (dataLayer, gtag) and the Meta pixel (fbq), so they can be counted as conversions for ad campaigns.
+// Nader's live GA4 property (Nader-exp). The site loads it on its own data layer (gtag/js?id=G-N9D71PSLL6&l=customSiteDataLayer),
+// which the page's gtag() does not feed, so our events go onto that layer (gtag needs a real arguments object).
+function naderExp() {
+var l = window.customSiteDataLayer;
+if (l && typeof l.push === 'function') { l.push(arguments); return true; }
+return false;
+}
 function track(name, data) {
 data.page_path = location.pathname;
 data.city = cityOf() || '';
 try { (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: name }, data)); } catch (e) {}
-// Lofty configures Nader's live GA4 property (Nader-exp, G-N9D71PSLL6) in its own tracker group, so a plain gtag event never reached
-// it (only the default G-50BX6YT24D did). Send to both by ID.
-try { if (typeof window.gtag === 'function') window.gtag('event', name, Object.assign({ send_to: ['G-N9D71PSLL6', 'G-50BX6YT24D'] }, data)); } catch (e) {}
+var viaSite = false;
+try { viaSite = naderExp('event', name, Object.assign({ send_to: 'G-N9D71PSLL6' }, data)); } catch (e) {}
+try { if (typeof window.gtag === 'function') window.gtag('event', name, Object.assign({ send_to: viaSite ? 'G-50BX6YT24D' : ['G-N9D71PSLL6', 'G-50BX6YT24D'] }, data)); } catch (e) {}
 try { if (typeof window.fbq === 'function') window.fbq('trackCustom', name, data); } catch (e) {}
 }
 // The site's own "Register/Sign In" link; it's only there while the visitor isn't signed in.
@@ -434,7 +442,8 @@ for (var i = els.length - 1; i >= 0; i--) {
 var t = els[i].textContent;
 if (t.length > 40) continue;
 t = t.replace(/\s+/g, ' ').trim();
-if (!REG.test(t) || els[i].closest('#hn-bcp-modal, footer')) continue;
+// Never a Register/Sign in link inside a listing card: clicking that opens the listing instead of the form.
+if (!REG.test(t) || els[i].closest('#hn-bcp-modal, footer, a[href*="/listing-detail/"]')) continue;
 var el = els[i].closest('a, button, [role="button"]') || els[i];
 var score = (el !== els[i] || /^(A|BUTTON)$/.test(el.tagName) || el.getAttribute('role') === 'button' ? 4 : 0) + (/register/i.test(t) ? 2 : 0) + (el.offsetParent ? 1 : 0);
 if (score > bestScore) { best = el; bestScore = score; }
@@ -675,7 +684,7 @@ for (var c = 0; c < CITIES.length; c++) if (new RegExp('-' + CITIES[c].toLowerCa
 return '';
 }
 var m = /^\/(?:presales?-)?([a-z-]+?)(?:-(?:sold-)?listings?|-presales?)?\/?$/.exec(path);
-if (!m || /^(new|foreclosures?|commercial|residential)/.test(m[1])) return '';
+if (!m || /^(new|foreclosures?|commercial|residential|listings?$)/.test(m[1])) return '';
 return m[1].split('-').map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
 }
 // Latest Total cost shown in the Buyer Cost popup (it reports every change), so Mortgage starts from what the visitor ticked there.
@@ -691,7 +700,7 @@ current = { isNewBuild: isNewBuild, mortgage: mortgage, prices: prices || [price
 var city = mortgage ? cityOf() : '';
 var total = mortgage && lastTotal && lastTotal.price === price ? lastTotal.total : 0;
 var u = utm(mortgage, COMMERCIAL ? 'commercial' : isNewBuild ? 'new_build' : 'residential');
-var url = (mortgage ? MORTGAGE_APP : APP) + '?utm_source=' + u.utm_source + '&utm_medium=' + u.utm_medium + '&utm_campaign=' + u.utm_campaign + '&utm_content=' + u.utm_content + '&price=' + price + (isNewBuild ? '&new=1' : '') + (mortgage ? '&down=' + estimate(price, isNewBuild).downPct : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + (mortgage && COMMERCIAL ? '&commercial=1' : '') + '&v=' + Math.floor(Date.now() / 6e4);
+var url = (mortgage ? MORTGAGE_APP : APP) + '?utm_source=' + u.utm_source + '&utm_medium=' + u.utm_medium + '&utm_campaign=' + u.utm_campaign + '&utm_content=' + u.utm_content + '&price=' + price + (isNewBuild ? '&new=1' : '') + (mortgage ? '&down=' + EST.downPct : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + (mortgage && COMMERCIAL ? '&commercial=1' : '') + '&v=' + Math.floor(Date.now() / 6e4);
 var m = modal();
 m.querySelector('.hn-bcp-title').textContent = mortgage ? 'Mortgage for $' + price.toLocaleString('en-CA') + (city ? ' in ' + city : '') :
 (COMMERCIAL ? 'Commercial Buyer Cost for $' : 'Buyer Cost for $') + price.toLocaleString('en-CA');
@@ -751,6 +760,9 @@ return false;
 // A signed-out visitor who has used a calculator and then clicks a listing card gets the registration form (the card does not open until
 // they register), the same as when they close a calculator. Our own buttons, hearts and other buttons are left alone.
 function onCardClick(e) {
+// Only a visitor's own click. Our own clicks on the Register link (openRegistration) must not land here: on the search page that
+// started a loop that re-opened the form and logged hn_listing_signup_prompt about once a second.
+if (!e.isTrusted) return;
 var t = e.target;
 if (!t || !t.closest || t.closest('.hn-bcp-row,#hn-bcp-modal,button,[role="button"],input,select,textarea,label')) return;
 var used = false;

@@ -49,13 +49,13 @@
     <label for="p-price">Purchase price (CAD)</label><input id="p-price" type="text" inputmode="numeric" value="$900,000">
     <label class="check" for="p-biz" id="p-biz-row" hidden>Business only, no land or building (no property transfer tax)<input id="p-biz" type="checkbox"></label>
     <label for="p-down">Down payment</label>
-    <div class="inline"><input id="p-down" type="text" inputmode="decimal" value="10"><div class="chips" id="p-mode"><button data-v="%" class="on">%</button><button data-v="$">$</button></div></div>
+    <div class="inline"><input id="p-down" type="text" inputmode="decimal" value="20"><div class="chips" id="p-mode"><button data-v="%" class="on">%</button><button data-v="$">$</button></div></div>
     <p class="note" id="p-min"></p>
-    <label for="p-rate">Interest rate (%)</label><input id="p-rate" type="text" inputmode="decimal" value="4.5">
-    <label for="p-years">Amortization (years)</label><input id="p-years" type="text" inputmode="numeric" value="25">
+    <label for="p-rate">Interest rate (%)</label><input id="p-rate" type="text" inputmode="decimal" value="4">
+    <label for="p-years">Amortization (years)</label><input id="p-years" type="text" inputmode="numeric" value="30">
     <label>Payment frequency</label><div class="chips" id="p-freq"></div>
     <div id="p-out"></div>
-    <p class="note">Estimate only. Canadian fixed rates compound semi-annually. Your lender's figures may differ slightly.</p>
+    <p class="note">Estimate only. Your lender's figures may differ slightly.</p>
   </section>
   <section id="afford" hidden>
     <h1>What can I afford?</h1>
@@ -220,7 +220,7 @@ document.querySelector('nav').onclick = (e) => {
       $('p-biz').onchange = () => { closingCash = Math.round(commercialClosing()); $('p-closing').textContent = closingNote(closingCash); pay(); };
     }
     if (q.get('new') === '1') $('t-nb').checked = true;
-    // &down= is the down payment % the listing's button estimate used (10%, or 20% at $1.5M or more).
+    // &down= is the down payment % the listing's Est./mo button used (20%, the same as the site's own mortgage calculator).
     const dq = num(q.get('down'));
     if (dq >= 5 && dq <= 100) for (const id of ['p-down', 'c-down']) $(id).value = commercial ? Math.max(35, dq) : dq;
     const city = (q.get('city') || '').replace(/[^A-Za-z .'-]/g, '').slice(0, 40);

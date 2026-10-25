@@ -1,9 +1,10 @@
-// Mortgage math for BC buyers. Canadian fixed-rate mortgages compound semi-annually.
+// Mortgage math for BC buyers. Interest compounds once per payment (monthly for monthly payments), the same as the
+// mortgage calculator on Nader's Lofty listing pages, so both show the same payment (Nader, 2026-10-24).
 
 export const num = (s) => parseFloat(String(s).replace(/[^0-9.]/g, '')) || 0;
 
 // Interest rate per payment for a given number of payments a year.
-export const periodRate = (annualPct, perYear) => Math.pow(1 + annualPct / 100 / 2, 2 / perYear) - 1;
+export const periodRate = (annualPct, perYear) => annualPct / 100 / perYear;
 
 export function pmt(principal, annualPct, years, perYear = 12) {
   const n = Math.round(years * perYear);
