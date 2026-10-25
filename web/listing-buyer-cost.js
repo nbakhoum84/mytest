@@ -865,6 +865,11 @@ function onCardClick(e) {
 if (!e.isTrusted) return;
 var t = e.target;
 if (!t || !t.closest || t.closest('.hn-bcp-row,#hn-bcp-modal,button,[role="button"],input,select,textarea,label')) return;
+// The photo arrows (and dots) that page through a card's pictures never open the form (Nader, 2026-10-25).
+for (var pa = t, pi = 0; pa && pa !== document.body && pi < 4; pa = pa.parentElement, pi++) {
+var pc = (typeof pa.className === 'string' ? pa.className : (pa.getAttribute && pa.getAttribute('class')) || '') + ' ' + ((pa.getAttribute && (pa.getAttribute('aria-label') || pa.getAttribute('title'))) || '');
+if (/(^|[\s_-])(arrow|arrows|prev|next|chevron|left|right)([\s_-]|$)|swiper-(button|pagination)|slick-(arrow|dots)|carousel-control|pagination|indicator/i.test(pc)) return;
+}
 var used = false;
 try { used = sessionStorage.getItem('hnCalcUsed') === '1'; } catch (err) {}
 if (!used || !registerLink() || inFixed(t)) return;
