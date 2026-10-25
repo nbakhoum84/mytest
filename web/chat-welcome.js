@@ -81,7 +81,11 @@ function check(doc) {
       var b = doc.createElement('button');
       b.type = 'button';
       b.textContent = q;
-      b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); box.remove(); send(input, q); });
+      b.addEventListener('click', function (e) {
+        e.preventDefault(); e.stopPropagation(); box.remove(); send(input, q);
+        // Counted in Nader's analytics through listing-buyer-cost.js (Nader 2026-10-25).
+        try { if (window.hnTrack) window.hnTrack('hn_chat_button_click', { button_text: q, utm_source: 'home-nader.com', utm_medium: 'chat_greeting', utm_campaign: 'chat', utm_content: q }); } catch (err) {}
+      });
       list.appendChild(b);
     });
     box.appendChild(p);
