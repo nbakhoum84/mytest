@@ -46,7 +46,8 @@
   <section id="pay">
     <h1>Mortgage payment</h1>
     <p class="note"><strong>Disclaimer:</strong> These numbers are estimates only, not a quote or financial, legal or tax advice. Actual costs, rates and payments will vary. Confirm with your lender, lawyer and accountant.</p>
-    <label for="p-price">Purchase price (CAD)</label><input id="p-price" type="text" inputmode="numeric" value="$900,000">
+    <!-- BC Assessment has no public data feed, so the link opens its free search, where the official assessed value is one address away (Nader, 2026-10-25). -->
+    <label for="p-price" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">Purchase price (CAD)<a href="https://www.bcassessment.ca/" target="_blank" rel="noopener" style="color:inherit;font-size:14px;text-decoration:underline">BC Assessment value &#8599;</a></label><input id="p-price" type="text" inputmode="numeric" value="$900,000">
     <label class="check" for="p-biz" id="p-biz-row" hidden>Business only, no land or building (no property transfer tax)<input id="p-biz" type="checkbox"></label>
     <label for="p-down">Down payment</label>
     <div class="inline"><input id="p-down" type="text" inputmode="decimal" value="20"><div class="chips" id="p-mode"><button data-v="%" class="on">%</button><button data-v="$">$</button></div></div>
