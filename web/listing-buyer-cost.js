@@ -571,7 +571,7 @@ m.innerHTML =
 '<div class="hn-bcp-box" role="dialog" aria-modal="true" aria-label="Buyer Cost">' +
 '<div class="hn-bcp-bar"><b class="hn-bcp-title">Buyer Cost</b><span class="hn-bcp-alts"></span>' +
 '<button type="button" class="hn-bcp-x" aria-label="Close">&times;</button></div>' +
-'<iframe title="Buyer Cost calculator"></iframe>' +
+'<iframe title="Buyer Cost calculator" allow="clipboard-write"></iframe>' +
 '<div class="hn-bcp-fail" hidden>The calculator is taking a while to load. <a class="hn-bcp-fail-open" target="_blank" rel="noopener">Open it in a new tab</a></div>' +
 '<div class="hn-bcp-cta" hidden><span>Want the full breakdown for this home?</span>' +
 '<button type="button" class="hn-bcp-cta-btn" data-hn-cta="register">Email me the breakdown</button>' +
@@ -783,12 +783,24 @@ if (d && d.hnBuyerCost && f && e.source === f.contentWindow && d.price > 0 && d.
 });
 var current = null;
 var loadTimer = null;
+// The listing's street address, e.g. "2891 MONTROSE AVE #48, Abbotsford", sent to the Mortgage form for its BC Assessment link
+// (Nader, 2026-10-25). Cards show it on a line like "2891 MONTROSE AVE #48, Abbotsford, BC V2T 0A1"; a listing page in its heading or title.
+var lastAddr = '';
+function addressOf(card) {
+var text = DETAIL ? Array.prototype.map.call(document.querySelectorAll('h1,h2'), function (h) { return h.innerText || ''; }).join('\n') + '\n' + (document.title || '').replace(/\s+-\s+/g, '\n') : (card && card.innerText) || '';
+var lines = text.split('\n');
+for (var i = 0; i < lines.length; i++) {
+var m = /^\s*(\d+[A-Za-z]?\s+[^,$\n]{2,60}?,\s*[A-Za-z .'-]{2,30}?),\s*BC\b/i.exec(lines[i]);
+if (m) return m[1].replace(/\s+/g, ' ');
+}
+return '';
+}
 function openCalc(price, isNewBuild, mortgage, prices) {
 current = { isNewBuild: isNewBuild, mortgage: mortgage, prices: prices || [price], price: price };
 var city = mortgage ? cityOf() : '';
 var total = mortgage && lastTotal && lastTotal.price === price ? lastTotal.total : 0;
 var u = utm(mortgage, COMMERCIAL ? 'commercial' : isNewBuild ? 'new_build' : 'residential');
-var url = (mortgage ? MORTGAGE_APP : APP) + '?utm_source=' + u.utm_source + '&utm_medium=' + u.utm_medium + '&utm_campaign=' + u.utm_campaign + '&utm_content=' + u.utm_content + '&price=' + price + (isNewBuild ? '&new=1' : '') + (mortgage ? '&down=' + EST.downPct : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + (mortgage && COMMERCIAL ? '&commercial=1' : '') + '&v=' + Math.floor(Date.now() / 6e4);
+var url = (mortgage ? MORTGAGE_APP : APP) + '?utm_source=' + u.utm_source + '&utm_medium=' + u.utm_medium + '&utm_campaign=' + u.utm_campaign + '&utm_content=' + u.utm_content + '&price=' + price + (isNewBuild ? '&new=1' : '') + (mortgage ? '&down=' + EST.downPct : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + (mortgage && COMMERCIAL ? '&commercial=1' : '') + (mortgage && lastAddr ? '&addr=' + encodeURIComponent(lastAddr) : '') + '&v=' + Math.floor(Date.now() / 6e4);
 var m = modal();
 m.querySelector('.hn-bcp-title').textContent = mortgage ? 'Mortgage for $' + price.toLocaleString('en-CA') + (city ? ' in ' + city : '') :
 (COMMERCIAL ? 'Commercial Buyer Cost for $' : 'Buyer Cost for $') + price.toLocaleString('en-CA');
@@ -825,6 +837,7 @@ var shown = card && card.querySelector('.hn-bcp');
 var prices = shown ? parsePrices(priceText(shown)) : [];
 var price = prices[0] || +el.getAttribute('data-hn-price');
 if (!price) return;
+lastAddr = addressOf(card);
 // Stop the card's own link (to the listing page) only for clicks on the price or the button.
 e.preventDefault();
 e.stopPropagation();
