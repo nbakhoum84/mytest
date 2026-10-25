@@ -977,7 +977,7 @@ var href = a ? (a.getAttribute('href') || '').trim() : '';
 var text = (a || t).textContent.replace(/\s+/g, ' ').trim().slice(0, 60);
 var where = placeOf(t);
 var kind = /^tel:/i.test(href) ? 'call' : /^sms:/i.test(href) ? 'text' : /^mailto:/i.test(href) ? 'email' : /wa\.me|whatsapp/i.test(href) ? 'whatsapp' : '';
-if (kind) { track('hn_contact_click', Object.assign({ contact_type: kind, link_location: where, button_text: text }, siteTags('contact_link', kind, where))); return; }
+if (kind) { track('hn_contact_click', Object.assign({ contact_type: kind, link_location: where, button_text: text || (a && (a.getAttribute('aria-label') || a.getAttribute('title'))) || kind }, siteTags('contact_link', kind, where))); return; }
 if (/calendly\.com/i.test(href)) { track('hn_booking_click', Object.assign({ link_location: where, button_text: text }, siteTags('booking_link', 'calendly', where))); return; }
 var card = t.closest('#hn-bc-card, #hn-sc-card, #hn-mc-card, #hn-fh-card, #hn-pd-card, .hn-app');
 if (card && a) {
