@@ -956,6 +956,51 @@ window.hnBuyerCostLoaded = true;
 // (The commercial loader sets its mode before either copy of this file runs, so whichever copy runs first picks it up.)
 // Any other page (e.g. a commercial city page like /abbotsford) is checked for the Commercial menu highlight once loaded.
 // A single listing's page (/listing-detail/...) gets the buttons under its headline price.
+// Site-wide conversion clicks (Nader 2026-10-25), sent like the listing buttons (Nader-exp, GA4, Meta pixel) with UTM-style tags:
+// call / text / e-mail / WhatsApp links (hn_contact_click), "What's My Home Worth?" and Valuation (hn_valuation_click), Calendly
+// booking links (hn_booking_click), the "Get the ... app" cards (hn_app_card_click) and the first use of each pasted-in calculator
+// (hn_calculator_use). The chat greeting buttons are counted by chat-welcome.js through window.hnTrack (hn_chat_button_click).
+if (!window.hnSiteClicks) {
+window.hnSiteClicks = true;
+window.hnTrack = track;
+function siteTags(medium, campaign, content) {
+return { utm_source: 'home-nader.com', utm_medium: medium, utm_campaign: campaign, utm_content: content || '' };
+}
+function placeOf(el) {
+return el.closest('header, .md-header') ? 'header' : el.closest('footer, .md-footer') ? 'footer' : 'page';
+}
+var VALUATION = /^(what'?s my home worth\??|home valuation|valuation|value my home|free home (evaluation|valuation))$/i;
+document.addEventListener('click', function (e) {
+if (!e.isTrusted || !e.target || !e.target.closest) return;
+var t = e.target, a = t.closest('a, button, [role="button"]');
+var href = a ? (a.getAttribute('href') || '').trim() : '';
+var text = (a || t).textContent.replace(/\s+/g, ' ').trim().slice(0, 60);
+var where = placeOf(t);
+var kind = /^tel:/i.test(href) ? 'call' : /^sms:/i.test(href) ? 'text' : /^mailto:/i.test(href) ? 'email' : /wa\.me|whatsapp/i.test(href) ? 'whatsapp' : '';
+if (kind) { track('hn_contact_click', Object.assign({ contact_type: kind, link_location: where, button_text: text }, siteTags('contact_link', kind, where))); return; }
+if (/calendly\.com/i.test(href)) { track('hn_booking_click', Object.assign({ link_location: where, button_text: text }, siteTags('booking_link', 'calendly', where))); return; }
+var card = t.closest('#hn-bc-card, #hn-sc-card, #hn-mc-card, #hn-fh-card, #hn-pd-card, .hn-app');
+if (card && a) {
+var h = card.querySelector('h2, h3'), app = h ? h.textContent.replace(/\s+/g, ' ').trim().replace(/^get the\s+/i, '').replace(/\s+app$/i, '') : '';
+track('hn_app_card_click', Object.assign({ app: app, button_text: text }, siteTags('app_card', app.toLowerCase().replace(/\s+/g, '_'), text)));
+return;
+}
+// The home page Valuation tab is not a link, so look at the clicked element and a few blocks around it for a short matching label.
+for (var el = t, i = 0; el && el !== document.body && i < 4; el = el.parentElement, i++) {
+var label = el.textContent.replace(/\s+/g, ' ').trim();
+if (label.length > 40) break;
+if (VALUATION.test(label)) { track('hn_valuation_click', Object.assign({ link_location: where, button_text: label }, siteTags('valuation_button', 'home_valuation', where))); return; }
+}
+}, true);
+var CALCS = { 'mh-app': 'cash_to_close', 'sc-app': 'seller_cost', 'mc-app': 'mortgage', 'fh-app': 'first_home_savings', 'pd-app': 'presale_deposits' };
+var calcUsed = {};
+document.addEventListener('change', function (e) {
+var box = e.target && e.target.closest && e.target.closest('#mh-app, #sc-app, #mc-app, #fh-app, #pd-app');
+if (!box || calcUsed[box.id]) return;
+calcUsed[box.id] = true;
+track('hn_calculator_use', Object.assign({ calculator: CALCS[box.id] }, siteTags('calculator_page', CALCS[box.id], '')));
+}, true);
+}
 var LISTING_PAGE = false, active = false;
 function route() {
 active = false;
