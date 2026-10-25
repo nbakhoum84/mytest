@@ -71,7 +71,8 @@ while ((n = w.nextNode())) if (/info@home-nader\.com/i.test(n.nodeValue) && n.pa
 if (!bar) return null;
 while (bar.parentElement && bar.parentElement !== head && !/calculators/i.test(bar.parentElement.textContent)) bar = bar.parentElement;
 if (/calculators/i.test(bar.textContent)) return null;
-for (var el = head; el && el !== document.body; el = el.parentElement) {
+// The pinned box can be inside the header (Lofty pins div.header-container, the header itself scrolls away) or around it.
+for (var el = bar.parentElement; el && el !== document.body; el = el.parentElement) {
 var pos = getComputedStyle(el).position;
 if (pos === 'fixed' || pos === 'sticky') return { bar: bar, pinned: el };
 }
