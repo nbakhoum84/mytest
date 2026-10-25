@@ -101,9 +101,20 @@
     <p class="note">Table not showing? <a href="https://home-nader.com/mortgage-calculators#mortgage-rate-comparison-table" target="_blank" rel="noopener">Compare rates on Nader's website</a>.</p>
     <p class="note">Bring a rate back to the Payment tab to see what it means for your monthly payment.</p>
   </section>
+  <!-- BC Assessment tab (Nader, 2026-10-25): BC Assessment takes no address in a link and won't let another site type into its search,
+       so the address is copied for the visitor to paste there. -->
+  <section id="bca" hidden>
+    <h1>BC Assessment value</h1>
+    <p class="note">See the official assessed value of a BC home on BC Assessment's free website.</p>
+    <label for="b-addr">Property address</label><input id="b-addr" type="text" placeholder="e.g. 804-1342 JOHNSTON RD WHITE ROCK">
+    <a class="btn" id="b-go" href="https://www.bcassessment.ca/" target="_blank" rel="noopener">Copy address &amp; open BC Assessment &#8599;</a>
+    <p id="b-done" hidden></p>
+    <p><strong>Then click in BC Assessment's "Enter address" box and press Ctrl+V</strong> (on a phone: tap the box, then Paste). Pick the suggestion that appears to see the assessed value.</p>
+    <p class="note">BC Assessment writes addresses as unit-street city, e.g. 804-1342 JOHNSTON RD WHITE ROCK. Units in new projects may not be listed until BC Assessment adds them.</p>
+  </section>
 </main>
 <div class="contact"><a href="tel:+16046127228">Call Nader</a><a href="sms:+16046127228">Text Nader</a></div>
-<nav><button data-tab="pay" class="on">Payment</button><button data-tab="afford">Afford</button><button data-tab="cmhc">CMHC</button><button data-tab="tax">Tax</button><button data-tab="rates">Banks Rates</button></nav>
+<nav><button data-tab="pay" class="on">Payment</button><button data-tab="afford">Afford</button><button data-tab="cmhc">CMHC</button><button data-tab="tax">Tax</button><button data-tab="rates">Banks Rates</button><button data-tab="bca">BC Assessment</button></nav>
 <script src="../commercial-cost/costs.js?v=4"></script>
 <script type="module">
 import { propertyTransferTax, transferTax, AFFORD, CMHC, FREQUENCIES, affordability, cmhcInsurance, downInDollars, minimumDown, money, mortgagePayment, num } from './mortgage.js';
@@ -180,7 +191,7 @@ chips('p-mode', () => { convert('p')(); pay(); }); chips('p-freq', pay); chips('
 document.querySelector('nav').onclick = (e) => {
   const b = e.target.closest('button'); if (!b) return;
   document.querySelectorAll('nav button').forEach((x) => x.classList.toggle('on', x === b));
-  for (const s of ['pay', 'afford', 'cmhc', 'tax', 'rates']) $(s).hidden = s !== b.dataset.tab;
+  for (const s of ['pay', 'afford', 'cmhc', 'tax', 'rates', 'bca']) $(s).hidden = s !== b.dataset.tab;
   if (b.dataset.tab === 'rates' && !$('rh-rates').firstChild) {
     const sc = document.createElement('script');
     sc.src = 'https://www.ratehub.ca/scripts/rh-widget-loader.js'; sc.async = true;
@@ -193,6 +204,26 @@ document.querySelector('nav').onclick = (e) => {
   }
   scrollTo(0, 0);
 };
+// BC Assessment's search finds "UNIT-STREET CITY" in capitals, e.g. "804-1342 JOHNSTON RD WHITE ROCK" (checked on its site, 2026-10-25);
+// "#48", a unit after the street, or commas find nothing. Listings write "2891 MONTROSE AVE #48, Abbotsford" or "1342 JOHNSTON RD 804, White Rock".
+const bcaFormat = (a) => {
+  let [street, city = ''] = a.split(',').map((x) => x.trim());
+  let unit = '';
+  street = street.replace(/\s*(?:#|unit\s+|suite\s+|apt\.?\s+)([A-Za-z0-9]+)\s*$/i, (m, u) => { unit = u; return ''; });
+  if (!unit) street = street.replace(/^(.*[A-Za-z]\.?)\s+(\d+[A-Za-z]?)$/, (m, s1, u) => (/\b(hwy|highway)$/i.test(s1) ? m : (unit = u, s1)));
+  return ((unit ? unit + '-' : '') + street + (city ? ' ' + city : '')).replace(/\s+/g, ' ').toUpperCase();
+};
+const copyText = (text) => {
+  const fallback = () => { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (e) {} t.remove(); };
+  try { navigator.clipboard.writeText(text).catch(fallback); } catch (e) { fallback(); }
+};
+$('b-go').addEventListener('click', () => {
+  const a = $('b-addr').value.trim();
+  if (!a) return;
+  copyText(a);
+  $('b-done').innerHTML = `<strong>Copied: ${a.replace(/[<>&]/g, '')}</strong>`;
+  $('b-done').hidden = false;
+});
 // Opened from a listing's Mortgage button: ?price=1299000&city=Surrey starts every tab at that price and shows the city.
 {
   const q = new URLSearchParams(location.search), price = Math.round(num(q.get('price')));
@@ -226,25 +257,17 @@ document.querySelector('nav').onclick = (e) => {
     // &down= is the down payment % the listing's Est./mo button used (20%, the same as the site's own mortgage calculator).
     const dq = num(q.get('down'));
     if (dq >= 5 && dq <= 100) for (const id of ['p-down', 'c-down']) $(id).value = commercial ? Math.max(35, dq) : dq;
-    // The listing's address for the BC Assessment link: copied when the link is clicked, ready to paste into BC Assessment's search.
-    // BC Assessment's search finds "UNIT-STREET CITY" in capitals, e.g. "804-1342 JOHNSTON RD WHITE ROCK" (checked on its site, 2026-10-25);
-    // "#48", a unit after the street, or commas find nothing. Listings write "2891 MONTROSE AVE #48, Abbotsford" or "1342 JOHNSTON RD 804, White Rock".
-    const bcaFormat = (a) => {
-      let [street, city = ''] = a.split(',').map((x) => x.trim());
-      let unit = '';
-      street = street.replace(/\s*(?:#|unit\s+|suite\s+|apt\.?\s+)([A-Za-z0-9]+)\s*$/i, (m, u) => { unit = u; return ''; });
-      if (!unit) street = street.replace(/^(.*[A-Za-z]\.?)\s+(\d+[A-Za-z]?)$/, (m, s1, u) => (/\b(hwy|highway)$/i.test(s1) ? m : (unit = u, s1)));
-      return ((unit ? unit + '-' : '') + street + (city ? ' ' + city : '')).replace(/\s+/g, ' ').toUpperCase();
-    };
+    // The listing's address (&addr=) goes into the BC Assessment tab and the link beside the price.
     const addr = bcaFormat((q.get('addr') || '').replace(/[^A-Za-z0-9 #.,'\/-]/g, '').slice(0, 80));
     if (addr) {
+      $('b-addr').value = addr;
       const hint = $('p-bca-addr');
-      hint.textContent = `Address for BC Assessment: ${addr}. Clicking the link copies it; paste it (Ctrl+V) into their search box.`;
+      hint.innerHTML = `Address for BC Assessment: ${addr}. <strong>The link copies it; then click in BC Assessment's "Enter address" box and press Ctrl+V.</strong>`;
       hint.hidden = false;
+      $('p-bca').innerHTML = 'Copy address &amp; open BC Assessment &#8599;';
       $('p-bca').addEventListener('click', () => {
-        const fallback = () => { const t = document.createElement('textarea'); t.value = addr; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (e) {} t.remove(); };
-        try { navigator.clipboard.writeText(addr).catch(fallback); } catch (e) { fallback(); }
-        hint.textContent = `Copied: ${addr}. Paste it (Ctrl+V) into BC Assessment's search box.`;
+        copyText(addr);
+        hint.innerHTML = `Copied: ${addr}. <strong>Now click in BC Assessment's "Enter address" box and press Ctrl+V.</strong>`;
       });
     }
     const city = (q.get('city') || '').replace(/[^A-Za-z .'-]/g, '').slice(0, 40);
