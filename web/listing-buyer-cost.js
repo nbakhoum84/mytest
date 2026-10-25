@@ -414,13 +414,34 @@ return { utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaig
 }
 // Each button click (and each sign-up prompt click) is sent to whatever analytics the site runs: Google Tag Manager / GA4
 // (dataLayer, gtag) and the Meta pixel (fbq), so they can be counted as conversions for ad campaigns.
+var NADER_EXP = 'G-N9D71PSLL6', hnGtag = null;
+function naderExp(name, data) {
+// Same consent the visitor gave the site: its cookie banner sets a default and updates in the site's dataLayer. Where the page has none
+// (listing pages), the site's own tag sends as consented too.
+var dl = window.dataLayer || [], c = {};
+for (var i = 0; i < dl.length; i++) if (dl[i] && dl[i][0] === 'consent' && dl[i][2]) Object.assign(c, dl[i][2]);
+var hasConsent = Object.keys(c).length > 0;
+if (!hnGtag) {
+window.hnDataLayer = window.hnDataLayer || [];
+hnGtag = function () { window.hnDataLayer.push(arguments); };
+if (hasConsent) hnGtag('consent', 'default', c);
+hnGtag('js', new Date());
+hnGtag('config', NADER_EXP, { send_page_view: false });
+var sc = document.createElement('script');
+sc.async = true;
+sc.src = 'https://www.googletagmanager.com/gtag/js?id=' + NADER_EXP + '&l=hnDataLayer';
+document.head.appendChild(sc);
+} else if (hasConsent) hnGtag('consent', 'update', c);
+hnGtag('event', name, Object.assign({ send_to: NADER_EXP }, data));
+}
 function track(name, data) {
 data.page_path = location.pathname;
 data.city = cityOf() || '';
 try { (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: name }, data)); } catch (e) {}
-// Lofty configures Nader's live GA4 property (Nader-exp, G-N9D71PSLL6) in its own tracker group, so a plain gtag event never reached
-// it (only the default G-50BX6YT24D did). Send to both by ID.
-try { if (typeof window.gtag === 'function') window.gtag('event', name, Object.assign({ send_to: ['G-N9D71PSLL6', 'G-50BX6YT24D'] }, data)); } catch (e) {}
+try { if (typeof window.gtag === 'function') window.gtag('event', name, Object.assign({ send_to: 'G-50BX6YT24D' }, data)); } catch (e) {}
+// Nader's live GA4 property (Nader-exp, G-N9D71PSLL6): the site's own gtag only sometimes passed our events on to it (a test on the
+// listing search page showed none arriving), so it gets them through a Google tag of our own, with the site's current consent.
+try { naderExp(name, data); } catch (e) {}
 try { if (typeof window.fbq === 'function') window.fbq('trackCustom', name, data); } catch (e) {}
 }
 // The site's own "Register/Sign In" link; it's only there while the visitor isn't signed in.
@@ -675,7 +696,7 @@ for (var c = 0; c < CITIES.length; c++) if (new RegExp('-' + CITIES[c].toLowerCa
 return '';
 }
 var m = /^\/(?:presales?-)?([a-z-]+?)(?:-(?:sold-)?listings?|-presales?)?\/?$/.exec(path);
-if (!m || /^(new|foreclosures?|commercial|residential)/.test(m[1])) return '';
+if (!m || /^(new|foreclosures?|commercial|residential|listings?$)/.test(m[1])) return '';
 return m[1].split('-').map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
 }
 // Latest Total cost shown in the Buyer Cost popup (it reports every change), so Mortgage starts from what the visitor ticked there.
@@ -751,6 +772,9 @@ return false;
 // A signed-out visitor who has used a calculator and then clicks a listing card gets the registration form (the card does not open until
 // they register), the same as when they close a calculator. Our own buttons, hearts and other buttons are left alone.
 function onCardClick(e) {
+// Only a visitor's own click. Our own clicks on the Register link (openRegistration) must not land here: on the search page that
+// started a loop that re-opened the form and logged hn_listing_signup_prompt about once a second.
+if (!e.isTrusted) return;
 var t = e.target;
 if (!t || !t.closest || t.closest('.hn-bcp-row,#hn-bcp-modal,button,[role="button"],input,select,textarea,label')) return;
 var used = false;
