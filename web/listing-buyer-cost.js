@@ -414,34 +414,20 @@ return { utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaig
 }
 // Each button click (and each sign-up prompt click) is sent to whatever analytics the site runs: Google Tag Manager / GA4
 // (dataLayer, gtag) and the Meta pixel (fbq), so they can be counted as conversions for ad campaigns.
-var NADER_EXP = 'G-N9D71PSLL6', hnGtag = null;
-function naderExp(name, data) {
-// Same consent the visitor gave the site: its cookie banner sets a default and updates in the site's dataLayer. Where the page has none
-// (listing pages), the site's own tag sends as consented too.
-var dl = window.dataLayer || [], c = {};
-for (var i = 0; i < dl.length; i++) if (dl[i] && dl[i][0] === 'consent' && dl[i][2]) Object.assign(c, dl[i][2]);
-var hasConsent = Object.keys(c).length > 0;
-if (!hnGtag) {
-window.hnDataLayer = window.hnDataLayer || [];
-hnGtag = function () { window.hnDataLayer.push(arguments); };
-if (hasConsent) hnGtag('consent', 'default', c);
-hnGtag('js', new Date());
-hnGtag('config', NADER_EXP, { send_page_view: false });
-var sc = document.createElement('script');
-sc.async = true;
-sc.src = 'https://www.googletagmanager.com/gtag/js?id=' + NADER_EXP + '&l=hnDataLayer';
-document.head.appendChild(sc);
-} else if (hasConsent) hnGtag('consent', 'update', c);
-hnGtag('event', name, Object.assign({ send_to: NADER_EXP }, data));
+// Nader's live GA4 property (Nader-exp). The site loads it on its own data layer (gtag/js?id=G-N9D71PSLL6&l=customSiteDataLayer),
+// which the page's gtag() does not feed, so our events go onto that layer (gtag needs a real arguments object).
+function naderExp() {
+var l = window.customSiteDataLayer;
+if (l && typeof l.push === 'function') { l.push(arguments); return true; }
+return false;
 }
 function track(name, data) {
 data.page_path = location.pathname;
 data.city = cityOf() || '';
 try { (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: name }, data)); } catch (e) {}
-try { if (typeof window.gtag === 'function') window.gtag('event', name, Object.assign({ send_to: 'G-50BX6YT24D' }, data)); } catch (e) {}
-// Nader's live GA4 property (Nader-exp, G-N9D71PSLL6): the site's own gtag only sometimes passed our events on to it (a test on the
-// listing search page showed none arriving), so it gets them through a Google tag of our own, with the site's current consent.
-try { naderExp(name, data); } catch (e) {}
+var viaSite = false;
+try { viaSite = naderExp('event', name, Object.assign({ send_to: 'G-N9D71PSLL6' }, data)); } catch (e) {}
+try { if (typeof window.gtag === 'function') window.gtag('event', name, Object.assign({ send_to: viaSite ? 'G-50BX6YT24D' : ['G-N9D71PSLL6', 'G-50BX6YT24D'] }, data)); } catch (e) {}
 try { if (typeof window.fbq === 'function') window.fbq('trackCustom', name, data); } catch (e) {}
 }
 // The site's own "Register/Sign In" link; it's only there while the visitor isn't signed in.
@@ -455,7 +441,8 @@ for (var i = els.length - 1; i >= 0; i--) {
 var t = els[i].textContent;
 if (t.length > 40) continue;
 t = t.replace(/\s+/g, ' ').trim();
-if (!REG.test(t) || els[i].closest('#hn-bcp-modal, footer')) continue;
+// Never a Register/Sign in link inside a listing card: clicking that opens the listing instead of the form.
+if (!REG.test(t) || els[i].closest('#hn-bcp-modal, footer, a[href*="/listing-detail/"]')) continue;
 var el = els[i].closest('a, button, [role="button"]') || els[i];
 var score = (el !== els[i] || /^(A|BUTTON)$/.test(el.tagName) || el.getAttribute('role') === 'button' ? 4 : 0) + (/register/i.test(t) ? 2 : 0) + (el.offsetParent ? 1 : 0);
 if (score > bestScore) { best = el; bestScore = score; }
