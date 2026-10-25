@@ -34,8 +34,10 @@
   <section id="mc-pay">
     <h2>Mortgage payment</h2>
     <p class="mc-note"><strong>Disclaimer:</strong> These numbers are estimates only, not a quote or financial, legal or tax advice. Actual costs, rates and payments will vary. Confirm with your lender, lawyer and accountant.</p>
-    <!-- BC Assessment has no public data feed, so the link opens its free search, where the official assessed value is one address away (Nader, 2026-10-25). -->
-    <label for="p-price" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">Purchase price (CAD)<a href="https://www.bcassessment.ca/" target="_blank" rel="noopener" style="color:inherit;font-size:14px;text-decoration:underline">BC Assessment value &#8599;</a></label><input id="mc-p-price" type="text" inputmode="numeric" value="$900,000">
+    <!-- BC Assessment has no public data feed, so the link opens its free search, where the official assessed value is one address away (Nader, 2026-10-25).
+         Its site takes no address in the link, so the listing's address (&addr=) is copied for the visitor to paste into its search box. -->
+    <label for="p-price" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">Purchase price (CAD)<a href="https://www.bcassessment.ca/" target="_blank" rel="noopener" style="color:inherit;font-size:14px;text-decoration:underline" id="mc-p-bca">BC Assessment value &#8599;</a></label><input id="mc-p-price" type="text" inputmode="numeric" value="$900,000">
+    <p class="mc-note" id="mc-p-bca-addr" hidden style="margin-top:-8px"></p>
     <label class="mc-check" for="p-biz" id="mc-p-biz-row" hidden>Business only, no land or building (no property transfer tax)<input id="mc-p-biz" type="checkbox"></label>
     <label for="p-down">Down payment</label>
     <div class="mc-inline"><input id="mc-p-down" type="text" inputmode="decimal" value="20"><div class="mc-chips" id="mc-p-mode"><button data-v="%" class="mc-on">%</button><button data-v="$">$</button></div></div>
@@ -358,6 +360,27 @@ $('tabs').onclick = (e) => {
     // &down= is the down payment % the listing's Est./mo button used (20%, the same as the site's own mortgage calculator).
     const dq = num(q.get('down'));
     if (dq >= 5 && dq <= 100) for (const id of ['p-down', 'c-down']) $(id).value = commercial ? Math.max(35, dq) : dq;
+    // The listing's address for the BC Assessment link: copied when the link is clicked, ready to paste into BC Assessment's search.
+    // BC Assessment's search finds "UNIT-STREET CITY" in capitals, e.g. "804-1342 JOHNSTON RD WHITE ROCK" (checked on its site, 2026-10-25);
+    // "#48", a unit after the street, or commas find nothing. Listings write "2891 MONTROSE AVE #48, Abbotsford" or "1342 JOHNSTON RD 804, White Rock".
+    const bcaFormat = (a) => {
+      let [street, city = ''] = a.split(',').map((x) => x.trim());
+      let unit = '';
+      street = street.replace(/\s*(?:#|unit\s+|suite\s+|apt\.?\s+)([A-Za-z0-9]+)\s*$/i, (m, u) => { unit = u; return ''; });
+      if (!unit) street = street.replace(/^(.*[A-Za-z]\.?)\s+(\d+[A-Za-z]?)$/, (m, s1, u) => (/\b(hwy|highway)$/i.test(s1) ? m : (unit = u, s1)));
+      return ((unit ? unit + '-' : '') + street + (city ? ' ' + city : '')).replace(/\s+/g, ' ').toUpperCase();
+    };
+    const addr = bcaFormat((q.get('addr') || '').replace(/[^A-Za-z0-9 #.,'\/-]/g, '').slice(0, 80));
+    if (addr) {
+      const hint = $('p-bca-addr');
+      hint.textContent = `Address for BC Assessment: ${addr}. Clicking the link copies it; paste it (Ctrl+V) into their search box.`;
+      hint.hidden = false;
+      $('p-bca').addEventListener('click', () => {
+        const fallback = () => { const t = document.createElement('textarea'); t.value = addr; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (e) {} t.remove(); };
+        try { navigator.clipboard.writeText(addr).catch(fallback); } catch (e) { fallback(); }
+        hint.textContent = `Copied: ${addr}. Paste it (Ctrl+V) into BC Assessment's search box.`;
+      });
+    }
     const city = (q.get('city') || '').replace(/[^A-Za-z .'-]/g, '').slice(0, 40);
     if (city) $('p-min').insertAdjacentHTML('beforebegin', `<p class="mc-note">Listing in ${city}, BC</p>`);
     const key = Object.keys(CITY_TAX).find((c) => c.toLowerCase() === city.toLowerCase());
