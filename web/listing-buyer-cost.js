@@ -414,7 +414,7 @@ function utm(isMortgage, listingType) {
 return { utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaign: isMortgage ? 'est_monthly' : 'cash_to_close', utm_content: listingType };
 }
 // Each button click (and each sign-up prompt click) is sent to whatever analytics the site runs: Google Tag Manager / GA4
-// (dataLayer, gtag) and the Meta pixel (fbq), so they can be counted as conversions for ad campaigns.
+// (gtag), so they can be counted as conversions for ad campaigns.
 // Nader's live GA4 property (Nader-exp). The site loads it on its own data layer (gtag/js?id=G-N9D71PSLL6&l=customSiteDataLayer),
 // which the page's gtag() does not feed, so our events go onto that layer (gtag needs a real arguments object).
 function naderExp() {
@@ -429,7 +429,7 @@ data.city = cityOf() || '';
 var viaSite = false;
 try { viaSite = naderExp('event', name, Object.assign({ send_to: 'G-N9D71PSLL6' }, data)); } catch (e) {}
 try { if (typeof window.gtag === 'function') window.gtag('event', name, Object.assign({ send_to: viaSite ? 'G-50BX6YT24D' : ['G-N9D71PSLL6', 'G-50BX6YT24D'] }, data)); } catch (e) {}
-try { if (typeof window.fbq === 'function') window.fbq('trackCustom', name, data); } catch (e) {}
+// No Meta pixel (fbq) event: the site copies every pixel event into Nader-exp, which counted each click twice (live test, 2026-10-24).
 }
 // The site's own "Register/Sign In" link; it's only there while the visitor isn't signed in.
 // On phones it sits in the collapsed menu (hidden), so hidden links count too. Picks the innermost match,
