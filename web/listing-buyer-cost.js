@@ -418,7 +418,9 @@ function track(name, data) {
 data.page_path = location.pathname;
 data.city = cityOf() || '';
 try { (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: name }, data)); } catch (e) {}
-try { if (typeof window.gtag === 'function') window.gtag('event', name, data); } catch (e) {}
+// Lofty configures Nader's live GA4 property (Nader-exp, G-N9D71PSLL6) in its own tracker group, so a plain gtag event never reached
+// it (only the default G-50BX6YT24D did). Send to both by ID.
+try { if (typeof window.gtag === 'function') window.gtag('event', name, Object.assign({ send_to: ['G-N9D71PSLL6', 'G-50BX6YT24D'] }, data)); } catch (e) {}
 try { if (typeof window.fbq === 'function') window.fbq('trackCustom', name, data); } catch (e) {}
 }
 // The site's own "Register/Sign In" link; it's only there while the visitor isn't signed in.
