@@ -500,7 +500,6 @@ m.id = 'hn-bcp-modal';
 m.innerHTML =
 '<div class="hn-bcp-box" role="dialog" aria-modal="true" aria-label="Buyer Cost">' +
 '<div class="hn-bcp-bar"><b class="hn-bcp-title">Buyer Cost</b><span class="hn-bcp-alts"></span>' +
-'<a class="hn-bcp-open" target="_blank" rel="noopener">Open in new tab</a>' +
 '<button type="button" class="hn-bcp-x" aria-label="Close">&times;</button></div>' +
 '<iframe title="Buyer Cost calculator"></iframe>' +
 '<div class="hn-bcp-fail" hidden>The calculator is taking a while to load. <a class="hn-bcp-fail-open" target="_blank" rel="noopener">Open it in a new tab</a></div>' +
@@ -728,7 +727,6 @@ if (alts.length) m.querySelector('.hn-bcp-title').textContent = mortgage ? 'Mort
 m.querySelector('.hn-bcp-alts').innerHTML = alts.map(function (p) {
 return '<button type="button" class="hn-bcp-alt' + (p === price ? ' hn-bcp-alt-on' : '') + '" data-hn-price="' + p + '">$' + p.toLocaleString('en-CA') + '</button>';
 }).join('');
-m.querySelector('.hn-bcp-open').href = url;
 var fr = m.querySelector('iframe'), fail = m.querySelector('.hn-bcp-fail');
 fail.hidden = true;
 m.querySelector('.hn-bcp-fail-open').href = url;
@@ -828,7 +826,6 @@ style.textContent =
 '#hn-bcp-modal .hn-bcp-alts{flex:1;display:flex;flex-wrap:wrap;gap:6px}' +
 '#hn-bcp-modal .hn-bcp-alt{border:1px solid #dbae77;border-radius:8px;padding:4px 10px;background:#fff;color:#111;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}' +
 '#hn-bcp-modal .hn-bcp-alt-on{background:#dbae77}' +
-'#hn-bcp-modal .hn-bcp-open{color:#8a6a35;font-size:13px;text-decoration:underline}' +
 '#hn-bcp-modal .hn-bcp-x{border:0;background:none;font-size:28px;line-height:1;padding:0 6px;cursor:pointer;color:#111}' +
 '#hn-bcp-modal iframe{flex:1 1 auto;min-height:0;display:block;width:100%;border:0;background:#fff}' +
 '#hn-bcp-modal .hn-bcp-fail{padding:12px 16px;background:#fff7e8;color:#111;font-family:inherit;font-size:14px;border-top:1px solid #e6e2d9}' +
