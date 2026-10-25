@@ -30,19 +30,20 @@
   #mc-app [hidden]{display:none}
 </style>
 <div id="mc-app">
-  <div class="mc-tabs" id="mc-tabs"><button data-tab="pay" class="mc-on">Payment</button><button data-tab="afford">Afford</button><button data-tab="cmhc">CMHC</button><button data-tab="tax">Tax</button><button data-tab="rates">Rates</button></div>
+  <div class="mc-tabs" id="mc-tabs"><button data-tab="pay" class="mc-on">Payment</button><button data-tab="afford">Afford</button><button data-tab="cmhc">CMHC</button><button data-tab="tax">Tax</button><button data-tab="rates">Banks Rates</button></div>
   <section id="mc-pay">
     <h2>Mortgage payment</h2>
     <p class="mc-note"><strong>Disclaimer:</strong> These numbers are estimates only, not a quote or financial, legal or tax advice. Actual costs, rates and payments will vary. Confirm with your lender, lawyer and accountant.</p>
     <label for="p-price">Purchase price (CAD)</label><input id="mc-p-price" type="text" inputmode="numeric" value="$900,000">
+    <label class="mc-check" for="p-biz" id="mc-p-biz-row" hidden>Business only, no land or building (no property transfer tax)<input id="mc-p-biz" type="checkbox"></label>
     <label for="p-down">Down payment</label>
-    <div class="mc-inline"><input id="mc-p-down" type="text" inputmode="decimal" value="10"><div class="mc-chips" id="mc-p-mode"><button data-v="%" class="mc-on">%</button><button data-v="$">$</button></div></div>
+    <div class="mc-inline"><input id="mc-p-down" type="text" inputmode="decimal" value="20"><div class="mc-chips" id="mc-p-mode"><button data-v="%" class="mc-on">%</button><button data-v="$">$</button></div></div>
     <p class="mc-note" id="mc-p-min"></p>
-    <label for="p-rate">Interest rate (%)</label><input id="mc-p-rate" type="text" inputmode="decimal" value="4.5">
-    <label for="p-years">Amortization (years)</label><input id="mc-p-years" type="text" inputmode="numeric" value="25">
+    <label for="p-rate">Interest rate (%)</label><input id="mc-p-rate" type="text" inputmode="decimal" value="4">
+    <label for="p-years">Amortization (years)</label><input id="mc-p-years" type="text" inputmode="numeric" value="30">
     <label>Payment frequency</label><div class="mc-chips" id="mc-p-freq"></div>
     <div id="mc-p-out"></div>
-    <p class="mc-note">Estimate only. Canadian fixed rates compound semi-annually. Your lender's figures may differ slightly.</p>
+    <p class="mc-note">Estimate only. Your lender's figures may differ slightly.</p>
   </section>
   <section id="mc-afford" hidden>
     <h2>What can I afford?</h2>
@@ -79,19 +80,22 @@
   </section>
   <section id="mc-rates" hidden>
     <h2>Today's mortgage rates</h2>
-    <p>Compare today's best mortgage rates from Canadian lenders. The table updates live, so it opens on Nader's website.</p>
-    <a class="mc-btn" href="https://home-nader.com/mortgage-calculators#mortgage-rate-comparison-table" target="_blank" rel="noopener">Compare rates</a>
+    <p>Compare today's best mortgage rates from Canadian lenders. The table updates live.</p>
+    <!-- Same Ratehub comparison table as home-nader.com/mortgage-calculators; loaded when the Rates tab first opens. -->
+    <div id="mc-rh-rates" style="min-height:420px"></div>
+    <p class="mc-note">Table not showing? <a href="https://home-nader.com/mortgage-calculators#mortgage-rate-comparison-table" target="_blank" rel="noopener">Compare rates on Nader's website</a>.</p>
     <p class="mc-note">Bring a rate back to the Payment tab to see what it means for your monthly payment.</p>
   </section>
 </div>
 <script>
 (function () {
-// Mortgage math for BC buyers. Canadian fixed-rate mortgages compound semi-annually.
+// Mortgage math for BC buyers. Interest compounds once per payment (monthly for monthly payments), the same as the
+// mortgage calculator on Nader's Lofty listing pages, so both show the same payment (Nader, 2026-10-24).
 
 const num = (s) => parseFloat(String(s).replace(/[^0-9.]/g, '')) || 0;
 
 // Interest rate per payment for a given number of payments a year.
-const periodRate = (annualPct, perYear) => Math.pow(1 + annualPct / 100 / 2, 2 / perYear) - 1;
+const periodRate = (annualPct, perYear) => annualPct / 100 / perYear;
 
 function pmt(principal, annualPct, years, perYear = 12) {
   const n = Math.round(years * perYear);
@@ -252,17 +256,19 @@ $('p-freq').innerHTML = Object.entries(FREQUENCIES).map(([k, f], i) => `<button 
 // wowa.ca and millrate.ca. Set when a listing's Mortgage button passes ?city=. Estimates only; the BC home owner grant and the city's own bylaw can differ.
 const CITY_TAX = { 'Abbotsford': 0.4521, 'Burnaby': 0.3284, 'Coquitlam': 0.3852, 'Delta': 0.3958, 'Langley': 0.3617, 'New Westminster': 0.4793,
   'Port Coquitlam': 0.3775, 'Port Moody': 0.4291, 'Richmond': 0.3538, 'South Surrey': 0.3427, 'Surrey': 0.3427, 'Vancouver': 0.3364, 'White Rock': 0.4319 };
-let taxCity = '', closingCash = 0;
+let taxCity = '', closingCash = 0, commercialLoan = false;
 // Show prices as $1,234,567 while typing.
 const fmtPrice = (id) => { const n = $(id).value.replace(/[^0-9]/g, ''); $(id).value = n ? '$' + (+n).toLocaleString('en-CA') : ''; };
 for (const id of ['p-price', 'c-price', 't-price']) $(id).addEventListener('input', () => fmtPrice(id));
 function pay() {
   const p = v('p-price'), d = downInDollars(p, v('p-down'), picked('p-mode')), freq = picked('p-freq');
-  $('p-min').textContent = `Minimum down for this price: ${money(minimumDown(p))}`;
+  $('p-min').textContent = commercialLoan ? `Minimum down for a commercial mortgage (25%): ${money(p * 0.25)}` : `Minimum down for this price: ${money(minimumDown(p))}`;
   const r = mortgagePayment({ price: p, down: d, ratePct: v('p-rate'), years: v('p-years'), frequency: freq }), ins = r.insurance;
   $('p-out').innerHTML = ins.status === 'blocked' ? `<p class="mc-warn">${ins.message}</p>` :
     row('Down payment', `${money(d)} (${ins.downPct.toFixed(1)}%)`) + row('CMHC insurance', money(ins.premium)) +
     row('Mortgage amount', money(r.loan)) +
+    // Property transfer tax on the price above (Nader, 2026-10-24). Commercial: none when "Business only" is ticked.
+    row('Property transfer tax', money(commercialLoan && window.CommercialCosts ? ($('p-biz').checked ? 0 : CommercialCosts.ptt(p)) : propertyTransferTax(p))) +
     (closingCash ? row('Closing costs (cash, Buyer Cost)', money(closingCash)) + row('Cash needed to close', money(d + closingCash + ins.premium * 0.07), true) : '') + row(`${FREQUENCIES[freq].label} payment`, money(r.amount), true) +
     (taxCity ? row(`Property tax in ${taxCity} (${CITY_TAX[taxCity]}%/yr, est.)`, `${money((p * CITY_TAX[taxCity]) / 100 / 12)}/mo`) : '') +
     row('Balance after 5-year term', money(r.termBalance)) + row('Total interest', money(r.totalInterest)) +
@@ -307,6 +313,16 @@ $('tabs').onclick = (e) => {
   const b = e.target.closest('button'); if (!b) return;
   $('tabs').querySelectorAll('button').forEach((x) => x.classList.toggle('mc-on', x === b));
   for (const s of ['pay', 'afford', 'cmhc', 'tax', 'rates']) $(s).hidden = s !== b.dataset.tab;
+  if (b.dataset.tab === 'rates' && !$('rh-rates').firstChild) {
+    const sc = document.createElement('script');
+    sc.src = 'https://www.ratehub.ca/scripts/rh-widget-loader.js'; sc.async = true;
+    sc.setAttribute('rh-title', ''); sc.setAttribute('rh-frame-title', "Ratehub.ca's mortgage comparison table - compare today's best mortgage rates");
+    sc.setAttribute('rh-widget-key', 'ProductTableMortgages');
+    // Start Ratehub's table at the listing price (Ratehub passes rh-* attributes to the table; the exact name isn't documented, so send the likely ones).
+    const hp = String(Math.round(v('p-price')));
+    for (const a of ['rh-home-price', 'rh-purchase-price', 'rh-price', 'rh-property-value']) sc.setAttribute(a, hp);
+    $('rh-rates').appendChild(sc);
+  }
 };
 // Opened from a listing's Mortgage button: ?price=1299000&city=Surrey starts every tab at that price and shows the city.
 {
@@ -316,13 +332,31 @@ $('tabs').onclick = (e) => {
     const gst = q.get('new') === '1';
     // &total= is the Total cost last shown in the Buyer Cost popup (with whatever boxes were ticked); otherwise the defaults are used.
     const sent = Math.round(num(q.get('mc-total')));
-    const closing = sent > price ? sent - price : propertyTransferTax(price) + 1800 + (gst ? 0 : 500) + 400 + 1500 + (gst ? price * 0.05 : 0);
+    // &commercial=1: opened from a commercial listing card. Closing costs follow the Commercial Buyer Cost app, and the
+    // "Business only, no land or building" box drops the property transfer tax (PTT is only paid when land is bought).
+    const commercial = q.get('commercial') === '1' && window.CommercialCosts;
+    const commercialClosing = () => { const c = CommercialCosts.costs(price, { land: !$('p-biz').checked }); return c.closing + c.gstPaid; };
+    const closing = commercial ? commercialClosing() : sent > price ? sent - price : propertyTransferTax(price) + 1800 + (gst ? 0 : 500) + 400 + 1500 + (gst ? price * 0.05 : 0);
     for (const id of ['c-price', 't-price']) { $(id).value = price; fmtPrice(id); }
     // In BC closing costs are paid in cash and can't be added to the mortgage (only the CMHC premium can), so the mortgage stays on the price.
     $('p-price').value = price; fmtPrice('p-price');
     closingCash = Math.round(closing);
-    $('p-min').insertAdjacentHTML('beforebegin', `<p class="mc-note">Closing costs of ${money(closing)} (Buyer Cost total ${money(price + closing)}) are paid in cash, not added to the mortgage.</p>`);
+    const closingNote = (c) => `Closing costs of ${money(c)} (Buyer Cost total ${money(price + c)}) are paid in cash, not added to the mortgage.`;
+    $('p-min').insertAdjacentHTML('beforebegin', `<p class="mc-note" id="p-closing">${closingNote(closing)}</p>`);
+    if (commercial) {
+      $('p-biz-row').hidden = false;
+      // BC commercial loans (not CMHC-insured): BC banks quote 5.89%-6.39% (5-year fixed) with 35%-40% down typical (jeremykresky.com,
+      // 2026); lenders go to 75% loan-to-value at most, so never under 25% down. Checked Oct 24, 2026; update when rates move.
+      commercialLoan = true;
+      $('p-rate').value = '6';
+      for (const id of ['p-down', 'c-down']) $(id).value = 35;
+      $('p-min').insertAdjacentHTML('beforebegin', '<p class="mc-note">BC commercial mortgage: 6% is a typical bank rate (BC banks about 5.89% to 6.39%, 5-year fixed), usually with 35% to 40% down. Your lender\'s quote may differ.</p>');
+      $('p-biz').onchange = () => { closingCash = Math.round(commercialClosing()); $('p-closing').textContent = closingNote(closingCash); pay(); };
+    }
     if (q.get('new') === '1') $('t-nb').checked = true;
+    // &down= is the down payment % the listing's Est./mo button used (20%, the same as the site's own mortgage calculator).
+    const dq = num(q.get('down'));
+    if (dq >= 5 && dq <= 100) for (const id of ['p-down', 'c-down']) $(id).value = commercial ? Math.max(35, dq) : dq;
     const city = (q.get('city') || '').replace(/[^A-Za-z .'-]/g, '').slice(0, 40);
     if (city) $('p-min').insertAdjacentHTML('beforebegin', `<p class="mc-note">Listing in ${city}, BC</p>`);
     const key = Object.keys(CITY_TAX).find((c) => c.toLowerCase() === city.toLowerCase());

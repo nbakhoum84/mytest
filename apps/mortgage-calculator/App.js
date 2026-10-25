@@ -60,10 +60,10 @@ function DownPayment({ price, down, setDown, mode, setMode }) {
 
 function Payment() {
   const [price, setPrice] = useState('900000');
-  const [down, setDown] = useState('10');
+  const [down, setDown] = useState('20');
   const [mode, setMode] = useState('%');
-  const [rate, setRate] = useState('4.5');
-  const [years, setYears] = useState('25');
+  const [rate, setRate] = useState('4');
+  const [years, setYears] = useState('30');
   const [freq, setFreq] = useState('monthly');
   const p = num(price);
   const d = downInDollars(p, num(down), mode);
@@ -92,7 +92,7 @@ function Payment() {
           {!!ins.message && <Text style={styles.note}>{ins.message}</Text>}
         </>
       )}
-      <Text style={styles.note}>Estimate only. Canadian fixed rates compound semi-annually. Your lender's figures may differ slightly.</Text>
+      <Text style={styles.note}>Estimate only. Your lender's figures may differ slightly.</Text>
     </ScrollView>
   );
 }

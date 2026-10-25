@@ -199,10 +199,11 @@ el.setAttribute('data-hn-price', price);
 addButton(el, price);
 }
 
-// Rough numbers shown on the buttons, with the same defaults the popups open with: 10% down (20% at $1.5M or more),
-// 4.5% over 25 years, CMHC premium under 20% down (its 7% PST is paid in cash at closing), and the Buyer Cost app's
-// default closing costs (BC property transfer tax, legal $1,800, inspection $500 on resale, appraisal $400, insurance $1,500, 5% GST on new builds).
-var EST = { rate: 4.5, years: 25 };
+// Rough numbers shown on the buttons, with the same defaults the popups open with. Cash to close: 10% down (20% at $1.5M or more),
+// CMHC premium under 20% down (its 7% PST is paid in cash at closing), and the Buyer Cost app's default closing costs (BC property
+// transfer tax, legal $1,800, inspection $500 on resale, appraisal $400, insurance $1,500, 5% GST on new builds).
+// Est./mo: the same settings as the site's own (Lofty) mortgage calculator: 20% down, 4%, 30 years, compounded monthly (Nader, 2026-10-24).
+var EST = { rate: 4, years: 30, downPct: 20 };
 function ptt(p) {
 var band = function (from, to, rate) { return Math.max(0, Math.min(p, to) - from) * rate; };
 return band(0, 2e5, 0.01) + band(2e5, 2e6, 0.02) + band(2e6, Infinity, 0.03) + band(3e6, Infinity, 0.02);
@@ -212,8 +213,8 @@ var downPct = price >= 1.5e6 ? 20 : 10;
 var down = price * downPct / 100, loan = price - down;
 var premium = downPct < 20 ? loan * 0.031 : 0;
 var closing = ptt(price) + 1800 + (isNewBuild ? 0 : 500) + 400 + 1500 + (isNewBuild ? price * 0.05 : 0);
-var r = Math.pow(1 + EST.rate / 200, 1 / 6) - 1, n = EST.years * 12, total = loan + premium;
-return { downPct: downPct, cash: down + closing + premium * 0.07, monthly: total * r / (1 - Math.pow(1 + r, -n)) };
+var r = EST.rate / 1200, n = EST.years * 12, mLoan = price * (1 - EST.downPct / 100);
+return { downPct: downPct, cash: down + closing + premium * 0.07, monthly: mLoan * r / (1 - Math.pow(1 + r, -n)) };
 }
 function short(n) { return n >= 1e6 ? '$' + (n / 1e6).toFixed(n >= 1e7 ? 0 : 1).replace(/\.0$/, '') + 'M' : '$' + Math.round(n / 1e3) + 'K'; }
 function labels(price, isNewBuild) {
@@ -699,7 +700,7 @@ current = { isNewBuild: isNewBuild, mortgage: mortgage, prices: prices || [price
 var city = mortgage ? cityOf() : '';
 var total = mortgage && lastTotal && lastTotal.price === price ? lastTotal.total : 0;
 var u = utm(mortgage, COMMERCIAL ? 'commercial' : isNewBuild ? 'new_build' : 'residential');
-var url = (mortgage ? MORTGAGE_APP : APP) + '?utm_source=' + u.utm_source + '&utm_medium=' + u.utm_medium + '&utm_campaign=' + u.utm_campaign + '&utm_content=' + u.utm_content + '&price=' + price + (isNewBuild ? '&new=1' : '') + (mortgage ? '&down=' + estimate(price, isNewBuild).downPct : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + (mortgage && COMMERCIAL ? '&commercial=1' : '') + '&v=' + Math.floor(Date.now() / 6e4);
+var url = (mortgage ? MORTGAGE_APP : APP) + '?utm_source=' + u.utm_source + '&utm_medium=' + u.utm_medium + '&utm_campaign=' + u.utm_campaign + '&utm_content=' + u.utm_content + '&price=' + price + (isNewBuild ? '&new=1' : '') + (mortgage ? '&down=' + EST.downPct : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + (mortgage && COMMERCIAL ? '&commercial=1' : '') + '&v=' + Math.floor(Date.now() / 6e4);
 var m = modal();
 m.querySelector('.hn-bcp-title').textContent = mortgage ? 'Mortgage for $' + price.toLocaleString('en-CA') + (city ? ' in ' + city : '') :
 (COMMERCIAL ? 'Commercial Buyer Cost for $' : 'Buyer Cost for $') + price.toLocaleString('en-CA');

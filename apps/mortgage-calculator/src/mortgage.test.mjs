@@ -4,21 +4,23 @@ import { propertyTransferTax, transferTax, pmt, payment, minimumDown, cmhcInsura
 
 const near = (a, b, tol = 0.01) => assert.ok(Math.abs(a - b) <= tol, `${a} is not ${b}`);
 
-// $500k at 5% over 25 years, compounded semi-annually.
-near(pmt(500000, 5, 25), 2908.02);
-near(payment({ loan: 500000, ratePct: 5, years: 25 }).totalInterest, 2908.0249 * 300 - 500000, 1);
+// $500k at 5% over 25 years, compounded monthly.
+near(pmt(500000, 5, 25), 2922.95);
+near(payment({ loan: 500000, ratePct: 5, years: 25 }).totalInterest, 2922.9502 * 300 - 500000, 1);
+// Same as the Lofty listing page's mortgage calculator: $678,000, 20% down, 30-year fixed at 4% -> $2,590 a month.
+assert.strictEqual(Math.round(pmt(678000 * 0.8, 4, 30)), 2590);
 near(pmt(120000, 0, 10), 1000);
 assert.strictEqual(pmt(0, 5, 25), 0);
 
 // Accelerated bi-weekly is half the monthly payment and pays the loan off sooner.
 const acc = payment({ loan: 500000, ratePct: 5, years: 25, frequency: 'accBiweekly' });
-near(acc.amount, 1454.01);
+near(acc.amount, 1461.48);
 assert.ok(acc.payoffYears > 21 && acc.payoffYears < 22);
 const bi = payment({ loan: 500000, ratePct: 5, years: 25, frequency: 'biweekly' });
 assert.strictEqual(bi.payoffYears, 25);
 assert.ok(bi.amount < acc.amount);
-// Balance after the 5-year term is the same whether paid monthly or bi-weekly.
-near(bi.termBalance, payment({ loan: 500000, ratePct: 5, years: 25 }).termBalance, 1);
+// Balance after the 5-year term is about the same whether paid monthly or bi-weekly.
+near(bi.termBalance, payment({ loan: 500000, ratePct: 5, years: 25 }).termBalance, 100);
 assert.strictEqual(payment({ loan: 120000, ratePct: 0, years: 10, frequency: 'accWeekly' }).termBalance, 55000);
 
 // Minimum down: 5% of the first $500k, 10% of the rest, 20% at $1.5M or more.
