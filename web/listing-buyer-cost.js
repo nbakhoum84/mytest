@@ -56,13 +56,13 @@ window.addEventListener('resize', window.hnHeroFit);
 // After a click (e.g. Accept All Cookies closes the banner), fit again.
 document.addEventListener('click', function () { setTimeout(window.hnHeroFit, 400); }, true);
 }
-// Laptops and other wide screens, home page: the top bar of the header (phone, e-mail and the social icons) slides up out of sight
+// Home page, every screen size (phones too, Nader 2026-10-25): the top bar of the header (phone, e-mail and the social icons) slides up out of sight
 // while the page is scrolling, up or down, and slides back as soon as scrolling stops (Nader 2026-10-25). The pinned header moves up
 // by the bar's height, so the menu below the bar stays at the top of the window.
 if (typeof document !== 'undefined' && !window.hnTopBarScroll) {
 window.hnTopBarScroll = true;
 var tbParts = function () {
-if (!document.body || !document.body.classList.contains('home') || !window.matchMedia('(min-width:701px)').matches) return null;
+if (!document.body || !document.body.classList.contains('home')) return null;
 var head = document.querySelector('.md-header') || document.querySelector('header');
 if (!head) return null;
 // The bar is the row holding the e-mail address, as wide as it gets without taking in the menu.
