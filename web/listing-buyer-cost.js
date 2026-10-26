@@ -8,19 +8,8 @@
 // something on the site is Lofty's own. ?hnoff=0 turns it back on. Remembered for the browser tab only.
 try {
 var off = /[?&]hnoff=([01])/.exec(location.search);
-// Only for the page load that has ?hnoff=1 in its address, never remembered (a tab left on ?hnoff=1 once kept every script off).
-sessionStorage.removeItem('hnOff');
-if (off && off[1] === '1') { console.log('home-nader scripts are off (?hnoff=0 turns them on)'); return; }
-} catch (e) {}
-// Test switch for finding which part of our code touches the header: ?hnskip=ext skips the four separate scripts (language selector, chat bubble,
-// chat greeting, hover lock); ?hnskip=inl skips the header top bar, home hero and bottom bar code in this file. ?hnskip=none turns it back on.
-// Remembered for the browser tab only.
-try {
-var sk = /[?&]hnskip=(ext|inl|none)/.exec(location.search);
-sessionStorage.removeItem('hnSkip');
-var skip = sk && sk[1];
-if (skip === 'ext') { window.hnLangPosLoading = window.hnBubblePosLoading = window.hnChatWelcomeLoading = window.hnHoverLockLoading = true; }
-if (skip === 'inl') { window.hnTopBarScroll = window.hnHeroFit = true; var sh = document.createElement('style'); sh.id = 'hn-hide-bar'; (document.head || document.documentElement).appendChild(sh); var sh2 = document.createElement('style'); sh2.id = 'hn-hero-up'; (document.head || document.documentElement).appendChild(sh2); }
+if (off) sessionStorage.setItem('hnOff', off[1]);
+if (sessionStorage.getItem('hnOff') === '1') { console.log('home-nader scripts are off (?hnoff=0 turns them on)'); return; }
 } catch (e) {}
 // The virtual assistant chat's greeting line (web/chat-welcome.js) rides along on every page.
 // Phones held upright: the language selector and the AI chat bubble are moved below the home page's search field
@@ -84,22 +73,11 @@ if (!document.body) return null;
 var head = document.querySelector('.md-header') || document.querySelector('header');
 if (!head) return null;
 var hc = head.querySelector('.header-container');
-// Phones and narrow windows (Nader 2026-10-26): the phone number and e-mail were gone after scrolling back to the top, so the slide
-// effect is off there (the bar stays put, see hn-nb-css below). Returning null also puts back anything the effect moved.
-if (window.matchMedia('(max-width:1024px)').matches) return null;
 if (hc && !hc.classList.contains('hn-tb-keep')) hc.classList.add('hn-tb-keep');
 // The bar is the row holding the e-mail address, as wide as it gets without taking in the menu.
 var w = document.createTreeWalker(head, NodeFilter.SHOW_TEXT, null), n, bar = null;
-while ((n = w.nextNode())) if (/info@home-nader\.com/i.test(n.nodeValue)) { bar = n.parentElement; break; }
+while ((n = w.nextNode())) if (/info@home-nader\.com/i.test(n.nodeValue) && n.parentElement.getClientRects().length) { bar = n.parentElement; break; }
 if (!bar) return null;
-// On phones the site's CSS can hide the e-mail row once the page has been scrolled, so only the logo row came back after scrolling up.
-// Un-hide the e-mail and every box around it up to the header.
-for (var hid = bar, leaf = true; hid && hid !== head.parentElement; hid = hid.parentElement, leaf = false) {
-var cs = getComputedStyle(hid);
-if (cs.display === 'none') hid.style.setProperty('display', leaf ? 'inline-block' : 'flex', 'important');
-if (cs.visibility === 'hidden') hid.style.setProperty('visibility', 'visible', 'important');
-if (cs.opacity === '0') hid.style.setProperty('opacity', '1', 'important');
-}
 while (bar.parentElement && bar.parentElement !== head && !/calculators/i.test(bar.parentElement.textContent)) bar = bar.parentElement;
 if (/calculators/i.test(bar.textContent)) return null;
 // The pinned box can be inside the header (Lofty pins div.header-container, the header itself scrolls away) or around it.
@@ -136,51 +114,8 @@ if (up > 0) p.pinned.style.setProperty('transform', 'translateY(' + -up + 'px)',
 else p.pinned.style.removeProperty('transform');
 tbStop = setTimeout(tbBack, 1000);
 };
-// Phones (iOS momentum scrolling) can stop without a last scroll event, which left the bar slid away after scrolling down and back up.
-// Slide it back when the finger lifts, when the browser reports the scroll ended, and when the page comes back into view.
-var tbSettle = function () { clearTimeout(tbStop); tbStop = setTimeout(tbBack, 1000); };
 window.addEventListener('scroll', tbFit, { passive: true });
 window.addEventListener('resize', tbFit);
-window.addEventListener('touchend', tbSettle, { passive: true });
-window.addEventListener('touchcancel', tbSettle, { passive: true });
-window.addEventListener('scrollend', tbBack);
-window.addEventListener('pageshow', tbBack);
-document.addEventListener('visibilitychange', tbBack);
-}
-// Phones and narrow windows (Nader 2026-10-26): the site's own top bar (phone number, e-mail, social icons) stays on screen all the time, looking
-// as it does when the page opens (dark bar, white text), and the header keeps the height that holds it. The site's own script hid it after scrolling.
-if (typeof document !== 'undefined' && !document.getElementById('hn-nb-css')) {
-var nbCss = document.createElement('style');
-nbCss.id = 'hn-nb-css';
-nbCss.textContent = '@media(max-width:1024px){.header-container.cc.hn-tb-keep{height:122px!important}' +
-'.hn-nb,.hn-nb .social-container{display:flex!important;visibility:visible!important;opacity:1!important;transform:none!important;height:auto!important;min-height:36px!important;max-height:none!important;overflow:visible!important;background:#0f172a!important;background-image:none!important}' +
-'.hn-nb *{visibility:visible!important;opacity:1!important}' +
-'.hn-nb a,.hn-nb span,.hn-nb p,.hn-nb li{color:#fff!important;-webkit-text-fill-color:#fff!important}.hn-nb svg,.hn-nb svg *{fill:#fff!important}}';
-(document.head || document.documentElement).appendChild(nbCss);
-var nbMark = function () {
-if (!window.matchMedia('(max-width:1024px)').matches || !document.body) return;
-var head = document.querySelector('.md-header') || document.querySelector('header');
-if (!head) return;
-var hc = head.querySelector('.header-container');
-if (hc && !hc.classList.contains('hn-tb-keep')) hc.classList.add('hn-tb-keep');
-var w = document.createTreeWalker(head, NodeFilter.SHOW_TEXT, null), n, bar = null;
-while ((n = w.nextNode())) if (/info@home-nader\.com/i.test(n.nodeValue)) { bar = n.parentElement; break; }
-if (!bar) return;
-// The bar is the row holding the e-mail address, as wide as it gets without taking in the menu.
-while (bar.parentElement && bar.parentElement !== head && !/calculators/i.test(bar.parentElement.textContent)) bar = bar.parentElement;
-if (/calculators/i.test(bar.textContent) || bar === head) return;
-// Un-hide the boxes around the e-mail up to the header, and mark the bar.
-for (var el = n.parentElement; el && el !== bar.parentElement; el = el.parentElement) {
-if (getComputedStyle(el).display === 'none') el.style.setProperty('display', 'flex', 'important');
-}
-if (!bar.classList.contains('hn-nb')) bar.classList.add('hn-nb');
-};
-[0, 300, 1000, 2500].forEach(function (t) { setTimeout(nbMark, t); });
-window.addEventListener('load', nbMark);
-window.addEventListener('resize', nbMark);
-var nbQ = false;
-window.addEventListener('scroll', function () { if (nbQ) return; nbQ = true; setTimeout(function () { nbQ = false; nbMark(); }, 200); }, { passive: true });
-setInterval(nbMark, 700);
 }
 // Hide the fixed bottom bar with the "Call Nader" and "Value My Home" buttons on every screen size (Nader 2026-10-24: it still
 // showed on narrow laptop windows, which were wider than the old 700px limit). Found by its two buttons' text.
