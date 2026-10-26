@@ -76,8 +76,16 @@ var hc = head.querySelector('.header-container');
 if (hc && !hc.classList.contains('hn-tb-keep')) hc.classList.add('hn-tb-keep');
 // The bar is the row holding the e-mail address, as wide as it gets without taking in the menu.
 var w = document.createTreeWalker(head, NodeFilter.SHOW_TEXT, null), n, bar = null;
-while ((n = w.nextNode())) if (/info@home-nader\.com/i.test(n.nodeValue) && n.parentElement.getClientRects().length) { bar = n.parentElement; break; }
+while ((n = w.nextNode())) if (/info@home-nader\.com/i.test(n.nodeValue)) { bar = n.parentElement; break; }
 if (!bar) return null;
+// On phones the site's CSS can hide the e-mail row once the page has been scrolled, so only the logo row came back after scrolling up.
+// Un-hide the e-mail and every box around it up to the header.
+for (var hid = bar, leaf = true; hid && hid !== head.parentElement; hid = hid.parentElement, leaf = false) {
+var cs = getComputedStyle(hid);
+if (cs.display === 'none') hid.style.setProperty('display', leaf ? 'inline-block' : 'flex', 'important');
+if (cs.visibility === 'hidden') hid.style.setProperty('visibility', 'visible', 'important');
+if (cs.opacity === '0') hid.style.setProperty('opacity', '1', 'important');
+}
 while (bar.parentElement && bar.parentElement !== head && !/calculators/i.test(bar.parentElement.textContent)) bar = bar.parentElement;
 if (/calculators/i.test(bar.textContent)) return null;
 // The pinned box can be inside the header (Lofty pins div.header-container, the header itself scrolls away) or around it.
