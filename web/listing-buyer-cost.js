@@ -85,8 +85,8 @@ var head = document.querySelector('.md-header') || document.querySelector('heade
 if (!head) return null;
 var hc = head.querySelector('.header-container');
 // Phones and narrow windows (Nader 2026-10-26): the phone number and e-mail were gone after scrolling back to the top, so the slide
-// effect is off there and the site's own header is left alone. Returning null also puts back anything the effect moved.
-if (window.matchMedia('(max-width:1024px)').matches) { if (hc) hc.classList.remove('hn-tb-keep'); return null; }
+// effect is off there (the bar stays put, see hn-nb-css below). Returning null also puts back anything the effect moved.
+if (window.matchMedia('(max-width:1024px)').matches) return null;
 if (hc && !hc.classList.contains('hn-tb-keep')) hc.classList.add('hn-tb-keep');
 // The bar is the row holding the e-mail address, as wide as it gets without taking in the menu.
 var w = document.createTreeWalker(head, NodeFilter.SHOW_TEXT, null), n, bar = null;
@@ -147,46 +147,40 @@ window.addEventListener('scrollend', tbBack);
 window.addEventListener('pageshow', tbBack);
 document.addEventListener('visibilitychange', tbBack);
 }
-// Phones and narrow windows (Nader 2026-10-26): the phone number and the e-mail stay on screen all the time, in a bar of our own at the very top
-// (the site's own top bar kept disappearing after scrolling). The site's pinned header is moved down below it and the page starts below it.
-if (typeof document !== 'undefined' && !document.getElementById('hn-contact-bar')) {
-var cbH = 34;
-var cbCss = document.createElement('style');
-cbCss.id = 'hn-contact-css';
-cbCss.textContent = '#hn-contact-bar{display:none}@media(max-width:1024px){#hn-contact-bar{display:flex!important;position:fixed;top:0;left:0;right:0;height:' + cbH + 'px;z-index:2147483000;' +
-'align-items:center;justify-content:center;gap:14px;background:#0f172a;color:#fff;font:600 13px/1 Arial,sans-serif}' +
-'#hn-contact-bar a{color:#fff!important;text-decoration:none!important;white-space:nowrap}body{padding-top:' + cbH + 'px!important}}';
-(document.head || document.documentElement).appendChild(cbCss);
-var cbMake = function () {
-if (!document.body || document.getElementById('hn-contact-bar')) return;
-var bar = document.createElement('div');
-bar.id = 'hn-contact-bar';
-bar.innerHTML = '<a href="tel:+16046127228">604-612-7228</a><a href="mailto:info@home-nader.com">info@home-nader.com</a>';
-document.body.appendChild(bar);
-};
-// Move the site's pinned header (fixed or sticky, as wide as the screen) down below our bar; put it back on wide screens.
-var cbPlace = function () {
-cbMake();
+// Phones and narrow windows (Nader 2026-10-26): the site's own top bar (phone number, e-mail, social icons) stays on screen all the time, looking
+// as it does when the page opens (dark bar, white text), and the header keeps the height that holds it. The site's own script hid it after scrolling.
+if (typeof document !== 'undefined' && !document.getElementById('hn-nb-css')) {
+var nbCss = document.createElement('style');
+nbCss.id = 'hn-nb-css';
+nbCss.textContent = '@media(max-width:1024px){.header-container.cc.hn-tb-keep{height:122px!important}' +
+'.hn-nb,.hn-nb .social-container{display:flex!important;visibility:visible!important;opacity:1!important;transform:none!important;height:auto!important;min-height:36px!important;max-height:none!important;overflow:visible!important;background:#0f172a!important;background-image:none!important}' +
+'.hn-nb *{visibility:visible!important;opacity:1!important}' +
+'.hn-nb a,.hn-nb span,.hn-nb p,.hn-nb li{color:#fff!important;-webkit-text-fill-color:#fff!important}.hn-nb svg,.hn-nb svg *{fill:#fff!important}}';
+(document.head || document.documentElement).appendChild(nbCss);
+var nbMark = function () {
+if (!window.matchMedia('(max-width:1024px)').matches || !document.body) return;
 var head = document.querySelector('.md-header') || document.querySelector('header');
 if (!head) return;
-var narrow = window.matchMedia('(max-width:1024px)').matches, list = [head].concat([].slice.call(head.querySelectorAll('*')));
-for (var i = 0; i < list.length; i++) {
-var el = list[i];
-if (narrow) {
-var cs = getComputedStyle(el);
-if ((cs.position === 'fixed' || cs.position === 'sticky') && el.offsetWidth >= window.innerWidth * 0.8 && el.getAttribute('data-hn-cb') !== '1') {
-if (parseFloat(cs.top) < cbH) { el.style.setProperty('top', cbH + 'px', 'important'); }
-el.setAttribute('data-hn-cb', '1');
-} else if (el.getAttribute('data-hn-cb') === '1' && parseFloat(cs.top) < cbH) { el.style.setProperty('top', cbH + 'px', 'important'); }
-} else if (el.getAttribute('data-hn-cb') === '1') { el.style.removeProperty('top'); el.removeAttribute('data-hn-cb'); }
+var hc = head.querySelector('.header-container');
+if (hc && !hc.classList.contains('hn-tb-keep')) hc.classList.add('hn-tb-keep');
+var w = document.createTreeWalker(head, NodeFilter.SHOW_TEXT, null), n, bar = null;
+while ((n = w.nextNode())) if (/info@home-nader\.com/i.test(n.nodeValue)) { bar = n.parentElement; break; }
+if (!bar) return;
+// The bar is the row holding the e-mail address, as wide as it gets without taking in the menu.
+while (bar.parentElement && bar.parentElement !== head && !/calculators/i.test(bar.parentElement.textContent)) bar = bar.parentElement;
+if (/calculators/i.test(bar.textContent) || bar === head) return;
+// Un-hide the boxes around the e-mail up to the header, and mark the bar.
+for (var el = n.parentElement; el && el !== bar.parentElement; el = el.parentElement) {
+if (getComputedStyle(el).display === 'none') el.style.setProperty('display', 'flex', 'important');
 }
+if (!bar.classList.contains('hn-nb')) bar.classList.add('hn-nb');
 };
-[0, 300, 1000, 2500].forEach(function (t) { setTimeout(cbPlace, t); });
-window.addEventListener('load', cbPlace);
-window.addEventListener('resize', cbPlace);
-var cbQ = false;
-window.addEventListener('scroll', function () { if (cbQ) return; cbQ = true; setTimeout(function () { cbQ = false; cbPlace(); }, 200); }, { passive: true });
-setInterval(cbPlace, 700);
+[0, 300, 1000, 2500].forEach(function (t) { setTimeout(nbMark, t); });
+window.addEventListener('load', nbMark);
+window.addEventListener('resize', nbMark);
+var nbQ = false;
+window.addEventListener('scroll', function () { if (nbQ) return; nbQ = true; setTimeout(function () { nbQ = false; nbMark(); }, 200); }, { passive: true });
+setInterval(nbMark, 700);
 }
 // Hide the fixed bottom bar with the "Call Nader" and "Value My Home" buttons on every screen size (Nader 2026-10-24: it still
 // showed on narrow laptop windows, which were wider than the old 700px limit). Found by its two buttons' text.
