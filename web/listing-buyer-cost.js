@@ -73,6 +73,9 @@ if (!document.body) return null;
 var head = document.querySelector('.md-header') || document.querySelector('header');
 if (!head) return null;
 var hc = head.querySelector('.header-container');
+// Phones and narrow windows (Nader 2026-10-26): the phone number and e-mail were gone after scrolling back to the top, so the slide
+// effect is off there and the site's own header is left alone. Returning null also puts back anything the effect moved.
+if (window.matchMedia('(max-width:1024px)').matches) { if (hc) hc.classList.remove('hn-tb-keep'); return null; }
 if (hc && !hc.classList.contains('hn-tb-keep')) hc.classList.add('hn-tb-keep');
 // The bar is the row holding the e-mail address, as wide as it gets without taking in the menu.
 var w = document.createTreeWalker(head, NodeFilter.SHOW_TEXT, null), n, bar = null;
