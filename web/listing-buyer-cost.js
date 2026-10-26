@@ -583,7 +583,10 @@ if (e.target === m || e.target.closest('.hn-bcp-x')) { closeAndOffer(); return; 
 var cta = e.target.closest('[data-hn-cta]');
 if (cta && current) {
 var kind = cta.getAttribute('data-hn-cta'), target = kind === 'save' ? saveButton() : registerLink();
-track('hn_calculator_signup_click', { action: kind, calculator: current.mortgage ? 'mortgage' : 'buyer_cost', listing_price: current.price });
+// UTM tags (Nader 2026-10-26): "Email me the breakdown" / "Save this listing" in the Cash to Close and Mortgage popups count as conversions.
+track('hn_calculator_signup_click', { action: kind, calculator: current.mortgage ? 'mortgage' : 'buyer_cost', listing_price: current.price,
+button_text: cta.textContent.trim(), utm_source: 'home-nader.com', utm_medium: 'calculator_popup', utm_campaign: current.mortgage ? 'est_monthly' : 'cash_to_close',
+utm_content: kind === 'save' ? 'save_listing' : 'email_breakdown' });
 close();
 if (kind === 'save') { if (target) target.click(); } else openRegistration();
 return;
