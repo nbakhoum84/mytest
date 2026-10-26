@@ -117,40 +117,6 @@ tbStop = setTimeout(tbBack, 1000);
 window.addEventListener('scroll', tbFit, { passive: true });
 window.addEventListener('resize', tbFit);
 }
-// Phones and narrow windows (Nader 2026-10-26): the phone number and e-mail stay on screen all the time, drawn over the empty strip at the top
-// of the site's header (above its logo). Nothing is moved: no padding, the header stays where the site puts it. The bar is only as tall
-// as that strip (up to 34px), measured from the logo's top edge.
-if (typeof document !== 'undefined' && !document.getElementById('hn-contact-css')) {
-var cbCss = document.createElement('style');
-cbCss.id = 'hn-contact-css';
-cbCss.textContent = '#hn-contact-bar{display:none}@media(max-width:1024px){#hn-contact-bar.hn-on{display:flex!important;position:fixed;top:0;left:0;right:0;z-index:2147483000;' +
-'align-items:center;justify-content:center;gap:14px;background:#fff;font:600 12px/1 Arial,sans-serif}' +
-'#hn-contact-bar a{color:#1b2a4a!important;text-decoration:none!important;white-space:nowrap}}';
-(document.head || document.documentElement).appendChild(cbCss);
-var cbPlace = function () {
-if (!document.body) return;
-var bar = document.getElementById('hn-contact-bar');
-if (!bar) {
-bar = document.createElement('div');
-bar.id = 'hn-contact-bar';
-bar.innerHTML = '<a href="tel:+16046127228">604-612-7228</a><a href="mailto:info@home-nader.com">info@home-nader.com</a>';
-document.body.appendChild(bar);
-}
-var head = document.querySelector('.md-header') || document.querySelector('header');
-var logo = head && head.querySelector('img');
-var lt = logo ? Math.round(logo.getBoundingClientRect().top) : 0;
-var h = Math.min(34, lt - 2);
-if (!window.matchMedia('(max-width:1024px)').matches || h < 20) { bar.classList.remove('hn-on'); return; }
-bar.style.setProperty('height', h + 'px', 'important');
-bar.classList.add('hn-on');
-};
-[0, 300, 1000, 2500].forEach(function (t) { setTimeout(cbPlace, t); });
-window.addEventListener('load', cbPlace);
-window.addEventListener('resize', cbPlace);
-var cbQ = false;
-window.addEventListener('scroll', function () { if (cbQ) return; cbQ = true; setTimeout(function () { cbQ = false; cbPlace(); }, 200); }, { passive: true });
-setInterval(cbPlace, 700);
-}
 // Hide the fixed bottom bar with the "Call Nader" and "Value My Home" buttons on every screen size (Nader 2026-10-24: it still
 // showed on narrow laptop windows, which were wider than the old 700px limit). Found by its two buttons' text.
 if (typeof document !== 'undefined' && !document.getElementById('hn-hide-bar')) {
