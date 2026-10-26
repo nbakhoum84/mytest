@@ -114,8 +114,16 @@ if (up > 0) p.pinned.style.setProperty('transform', 'translateY(' + -up + 'px)',
 else p.pinned.style.removeProperty('transform');
 tbStop = setTimeout(tbBack, 1000);
 };
+// Phones (iOS momentum scrolling) can stop without a last scroll event, which left the bar slid away after scrolling down and back up.
+// Slide it back when the finger lifts, when the browser reports the scroll ended, and when the page comes back into view.
+var tbSettle = function () { clearTimeout(tbStop); tbStop = setTimeout(tbBack, 1000); };
 window.addEventListener('scroll', tbFit, { passive: true });
 window.addEventListener('resize', tbFit);
+window.addEventListener('touchend', tbSettle, { passive: true });
+window.addEventListener('touchcancel', tbSettle, { passive: true });
+window.addEventListener('scrollend', tbBack);
+window.addEventListener('pageshow', tbBack);
+document.addEventListener('visibilitychange', tbBack);
 }
 // Hide the fixed bottom bar with the "Call Nader" and "Value My Home" buttons on every screen size (Nader 2026-10-24: it still
 // showed on narrow laptop windows, which were wider than the old 700px limit). Found by its two buttons' text.
