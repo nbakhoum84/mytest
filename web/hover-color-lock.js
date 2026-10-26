@@ -12,9 +12,7 @@ window.hnHoverLock = true;
 var NOT = 'script,style,noscript,button,input,select,textarea,option,svg,svg *';
 // The AI chat (#chat-app) is left completely alone: the chat bubble started opening Lofty's sign-up form right after this script
 // went live (Nader, 2026-10-24).
-// The site's header is left alone too (Nader 2026-10-26): the site changes its text colours on purpose while scrolling, and the pinned colour
-// left the phone number and e-mail unreadable after the second scroll down and up on phones.
-var SKIP = '.hn-bcp-row,#hn-bcp-modal,#hn-chat-welcome,#chat-app,[class*="chat"],header,.md-header';
+var SKIP = '.hn-bcp-row,#hn-bcp-modal,#hn-chat-welcome,#chat-app,[class*="chat"]';
 // Any visible colour counts (dark text, and light text such as on the home page's photos; Nader 2026-10-24).
 function visible(c) {
 var m = /rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+))?/.exec(c);
