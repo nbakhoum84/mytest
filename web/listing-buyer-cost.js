@@ -11,6 +11,16 @@ var off = /[?&]hnoff=([01])/.exec(location.search);
 if (off) sessionStorage.setItem('hnOff', off[1]);
 if (sessionStorage.getItem('hnOff') === '1') { console.log('home-nader scripts are off (?hnoff=0 turns them on)'); return; }
 } catch (e) {}
+// Test switch for finding which part of our code touches the header: ?hnskip=ext skips the four separate scripts (language selector, chat bubble,
+// chat greeting, hover lock); ?hnskip=inl skips the header top bar, home hero and bottom bar code in this file. ?hnskip=none turns it back on.
+// Remembered for the browser tab only.
+try {
+var sk = /[?&]hnskip=(ext|inl|none)/.exec(location.search);
+if (sk) sessionStorage.setItem('hnSkip', sk[1]);
+var skip = sessionStorage.getItem('hnSkip');
+if (skip === 'ext') { window.hnLangPosLoading = window.hnBubblePosLoading = window.hnChatWelcomeLoading = window.hnHoverLockLoading = true; }
+if (skip === 'inl') { window.hnTopBarScroll = window.hnHeroFit = true; var sh = document.createElement('style'); sh.id = 'hn-hide-bar'; (document.head || document.documentElement).appendChild(sh); var sh2 = document.createElement('style'); sh2.id = 'hn-hero-up'; (document.head || document.documentElement).appendChild(sh2); }
+} catch (e) {}
 // The virtual assistant chat's greeting line (web/chat-welcome.js) rides along on every page.
 // Phones held upright: the language selector and the AI chat bubble are moved below the home page's search field
 // (web/lang-selector-position.js, web/chat-bubble-position.js; leaves the rest of the chat alone). Both scripts load at any width and decide
