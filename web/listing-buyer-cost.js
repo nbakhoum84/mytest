@@ -124,8 +124,8 @@ if (typeof document !== 'undefined' && !document.getElementById('hn-contact-css'
 var cbCss = document.createElement('style');
 cbCss.id = 'hn-contact-css';
 cbCss.textContent = '#hn-contact-bar{display:none}@media(max-width:1024px){#hn-contact-bar.hn-on{display:flex!important;position:fixed;top:0;left:0;right:0;z-index:2147483000;' +
-'align-items:center;justify-content:center;gap:14px;background:#0f172a;color:#fff;font:600 12px/1 Arial,sans-serif}' +
-'#hn-contact-bar a{color:#fff!important;text-decoration:none!important;white-space:nowrap}}';
+'align-items:center;justify-content:center;gap:14px;background:#fff;font:600 12px/1 Arial,sans-serif}' +
+'#hn-contact-bar a{color:#1b2a4a!important;text-decoration:none!important;white-space:nowrap}}';
 (document.head || document.documentElement).appendChild(cbCss);
 var cbPlace = function () {
 if (!document.body) return;
