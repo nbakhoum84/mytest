@@ -4,6 +4,9 @@
 // so their hover look still works. Loaded on every page by listing-buyer-cost.js.
 (function () {
 if (window.hnHoverLock) return;
+// Touch screens have no mouse hover, so nothing to lock there. Leaving the header untouched on phones fixed the phone number and e-mail
+// row disappearing after scrolling (Nader 2026-10-26; it worked with all our scripts off).
+if (window.matchMedia && !window.matchMedia('(hover:hover)').matches) return;
 window.hnHoverLock = true;
 // Every element that shows its own text (links, menu items, and labels such as the listing cards' Townhouse / Condo tags).
 var NOT = 'script,style,noscript,button,input,select,textarea,option,svg,svg *';
