@@ -8,16 +8,17 @@
 // something on the site is Lofty's own. ?hnoff=0 turns it back on. Remembered for the browser tab only.
 try {
 var off = /[?&]hnoff=([01])/.exec(location.search);
-if (off) sessionStorage.setItem('hnOff', off[1]);
-if (sessionStorage.getItem('hnOff') === '1') { console.log('home-nader scripts are off (?hnoff=0 turns them on)'); return; }
+// Only for the page load that has ?hnoff=1 in its address, never remembered (a tab left on ?hnoff=1 once kept every script off).
+sessionStorage.removeItem('hnOff');
+if (off && off[1] === '1') { console.log('home-nader scripts are off (?hnoff=0 turns them on)'); return; }
 } catch (e) {}
 // Test switch for finding which part of our code touches the header: ?hnskip=ext skips the four separate scripts (language selector, chat bubble,
 // chat greeting, hover lock); ?hnskip=inl skips the header top bar, home hero and bottom bar code in this file. ?hnskip=none turns it back on.
 // Remembered for the browser tab only.
 try {
 var sk = /[?&]hnskip=(ext|inl|none)/.exec(location.search);
-if (sk) sessionStorage.setItem('hnSkip', sk[1]);
-var skip = sessionStorage.getItem('hnSkip');
+sessionStorage.removeItem('hnSkip');
+var skip = sk && sk[1];
 if (skip === 'ext') { window.hnLangPosLoading = window.hnBubblePosLoading = window.hnChatWelcomeLoading = window.hnHoverLockLoading = true; }
 if (skip === 'inl') { window.hnTopBarScroll = window.hnHeroFit = true; var sh = document.createElement('style'); sh.id = 'hn-hide-bar'; (document.head || document.documentElement).appendChild(sh); var sh2 = document.createElement('style'); sh2.id = 'hn-hero-up'; (document.head || document.documentElement).appendChild(sh2); }
 } catch (e) {}
