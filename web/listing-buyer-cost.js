@@ -107,8 +107,8 @@ tbH = Math.round(p.bar.getBoundingClientRect().height);
 tbMoved = p.pinned;
 // While the page scrolls (up or down) the bar goes up out of sight; it comes back 1s after scrolling stops; both slides take 1s (Nader).
 clearTimeout(tbStop);
-// Phones and narrow windows (Nader 2026-10-26): the bar (phone, e-mail) stays visible all the time, no slide.
-if (!e || e.type !== 'scroll' || window.matchMedia('(max-width:1024px)').matches) { tbBack(); return; }
+// Phones (touch screens, Nader 2026-10-26): the bar (phone, e-mail) stays visible all the time, no slide. Laptops always slide, whatever the zoom.
+if (!e || e.type !== 'scroll' || window.matchMedia('(hover:none) and (pointer:coarse)').matches) { tbBack(); return; }
 var up = y > 0 ? tbH : 0;
 p.pinned.style.setProperty('transition', 'transform 1s ease', 'important');
 if (up > 0) p.pinned.style.setProperty('transform', 'translateY(' + -up + 'px)', 'important');
