@@ -136,32 +136,6 @@ window.addEventListener('scrollend', tbBack);
 window.addEventListener('pageshow', tbBack);
 document.addEventListener('visibilitychange', tbBack);
 }
-// Phones and narrow windows (Nader 2026-10-26): back at the very top of the page the phone number and e-mail row must be showing. The site's
-// own header only brought it back after the first scroll down and up; later times it stayed hidden. At the top, un-hide the e-mail
-// and every box around it up to the header (display, visibility, opacity, collapsed height, slid-away transform).
-if (typeof document !== 'undefined' && !window.hnTopBarShow) {
-window.hnTopBarShow = true;
-var tbShow = function () {
-if (!window.matchMedia('(max-width:1024px)').matches || (window.pageYOffset || 0) > 2 || !document.body) return;
-var head = document.querySelector('.md-header') || document.querySelector('header');
-if (!head) return;
-var w = document.createTreeWalker(head, NodeFilter.SHOW_TEXT, null), n, el = null;
-while ((n = w.nextNode())) if (/info@home-nader\.com|604[\s.)-]*612[\s.-]*7228/i.test(n.nodeValue)) { el = n.parentElement; break; }
-for (var leaf = true; el && el !== head.parentElement; el = el.parentElement, leaf = false) {
-var cs = getComputedStyle(el), st = el.style;
-if (cs.display === 'none') st.setProperty('display', leaf ? 'inline-block' : 'flex', 'important');
-if (cs.visibility === 'hidden') st.setProperty('visibility', 'visible', 'important');
-if (cs.opacity === '0') st.setProperty('opacity', '1', 'important');
-if (cs.transform !== 'none') st.setProperty('transform', 'none', 'important');
-if (!leaf && el !== head && el.getBoundingClientRect().height < 4) {
-st.setProperty('height', 'auto', 'important'); st.setProperty('max-height', 'none', 'important'); st.setProperty('overflow', 'visible', 'important');
-}
-}
-};
-window.addEventListener('scroll', function () { setTimeout(tbShow, 150); }, { passive: true });
-window.addEventListener('touchend', function () { setTimeout(tbShow, 400); }, { passive: true });
-setInterval(tbShow, 500);
-}
 // Hide the fixed bottom bar with the "Call Nader" and "Value My Home" buttons on every screen size (Nader 2026-10-24: it still
 // showed on narrow laptop windows, which were wider than the old 700px limit). Found by its two buttons' text.
 if (typeof document !== 'undefined' && !document.getElementById('hn-hide-bar')) {
