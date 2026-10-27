@@ -476,6 +476,30 @@ continue;
 mark(best, parsePrice(priceText(best)));
 }
 if (top && !document.querySelector('.hn-bcp')) mark(top, parsePrice(priceText(top)));
+tours();
+}
+
+// Residential cards (Nader 2026-10-27): a "Virtual Tour" button beside the price / open house badge when the listing has a tour.
+// The site keeps the tour address in each card's data (house.link; null when there's none), the same one the listing page's
+// Virtual Tour button opens. Cards are reused when results are paged or sorted, so the button is re-checked on every scan.
+function tours() {
+if (DETAIL) return;
+var cards = document.querySelectorAll('li.house-grid-item');
+for (var i = 0; i < cards.length; i++) {
+var vc = cards[i].__vueParentComponent, h = vc && vc.props && vc.props.house;
+var url = h && typeof h.link === 'string' && /^https?:\/\//i.test(h.link.trim()) ? h.link.trim() : '';
+var box = cards[i].querySelector('.house-price-container');
+var b = cards[i].querySelector('.hn-vt-btn');
+if (!url || !box) { if (b) b.remove(); continue; }
+if (!b) {
+b = document.createElement('button');
+b.type = 'button';
+b.className = 'hn-vt-btn';
+b.textContent = 'Virtual Tour';
+}
+if (b.parentElement !== box) box.appendChild(b);
+b.setAttribute('data-hn-vt', url);
+}
 }
 
 // For troubleshooting on the live site: type hnBuyerCostDebug() in the browser console to see every price it found and why it was used or skipped.
@@ -830,6 +854,16 @@ m.querySelector('.hn-bcp-x').focus();
 }
 
 function onClick(e) {
+var vt = e.target && e.target.closest && e.target.closest('.hn-vt-btn');
+if (vt) {
+// The card is one big link to the listing; the tour opens in a new tab instead.
+e.preventDefault();
+e.stopPropagation();
+window.open(vt.getAttribute('data-hn-vt'), '_blank', 'noopener');
+track('hn_virtual_tour_click', { button_text: 'Virtual Tour', tour_url: vt.getAttribute('data-hn-vt'), listing_url: ((cardOf(vt) || vt).querySelector('a[href*="/listing-detail/"]') || {}).href || '',
+utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaign: 'virtual_tour', utm_content: 'residential' });
+return;
+}
 var el = e.target && e.target.closest && e.target.closest('.hn-bcp,.hn-bcp-btn,.hn-bcp-hint');
 if (!el) return;
 // Use the price the card shows right now, not the one stored when the button was added.
@@ -900,6 +934,8 @@ var style = document.createElement('style');
 style.textContent =
 '.hn-bcp{cursor:pointer!important}' +
 '.hn-bcp-row{display:flex!important;flex-wrap:wrap;gap:8px;margin:8px 0 6px!important}' +
+'button.hn-vt-btn{display:inline-flex!important;align-items:center!important;gap:6px!important;margin:0 0 0 10px!important;padding:3px 10px!important;border:0!important;border-radius:6px!important;background:#1e8e3e!important;color:#fff!important;font-family:inherit!important;font-weight:700!important;font-size:14px!important;line-height:1.4!important;white-space:nowrap!important;cursor:pointer!important;vertical-align:middle!important;text-transform:none!important}' +
+'.hn-vt-btn::before{content:"\\25B6";font-size:10px}' +
 // Commercial list cards (Nader 2026-10-27): Lofty pins the "Listed by" row to the card bottom (absolute), so with our buttons it covered
 // the description. Put it back in the normal flow, under the description, on cards that have our buttons.
 '.house-list-item.template1 .detail:has(.hn-bcp-row) .property{position:static!important}' +
