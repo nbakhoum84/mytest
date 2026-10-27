@@ -1013,6 +1013,21 @@ var h = card.querySelector('h2, h3'), app = h ? h.textContent.replace(/\s+/g, ' 
 track('hn_app_card_click', Object.assign({ app: app, button_text: text }, siteTags('app_card', app.toLowerCase().replace(/\s+/g, '_'), text)));
 return;
 }
+// "Get Price List & Floor Plans" on the presale / new-home development cards (Nader 2026-10-27): hn_price_list_click, named by the card's title.
+var PL = null;
+for (var pe = t, pk = 0; pe && pe !== document.body && pk < 4 && !PL; pe = pe.parentElement, pk++) {
+if (/^get price list\s*(&|and)\s*floor plans$/i.test(pe.textContent.replace(/\s+/g, ' ').trim())) PL = pe;
+}
+if (PL) {
+text = PL.textContent.replace(/\s+/g, ' ').trim();
+var dev = '';
+for (var c = PL.parentElement, j = 0; c && c !== document.body && j < 8 && !dev; c = c.parentElement, j++) {
+var hd = c.querySelector('h1, h2, h3, h4, h5');
+if (hd) dev = hd.textContent.replace(/\s+/g, ' ').trim().slice(0, 80);
+}
+track('hn_price_list_click', Object.assign({ development: dev, button_text: text }, siteTags('price_list_button', 'presale_price_list', dev)));
+return;
+}
 // The home page Valuation tab is not a link, so look at the clicked element and a few blocks around it for a short matching label.
 for (var el = t, i = 0; el && el !== document.body && i < 4; el = el.parentElement, i++) {
 var label = el.textContent.replace(/\s+/g, ' ').trim();
