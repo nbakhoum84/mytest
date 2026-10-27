@@ -550,17 +550,14 @@ if (/^\s*save\s*$/i.test(els[i].textContent) && els[i].offsetParent && !els[i].c
 return null;
 }
 var ctaTimer = null;
-// After the visitor has spent a little time in the calculator, offer the full breakdown (and saving the listing) for registering.
+// Offer the full breakdown (and saving the listing) for registering as soon as the calculator opens (Nader 2026-10-27; was after 8s).
 function showCta(m) {
 clearTimeout(ctaTimer);
 var cta = m.querySelector('.hn-bcp-cta');
 cta.hidden = true;
 if (!registerLink()) return;
-ctaTimer = setTimeout(function () {
-if (!m.classList.contains('hn-bcp-on') || !registerLink()) return;
 m.querySelector('.hn-bcp-save').hidden = !saveButton();
 cta.hidden = false;
-}, 8000);
 }
 
 function modal() {
