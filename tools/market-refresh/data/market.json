@@ -6,7 +6,7 @@
  "windowEnd": "August 2026",
  "active": "322",
  "medianList": "$1,139,000",
- "sold12": "372",
+ "sold12": "369",
  "domMedian": "31",
  "perMonth": "31",
  "supplyAll": "10",
@@ -16,8 +16,8 @@
  "otherSales": "12",
  "condo.active": "164",
  "condo.medianList": "$638,500",
- "condo.sold": "238",
- "condo.medianSold": "$549,000",
+ "condo.sold": "235",
+ "condo.medianSold": "$550,000",
  "condo.dom": "32",
  "townhome.active": "17",
  "townhome.medianList": "$869,000",
@@ -32,7 +32,7 @@
  "_raw": {
   "active": 322,
   "medianList": 1139000.0,
-  "sold12": 372,
+  "sold12": 369,
   "domMedian": 31
  }
 }

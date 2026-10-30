@@ -360,7 +360,7 @@
       <ul class="wr-neigh wr-neigh-4 wr-kpis">
         <li><div class="wr-coord">Active listings</div><div class="wr-kpi-val"><span data-wr="active">322</span></div></li>
         <li><div class="wr-coord">Median list price</div><div class="wr-kpi-val"><span data-wr="medianList">$1,139,000</span></div></li>
-        <li><div class="wr-coord">Sold, past 12 months</div><div class="wr-kpi-val"><span data-wr="sold12">372</span></div></li>
+        <li><div class="wr-coord">Sold, past 12 months</div><div class="wr-kpi-val"><span data-wr="sold12">369</span></div></li>
         <li><div class="wr-coord">Median days to sell</div><div class="wr-kpi-val"><span data-wr="domMedian">31</span></div></li>
       </ul>
 
@@ -371,8 +371,8 @@
           <dl class="wr-facts">
             <div><dt>Active now</dt><dd><span data-wr="condo.active">164</span></dd></div>
             <div><dt>Median list price</dt><dd><span data-wr="condo.medianList">$638,500</span></dd></div>
-            <div><dt>Sold, past 12 months</dt><dd><span data-wr="condo.sold">238</span></dd></div>
-            <div><dt>Median sold price</dt><dd><span data-wr="condo.medianSold">$549,000</span></dd></div>
+            <div><dt>Sold, past 12 months</dt><dd><span data-wr="condo.sold">235</span></dd></div>
+            <div><dt>Median sold price</dt><dd><span data-wr="condo.medianSold">$550,000</span></dd></div>
             <div><dt>Median days to sell</dt><dd><span data-wr="condo.dom">32</span></dd></div>
           </dl>
         </li>
@@ -400,7 +400,7 @@
         </li>
       </ul>
 
-      <p class="wr-marketnote">About <span data-wr="perMonth">31</span> homes sold per month over the past year, and half of them sold within <span data-wr="domMedian">31</span> days of listing. Condos are the bulk of the market: <span data-wr="condo.sold">238</span> of the <span data-wr="sold12">372</span> sales and <span data-wr="condo.active">164</span> of the <span data-wr="active">322</span> active listings, with a median sold price of <span data-wr="condo.medianSold">$549,000</span> against <span data-wr="sfh.medianSold">$1,565,000</span> for single&#8209;family homes. At the past year's sales pace, today's active listings equal roughly <span data-wr="supplyAll">10</span> months of supply overall, about <span data-wr="supplyCondo">8</span> months for condos and about <span data-wr="supplySfh">16</span> for single&#8209;family homes. Supply above about six months generally favours buyers. Want numbers for a specific street or building? <a href="/sell">Ask for a free home valuation</a>, or see the <a href="/latest-market-updates">latest market updates</a> and <a href="/white-rock-sold-listings">recently sold White Rock homes</a>.</p>
+      <p class="wr-marketnote">About <span data-wr="perMonth">31</span> homes sold per month over the past year, and half of them sold within <span data-wr="domMedian">31</span> days of listing. Condos are the bulk of the market: <span data-wr="condo.sold">235</span> of the <span data-wr="sold12">369</span> sales and <span data-wr="condo.active">164</span> of the <span data-wr="active">322</span> active listings, with a median sold price of <span data-wr="condo.medianSold">$550,000</span> against <span data-wr="sfh.medianSold">$1,565,000</span> for single&#8209;family homes. At the past year's sales pace, today's active listings equal roughly <span data-wr="supplyAll">10</span> months of supply overall, about <span data-wr="supplyCondo">8</span> months for condos and about <span data-wr="supplySfh">16</span> for single&#8209;family homes. Supply above about six months generally favours buyers. Want numbers for a specific street or building? <a href="/sell">Ask for a free home valuation</a>, or see the <a href="/latest-market-updates">latest market updates</a> and <a href="/white-rock-sold-listings">recently sold White Rock homes</a>.</p>
       <p class="wr-src">Source: MLS&reg; listing and sold data shown on this site. Active listings were counted on <span data-wr="asOf">October 30, 2026</span>. Sales cover <span data-wr="windowStart">September 2025</span> to <span data-wr="windowEnd">August 2026</span> because sales from the most recent weeks are not yet fully reported. Days to sell is the time from listing date to sale date. The cards leave out <span data-wr="otherActive">8</span> other active listings and <span data-wr="otherSales">12</span> other sales (vacant land, manufactured and multi&#8209;family).</p>
     </div>
   </section>

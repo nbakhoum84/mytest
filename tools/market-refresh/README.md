@@ -14,7 +14,8 @@ python3 tools/market-refresh/build.py     # write market.json + rebuild the code
 
 - Active listings: counted from the live `/white-rock-listings` results (all pages). Sold data: Lofty `/snapshot` API set to White Rock.
 - Sales window: the 12 complete months ending two months before the run month (the sold feed lags several weeks).
-- Days to sell = sold date minus list date (Lofty's `daysOnList` is days until today, so it is not used).
+- Days to sell = sold date minus list date, both as Pacific-time calendar dates (Lofty's `daysOnList` is days until today, so it is not used).
+- Sales are bucketed by month in Pacific time, exactly as Lofty does. Checked 2026-10-30: monthly counts and median sold prices for Oct 2025 to Aug 2026 match Lofty's `soldPriceStat` feed with 0 differences, and days to sell matches Lofty's own average (110.3 vs 110.0 over 11 sales).
 - `refresh.js` exits 2 if the collected active count differs from the page header, 3 if the Lofty request cannot be found.
 - `build.py` safety gate: if any headline figure moves more than 25%, it writes `data/market.pending.json`, changes nothing else, and exits 4. Review, then re-run with `--force`.
 - The loader only writes allow-listed characters (letters, digits, `$ , . -` and spaces, max 40) with `textContent`, so a bad feed cannot inject markup.

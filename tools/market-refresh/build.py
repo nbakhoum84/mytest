@@ -10,6 +10,8 @@ Usage: python3 build.py [YYYY-MM-DD] [--force]
 * Sales window = the 12 complete months ending two months before the run month (the sold feed lags several weeks).
 Also rewrites white-rock-listings-improved.html, white-rock-listings-code.txt and white-rock-listings-copy-page.html."""
 import json, re, sys, statistics as st, collections, datetime as dt, html, os
+from zoneinfo import ZoneInfo
+PT = ZoneInfo('America/Los_Angeles')
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.abspath(os.path.join(HERE, '..', '..'))
 FEED_URL = 'https://raw.githubusercontent.com/nbakhoum84/mytest/claude/practical-wozniak-s89tdk/tools/market-refresh/data/market.json'
 args = [a for a in sys.argv[1:] if not a.startswith('--')]; force = '--force' in sys.argv
@@ -21,8 +23,9 @@ end_x = addm(today.replace(day=1), -1); start = addm(end_x, -12); last_full = ad
 rows = []
 for x in sold:
     if not (x.get('listDate') and x.get('soldPrice') and x.get('soldDate')): continue
-    ld = dt.datetime.fromtimestamp(x['listDate'] / 1000, dt.UTC).replace(tzinfo=None); sd = dt.datetime.fromtimestamp(x['soldDate'] / 1000, dt.UTC).replace(tzinfo=None)
-    rows.append((sd, (sd - ld).days, x['soldPrice'], x['propertyType']))
+    # Lofty buckets sales and counts days in Pacific time; doing the same makes monthly counts/medians match Lofty's own statistics exactly.
+    ld = dt.datetime.fromtimestamp(x['listDate'] / 1000, dt.UTC).astimezone(PT).replace(tzinfo=None); sd = dt.datetime.fromtimestamp(x['soldDate'] / 1000, dt.UTC).astimezone(PT).replace(tzinfo=None)
+    rows.append((sd, (sd.date() - ld.date()).days, x['soldPrice'], x['propertyType']))
 win = [r for r in rows if start <= r[0] < end_x]; wd = [r for r in win if r[1] >= 0]
 M = lambda n: '${:,.0f}'.format(n)
 cnt = collections.Counter(r[0].strftime('%Y-%m') for r in win); med = st.median(cnt.values()) if cnt else 0
