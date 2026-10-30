@@ -302,6 +302,43 @@ CONFIGS['southsurrey'] = dict(
   ],
   take=(f"South Surrey feels different from much of the rest of Surrey, and that's the point. Buyers here are often choosing space, golf courses, or beach access over density. As an engineer, I pay close attention to lot grading and drainage, especially on older streets near the water. I help my clients understand what an older lot actually needs before they commit to it."),
 )
+CONFIGS['surrey'] = dict(
+  label='Surrey', page='surrey-listings', hero_word='Homes',
+  hero_h2='Surrey Homes for Sale – Condos, Townhomes &amp; Single&#8209;Family Homes',
+  nearby=[('/south-surrey-listings', 'South Surrey homes for sale'), ('/surrey-presales', 'Surrey presales'), ('/surrey-sold-listings', 'recently sold Surrey homes')],
+  life_h2='Why Surrey? Growth, Transit &amp; Town Centres',
+  life_sub=f"Surrey is really several communities under one name, each with its own character.",
+  areas=["White Rock", "Surrey", "South Surrey", "Langley", "Delta", "Richmond", "Burnaby", "New Westminster", "Coquitlam", "Port Coquitlam", "Port Moody", "Abbotsford"],
+  agent_cities='White Rock, Surrey, South Surrey, Langley, Delta, Richmond, Burnaby, New Westminster, Coquitlam, Port Coquitlam, Port Moody and Abbotsford',
+  sub=(f"Surrey is the second{NH}most populous city in BC and one of the fastest{NH}growing in Metro Vancouver. The Surrey{NH}Langley SkyTrain extension is under construction along Fraser Highway, and City Centre (formerly known as Whalley) is the city's growing downtown. This search covers Surrey's northern and central communities. South Surrey has its own dedicated search. With hundreds of active listings, prices range widely, from a condo to a large single{NH}family lot. Whether you're after a <strong>highrise condo in City Centre</strong>, a <strong>family home in Fleetwood</strong>, or a <strong>character property in Cloverdale</strong>, Surrey covers a huge range."),
+  faq=[
+   ("Is Surrey a good place to invest in real estate right now?", f"Surrey's population growth and the Surrey{NH}Langley SkyTrain extension under construction are two factors many buyers watch, particularly along Fraser Highway. Talk to Nader for a current{NH}day read on a specific town centre."),
+   ("What's the property transfer tax on a home in Surrey, BC?", f"BC's property transfer tax is 1% on the first $200,000, 2% from $200,000 to $2,000,000, 3% from $2,000,000 to $3,000,000, and a further 2% (5% total) on any residential value above $3,000,000. Surrey's wide range spans from condos, some near the first{NH}time buyer exemption threshold (up to an $835,000 fair market value), to larger single{NH}family homes that sit above it. Use the <a href=\"/cash-to-close\">Cash to Close calculator</a> for an exact number."),
+   ("How far is Surrey from downtown Vancouver?", f"By transit, the Expo Line SkyTrain runs from Surrey Central to downtown Vancouver, so check TransLink for current trip times from your station. By car, travel time depends heavily on the town centre and traffic."),
+   ("Is Surrey part of Metro Vancouver?", f"Yes. Surrey is a member municipality of the Metro Vancouver Regional District and the second{NH}most populous municipality in the region, after Vancouver."),
+   ("Does this search include South Surrey?", f"No. South Surrey has its own dedicated search, since its housing stock and price points differ from much of the rest of the city. This page covers the rest of Surrey, including City Centre, Guildford, Newton, Fleetwood, Cloverdale, and Port Kells."),
+   ("What school district serves Surrey?", f"Public schools fall under School District 36 Surrey."),
+  ],
+  neigh=[
+   ("City Centre (Whalley)", f"Surrey's downtown core, with a growing concentration of highrise condos."),
+   ("Guildford", f"An established neighbourhood built around Guildford Town Centre mall."),
+   ("Newton", f"A large community with a mix of established homes and newer townhome development."),
+   ("Fleetwood", f"A growing area on the Surrey{NH}Langley SkyTrain extension route, with new townhomes alongside established family homes."),
+   ("Cloverdale", f"A town centre with a heritage main street and a smaller{NH}town feel than much of the city."),
+   ("Port Kells", f"A smaller community on Surrey's northeast edge, near the Fraser River and the Golden Ears Bridge."),
+  ],
+  life=[
+   ("📈", "A Fast-Growing City", f"Surrey is the second{NH}most populous city in BC and continues to grow."),
+   ("🚇", "SkyTrain Under Construction", f"The Surrey{NH}Langley SkyTrain extension is under construction along Fraser Highway, with a station planned for Fleetwood."),
+   ("🏙️", "City Centre", f"City Centre is Surrey's downtown, with a growing cluster of highrises."),
+   ("🎓", "Post-Secondary Campuses", f"Simon Fraser University and Kwantlen Polytechnic University both have campuses in Surrey."),
+   ("🤠", "The Cloverdale Rodeo", f"Cloverdale hosts an annual rodeo, a link to Surrey's agricultural roots."),
+   ("🌳", "Several Communities in One", f"Surrey's town centres each have their own pace and character."),
+   ("📚", "Schools", f"Public schools fall under <strong>School District 36 Surrey</strong>."),
+   ("🚗", "Highway Access", f"Highway 1, Highway 99, Highway 91 and Fraser Highway all serve Surrey, connecting it to the rest of Metro Vancouver and the Fraser Valley."),
+  ],
+  take=(f"Surrey is really several communities under one name. City Centre is going vertical, while Cloverdale still has a smaller{NH}town feel. As an engineer, I find the SkyTrain extension interesting to track, since transit access shapes how people choose between town centres. I help my clients figure out which version of Surrey actually fits what they're looking for."),
+)
 def plain(s): return re.sub(r'<[^>]+>', '', s).replace(NH, '-').replace('&amp;', '&')
 def render(key):
     c = CONFIGS[key]; L = c['label']; PAGE = c['page']

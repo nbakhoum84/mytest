@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Rebuilds the Market snapshot section of a city page from data, and writes that city's live data feed.
 
-Usage: python3 build.py [whiterock|abbotsford|burnaby|coquitlam|delta|langley|newwestminster|portcoquitlam|portmoody|richmond|southsurrey] [YYYY-MM-DD] [--force]      (default city: whiterock; date: today)
+Usage: python3 build.py [whiterock|abbotsford|burnaby|coquitlam|delta|langley|newwestminster|portcoquitlam|portmoody|richmond|southsurrey|surrey] [YYYY-MM-DD] [--force]      (default city: whiterock; date: today)
 
 * The page's Lofty Page Script (<city>-market-loader.txt) loads the feed from GitHub and fills in every number marked data-wr,
   so after the one-time paste, monthly updates need no Lofty login and no re-paste.
@@ -28,6 +28,8 @@ CITIES = {
   'portmoody':  dict(label='Port Moody', dir='portmoody', slug='port-moody', page='port-moody-listings', loader='port-moody-market-loader.txt', other=None),
   'southsurrey': dict(label='South Surrey', dir='southsurrey', slug='south-surrey', page='south-surrey-listings', loader='south-surrey-market-loader.txt', other=None,
                      areaNote=' South Surrey here means Surrey listings with postal codes starting V3Z, V4A or V4P, which matches this page&#8217;s search.'),
+  'surrey':     dict(label='Surrey', dir='surrey', slug='surrey', page='surrey-listings', loader='surrey-market-loader.txt', other=None,
+                     areaNote=' Surrey here means Surrey listings outside the postal areas V3Z, V4A and V4P, which are covered on the South Surrey page.'),
   'richmond':   dict(label='Richmond', dir='richmond', slug='richmond', page='richmond-listings', loader='richmond-market-loader.txt', other=None),
 }
 args = [a for a in sys.argv[1:] if not a.startswith('--')]; force = '--force' in sys.argv
