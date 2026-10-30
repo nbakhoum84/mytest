@@ -7,11 +7,25 @@
   /* The site-wide "Get the home-nader app" card would just link back to this page, so hide it here (this block is only on /app). */
   .hn-app,.hn-app-card-wide{display:none!important}
   #hn-app-frame{display:block;width:100%;max-width:520px;height:1700px;margin:0 auto;border:0;border-radius:0;background:transparent;overflow:hidden}
-  #hn-app-open{max-width:520px;margin:12px auto 24px;padding:0 20px;font-size:14px;line-height:1.7;color:inherit}
+  #hn-app-open{max-width:520px;margin:16px auto 24px;padding:0 20px;font-size:15px;line-height:1.6;color:inherit}
+  #hn-app-open h3{margin:0 0 12px;font-size:20px;font-weight:600;text-align:center;color:inherit}
+  #hn-app-open details{margin:0 0 10px}
+  #hn-app-open summary{list-style:none;cursor:pointer;display:block;text-align:center;padding:14px 20px;border-radius:10px;background:#dbae77;color:#14213d;font-size:16px;font-weight:700;-webkit-tap-highlight-color:transparent}
+  #hn-app-open summary::-webkit-details-marker{display:none}
+  #hn-app-open summary:hover{background:#b8894f;color:#fff}
+  #hn-app-open details[open] summary{background:#14213d;color:#fff}
+  #hn-app-open ol{margin:10px 0 0;padding:14px 16px 14px 36px;border:1px solid rgba(128,128,128,.3);border-radius:10px;background:rgba(128,128,128,.08);text-align:left}
+  #hn-app-open li{margin:0 0 6px}
 </style>
 <iframe id="hn-app-frame" src="https://nbakhoum84.github.io/" title="home-nader app" scrolling="no" allow="clipboard-write; web-share"></iframe>
 <img src="x:" alt="" style="display:none" onerror="var s=document.createElement('script');s.src='https://nbakhoum84.github.io/embed-resize.js?v='+Math.floor(Date.now()/6e4);document.head.appendChild(s);this.remove()">
-<div id="hn-app-open"><b>Put this app on your phone</b><br><b>iPhone (Safari):</b> tap the Share button, then &ldquo;Add to Home Screen&rdquo;.<br><b>Android (Chrome):</b> tap the three dots &#8942; in the top-right corner of Chrome (next to the address bar), then &ldquo;Install app&rdquo; or &ldquo;Add to Home screen&rdquo;.</div>
+<div id="hn-app-open">
+  <h3>Install this app on your phone</h3>
+  <details><summary>Install on iPhone</summary>
+    <ol><li>Open this page in <b>Safari</b>.</li><li>Tap the <b>Share</b> button (the square with an arrow, at the bottom of the screen).</li><li>Scroll down and tap <b>Add to Home Screen</b>, then <b>Add</b>.</li></ol></details>
+  <details><summary>Install on Android</summary>
+    <ol><li>Open this page in <b>Chrome</b>.</li><li>Tap the <b>three dots &#8942;</b> in the top-right corner of Chrome, next to the address bar.</li><li>Tap <b>Install app</b> (or <b>Add to Home screen</b>), then <b>Install</b>.</li></ol></details>
+</div>
 <script>
 (function () {
   var f = document.getElementById('hn-app-frame');
