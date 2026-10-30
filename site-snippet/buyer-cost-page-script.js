@@ -1,8 +1,8 @@
 // Buyer Cost card (for the Buyer Cost page only; the Seller Cost page keeps seller-cost-page-script.js): copies the look and width of the other "Get the ... app" cards. Paste into Lofty Page Script (JavaScript).
 (function () {
-var URL = 'https://home-nader.com/buyer-cost';
+var URL = 'https://home-nader.com/cash-to-close';
 var N = 29;
-var ROWS = '1fc04f7f,10598741,174e205d,1747945d,1754965d,104d7341,1fd5557f,f2900,15441b12,6a4bde9,a5e70b7,1a88dc02,104679cb,1eac65c9,17d395bb,9a63dda,1b480bcb,9b998cd,16624163,b2dcc1a,14d049f0,115d17,1fc08f5b,10441918,17553df1,17469037,17550339,10434f22,1fd31b43'.split(',');
+var ROWS = '1fdef57f,10521d41,1748ea5d,17430e5d,17534c5d,105dd941,1fd5557f,18a700,1cdba1f3,13813343,14ddee1d,60776a8,c5cd361,1914f763,12de3711,9a49770,1b639161,f053a67,1b55efc9,2a762b0,1cecf7fa,1cfb1d,1fc62951,10589710,174f93f9,1749269d,1759e993,105f7188,1fdcd1e9'.split(',');
 var tries = 0;
 function qr() {
 var d = '';
