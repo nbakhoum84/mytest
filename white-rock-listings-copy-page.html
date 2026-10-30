@@ -366,20 +366,20 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
     &lt;/div&gt;
   &lt;/div&gt;
 
-  &lt;!-- MARKET SNAPSHOT: active listings counted October 30, 2026; sales September 2025 to August 2026 from the Lofty sold feed. Refresh monthly (tools/market-refresh). --&gt;
+  &lt;!-- MARKET SNAPSHOT: baseline counted October 30, 2026; sales September 2025 to August 2026. Numbers marked data-wr refresh from the monthly feed (tools/market-refresh). --&gt;
   &lt;section class="wr-block" aria-labelledby="wr-market-title"&gt;
     &lt;div class="wr-wrap"&gt;
       &lt;div class="wr-head"&gt;
         &lt;div class="wr-eyebrow"&gt;Market snapshot&lt;/div&gt;
-        &lt;h2 id="wr-market-title"&gt;White Rock Real Estate Market: October 2026&lt;/h2&gt;
-        &lt;p&gt;Active listings as of October 30, 2026, and sales over the past 12 complete months (September 2025 to August 2026).&lt;/p&gt;
+        &lt;h2 id="wr-market-title"&gt;White Rock Real Estate Market: &lt;span data-wr="monthYear"&gt;October 2026&lt;/span&gt;&lt;/h2&gt;
+        &lt;p&gt;Active listings as of &lt;span data-wr="asOf"&gt;October 30, 2026&lt;/span&gt;, and sales over the past 12 complete months (&lt;span data-wr="windowStart"&gt;September 2025&lt;/span&gt; to &lt;span data-wr="windowEnd"&gt;August 2026&lt;/span&gt;).&lt;/p&gt;
       &lt;/div&gt;
 
       &lt;ul class="wr-neigh wr-neigh-4 wr-kpis"&gt;
-        &lt;li&gt;&lt;div class="wr-coord"&gt;Active listings&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;322&lt;/div&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;div class="wr-coord"&gt;Median list price&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;$1,139,000&lt;/div&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;div class="wr-coord"&gt;Sold, past 12 months&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;372&lt;/div&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;div class="wr-coord"&gt;Median days to sell&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;31&lt;/div&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;div class="wr-coord"&gt;Active listings&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;&lt;span data-wr="active"&gt;322&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;div class="wr-coord"&gt;Median list price&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;&lt;span data-wr="medianList"&gt;$1,139,000&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;div class="wr-coord"&gt;Sold, past 12 months&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;&lt;span data-wr="sold12"&gt;372&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;div class="wr-coord"&gt;Median days to sell&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;&lt;span data-wr="domMedian"&gt;31&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
       &lt;/ul&gt;
 
       &lt;ul class="wr-neigh wr-types"&gt;
@@ -387,41 +387,56 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
           &lt;div class="wr-coord" aria-hidden="true"&gt;01&lt;/div&gt;
           &lt;h3&gt;Condos&lt;/h3&gt;
           &lt;dl class="wr-facts"&gt;
-            &lt;div&gt;&lt;dt&gt;Active now&lt;/dt&gt;&lt;dd&gt;164&lt;/dd&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;dt&gt;Median list price&lt;/dt&gt;&lt;dd&gt;$638,500&lt;/dd&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;dt&gt;Sold, past 12 months&lt;/dt&gt;&lt;dd&gt;238&lt;/dd&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;dt&gt;Median sold price&lt;/dt&gt;&lt;dd&gt;$549,000&lt;/dd&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;dt&gt;Median days to sell&lt;/dt&gt;&lt;dd&gt;32&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Active now&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="condo.active"&gt;164&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Median list price&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="condo.medianList"&gt;$638,500&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Sold, past 12 months&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="condo.sold"&gt;238&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Median sold price&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="condo.medianSold"&gt;$549,000&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Median days to sell&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="condo.dom"&gt;32&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
           &lt;/dl&gt;
         &lt;/li&gt;
         &lt;li&gt;
           &lt;div class="wr-coord" aria-hidden="true"&gt;02&lt;/div&gt;
           &lt;h3&gt;Townhomes&lt;/h3&gt;
           &lt;dl class="wr-facts"&gt;
-            &lt;div&gt;&lt;dt&gt;Active now&lt;/dt&gt;&lt;dd&gt;17&lt;/dd&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;dt&gt;Median list price&lt;/dt&gt;&lt;dd&gt;$869,000&lt;/dd&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;dt&gt;Sold, past 12 months&lt;/dt&gt;&lt;dd&gt;23&lt;/dd&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;dt&gt;Median sold price&lt;/dt&gt;&lt;dd&gt;$845,000&lt;/dd&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;dt&gt;Median days to sell&lt;/dt&gt;&lt;dd&gt;25&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Active now&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="townhome.active"&gt;17&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Median list price&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="townhome.medianList"&gt;$869,000&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Sold, past 12 months&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="townhome.sold"&gt;23&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Median sold price&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="townhome.medianSold"&gt;$845,000&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Median days to sell&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="townhome.dom"&gt;25&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
           &lt;/dl&gt;
         &lt;/li&gt;
         &lt;li&gt;
           &lt;div class="wr-coord" aria-hidden="true"&gt;03&lt;/div&gt;
           &lt;h3&gt;Single&amp;#8209;family homes&lt;/h3&gt;
           &lt;dl class="wr-facts"&gt;
-            &lt;div&gt;&lt;dt&gt;Active now&lt;/dt&gt;&lt;dd&gt;133&lt;/dd&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;dt&gt;Median list price&lt;/dt&gt;&lt;dd&gt;$1,938,000&lt;/dd&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;dt&gt;Sold, past 12 months&lt;/dt&gt;&lt;dd&gt;99&lt;/dd&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;dt&gt;Median sold price&lt;/dt&gt;&lt;dd&gt;$1,565,000&lt;/dd&gt;&lt;/div&gt;
-            &lt;div&gt;&lt;dt&gt;Median days to sell&lt;/dt&gt;&lt;dd&gt;32&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Active now&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="sfh.active"&gt;133&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Median list price&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="sfh.medianList"&gt;$1,938,000&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Sold, past 12 months&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="sfh.sold"&gt;99&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Median sold price&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="sfh.medianSold"&gt;$1,565,000&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;dt&gt;Median days to sell&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="sfh.dom"&gt;32&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
           &lt;/dl&gt;
         &lt;/li&gt;
       &lt;/ul&gt;
 
-      &lt;p class="wr-marketnote"&gt;About 31 homes sold per month over the past year, and half of them sold within 31 days of listing. Condos are the bulk of the market: 238 of the 372 sales and 164 of the 322 active listings, with a median sold price of $549,000 against $1,565,000 for single&amp;#8209;family homes. At the past year's sales pace, today's active listings equal roughly 10 months of supply overall, about 8 months for condos and about 16 for single&amp;#8209;family homes. Supply above about six months generally favours buyers. Want numbers for a specific street or building? &lt;a href="/sell"&gt;Ask for a free home valuation&lt;/a&gt;, or see the &lt;a href="/latest-market-updates"&gt;latest market updates&lt;/a&gt; and &lt;a href="/white-rock-sold-listings"&gt;recently sold White Rock homes&lt;/a&gt;.&lt;/p&gt;
-      &lt;p class="wr-src"&gt;Source: MLS&amp;reg; listing and sold data shown on this site. Active listings were counted on October 30, 2026. Sales cover September 2025 to August 2026 because sales from the most recent weeks are not yet fully reported. Days to sell is the time from listing date to sale date. The cards leave out 8 other active listings and 12 other sales (vacant land, manufactured and multi&amp;#8209;family).&lt;/p&gt;
+      &lt;p class="wr-marketnote"&gt;About &lt;span data-wr="perMonth"&gt;31&lt;/span&gt; homes sold per month over the past year, and half of them sold within &lt;span data-wr="domMedian"&gt;31&lt;/span&gt; days of listing. Condos are the bulk of the market: &lt;span data-wr="condo.sold"&gt;238&lt;/span&gt; of the &lt;span data-wr="sold12"&gt;372&lt;/span&gt; sales and &lt;span data-wr="condo.active"&gt;164&lt;/span&gt; of the &lt;span data-wr="active"&gt;322&lt;/span&gt; active listings, with a median sold price of &lt;span data-wr="condo.medianSold"&gt;$549,000&lt;/span&gt; against &lt;span data-wr="sfh.medianSold"&gt;$1,565,000&lt;/span&gt; for single&amp;#8209;family homes. At the past year's sales pace, today's active listings equal roughly &lt;span data-wr="supplyAll"&gt;10&lt;/span&gt; months of supply overall, about &lt;span data-wr="supplyCondo"&gt;8&lt;/span&gt; months for condos and about &lt;span data-wr="supplySfh"&gt;16&lt;/span&gt; for single&amp;#8209;family homes. Supply above about six months generally favours buyers. Want numbers for a specific street or building? &lt;a href="/sell"&gt;Ask for a free home valuation&lt;/a&gt;, or see the &lt;a href="/latest-market-updates"&gt;latest market updates&lt;/a&gt; and &lt;a href="/white-rock-sold-listings"&gt;recently sold White Rock homes&lt;/a&gt;.&lt;/p&gt;
+      &lt;p class="wr-src"&gt;Source: MLS&amp;reg; listing and sold data shown on this site. Active listings were counted on &lt;span data-wr="asOf"&gt;October 30, 2026&lt;/span&gt;. Sales cover &lt;span data-wr="windowStart"&gt;September 2025&lt;/span&gt; to &lt;span data-wr="windowEnd"&gt;August 2026&lt;/span&gt; because sales from the most recent weeks are not yet fully reported. Days to sell is the time from listing date to sale date. The cards leave out &lt;span data-wr="otherActive"&gt;8&lt;/span&gt; other active listings and &lt;span data-wr="otherSales"&gt;12&lt;/span&gt; other sales (vacant land, manufactured and multi&amp;#8209;family).&lt;/p&gt;
     &lt;/div&gt;
   &lt;/section&gt;
+  &lt;script&gt;
+    /* Fills the Market snapshot numbers from the monthly data feed. If the feed or JavaScript is unavailable, the numbers written in the HTML stay. */
+    (function () {
+      var FEED = 'https://raw.githubusercontent.com/nbakhoum84/mytest/claude/practical-wozniak-s89tdk/tools/market-refresh/data/market.json';
+      var ok = /^[A-Za-z0-9$,.\- ]{1,40}$/;
+      if (!window.fetch || !document.querySelector('[data-wr]')) return;
+      fetch(FEED).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+        if (!d) return;
+        document.querySelectorAll('[data-wr]').forEach(function (el) {
+          var v = d[el.getAttribute('data-wr')];
+          if (v !== undefined &amp;&amp; ok.test(String(v))) el.textContent = String(v);
+        });
+      }).catch(function () {});
+    })();
+  &lt;/script&gt;
 
   &lt;section class="wr-block" aria-labelledby="wr-neigh-title"&gt;
     &lt;div class="wr-wrap"&gt;
