@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fill in and copy White Rock code</title>
+<style>
+:root{--bg:#fff;--fg:#1b1f24;--muted:#5b6670;--card:#f5f7f9;--border:#d9dfe5;--accent:#0b6bcb;--warn:#a15c00}
+@media(prefers-color-scheme:dark){:root{--bg:#14181c;--fg:#e8ecef;--muted:#9aa5af;--card:#1d2329;--border:#323b44;--accent:#6db3ff;--warn:#ffb454}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,sans-serif}
+main{max-width:960px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.4rem;margin:0 0 6px}p{color:var(--muted);margin:6px 0 12px}
+button{font:inherit;font-weight:600;background:var(--accent);color:#fff;border:0;border-radius:8px;padding:12px 20px;cursor:pointer}
+button.alt{background:var(--card);color:var(--fg);border:1px solid var(--border)}
+@media(prefers-color-scheme:dark){button{color:#0b1620}}
+.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--border)}
+#msg{color:var(--muted)}#left{color:var(--warn);font-weight:600}
+textarea{width:100%;height:62vh;margin-top:14px;box-sizing:border-box;font:12.5px/1.45 ui-monospace,Menlo,Consolas,monospace;background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:8px;padding:12px}
+</style></head><body><main>
+<h1>White Rock listings: fill in, then copy</h1>
+<p><strong>Step 1.</strong> Click <em>Find next placeholder</em>. It jumps to the next square-bracket item such as <code>[N]</code> or <code>[$X]</code>. Type the real number over it, including the brackets. Repeat until none are left.<br>
+<strong>Step 2.</strong> Click <em>Copy all</em> and paste into the CMS Embed &rarr; CODE box (replace everything), then Update Code and Publish.</p>
+<div class="bar"><button id="f" class="alt" type="button">Find next placeholder</button><button id="b" type="button">Copy all</button><span id="left"></span><span id="msg"></span></div>
+<textarea id="c" spellcheck="false">&lt;!--
+  /white-rock-listings: improved custom code
+
+  PART 1: paste into the CMS "Head / custom code" field (fonts + structured data).
+  PART 2: paste into the page's HTML/content block (includes the Market snapshot, which needs real numbers).
+  Title, meta description, canonical and Open Graph are NOT included on purpose:
+  set them in the CMS SEO fields (values are in white-rock-listings-seo-notes.md),
+  because the platform already outputs those tags and duplicates cause conflicts.
+--&gt;
+
+
+&lt;!-- ===================== PART 1: HEAD / CUSTOM CODE ===================== --&gt;
+
+&lt;link rel="preconnect" href="https://fonts.googleapis.com" /&gt;
+&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /&gt;
+&lt;link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;600&amp;display=swap" rel="stylesheet" /&gt;
+
+&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is White Rock a good place to invest in real estate right now?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "White Rock's small size means very little new land ever comes to market, which has historically helped values hold up well, though it also means prices per square foot near the water rank among the highest in the Fraser Valley. Talk to Nader for a current-day read on a specific street."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the property transfer tax on a home in White Rock, BC?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "BC's property transfer tax is 1% on the first $200,000, 2% from $200,000 to $2,000,000, 3% from $2,000,000 to $3,000,000, and a further 2% (5% total) on any residential value above $3,000,000. White Rock's higher average price points mean fewer purchases qualify for the first-time buyer exemption (full up to an $835,000 fair market value, partial to $860,000), though condos away from the waterfront can still fall within range. Use the Cash to Close calculator for an exact number."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is White Rock part of Surrey?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. White Rock has governed itself as an independent city since 1957, when it split off from the District of Surrey, even though Surrey still surrounds it on the north, east, and west."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is White Rock on the SkyTrain?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. White Rock has no SkyTrain station of its own; the nearest stations are in Surrey, and most residents rely on bus connections or driving Highway 99, about 45 minutes to downtown Vancouver."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What school district serves White Rock?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Public schools fall under School District 36, the same district that covers Surrey."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What areas does this White Rock search cover?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "This search covers White Rock, including Waterfront/Marine Drive, East Beach, West Beach, Uptown/The Hill, Five Corners, and the Johnston Road corridor."
+      }
+    }
+  ]
+}
+&lt;/script&gt;
+
+&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://home-nader.com/" },
+    { "@type": "ListItem", "position": 2, "name": "White Rock Homes for Sale", "item": "https://home-nader.com/white-rock-listings" }
+  ]
+}
+&lt;/script&gt;
+
+&lt;!-- One agent entity. Same @id as the platform's own block so the two merge. --&gt;
+&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  "@id": "https://home-nader.com/#agent",
+  "name": "Nader Bakhoum, P.Eng., PMP",
+  "url": "https://home-nader.com/",
+  "telephone": "+1-604-612-7228",
+  "email": "info@home-nader.com",
+  "description": "Residential, commercial and presale real estate in Metro Vancouver, including White Rock and South Surrey.",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "7565 132 St",
+    "addressLocality": "Surrey",
+    "addressRegion": "BC",
+    "postalCode": "V3W 1K5",
+    "addressCountry": "CA"
+  },
+  "affiliation": { "@type": "Organization", "name": "eXp Realty Canada" },
+  "areaServed": [
+    { "@type": "City", "name": "White Rock" },
+    { "@type": "City", "name": "Surrey" },
+    { "@type": "City", "name": "Langley" },
+    { "@type": "City", "name": "Delta" }
+  ]
+}
+&lt;/script&gt;
+
+
+&lt;!-- ===================== PART 2: PAGE CONTENT ===================== --&gt;
+
+&lt;style&gt;
+  /* Everything is scoped under .wr so it cannot restyle the platform's header,
+     listing grid or footer. Class names are prefixed wr- to avoid collisions. */
+  .wr {
+    --paper: #F6F3EC;
+    --paper-line: #DAD4C4;
+    --ink: #1C2B39;
+    --ink-soft: #48576A;
+    --brass: #B0793A;
+    --brass-deep: #8E5F27;
+    --survey-green: #54746A;
+    --muted: #6B6556;
+    --white: #FFFFFF;
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wr *, .wr *::before, .wr *::after { box-sizing: border-box; }
+  /* :where() keeps the reset at zero specificity so the component rules below always win */
+  .wr :where(h1, h2, h3, p, ul, ol, li, blockquote, figure) { margin: 0; padding: 0; }
+  .wr :where(ul, ol) { list-style: none; }
+  .wr a { color: var(--brass-deep); }
+  .wr a:hover { color: var(--ink); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+
+  .wr-wrap { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+  .wr-mono { font-family: var(--mono); }
+
+  /* Hero */
+  .wr-hero-bg { position: relative; }
+  .wr-hero-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(28, 43, 57, .05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(28, 43, 57, .05) 1px, transparent 1px);
+    background-size: 220px 220px;
+    pointer-events: none;
+  }
+  .wr-crumbs {
+    position: relative;
+    padding-top: 26px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .04em;
+    color: var(--ink-soft);
+  }
+  .wr-crumbs ol { display: flex; flex-wrap: wrap; gap: 6px; }
+  .wr-crumbs li + li::before { content: "/"; margin-right: 6px; }
+  .wr-crumbs a { color: inherit; text-decoration: none; }
+  .wr-crumbs a:hover { color: var(--brass-deep); }
+
+  .wr-hero { position: relative; padding: 22px 0 44px; }
+  .wr-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--brass-deep);
+  }
+  .wr-eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--brass-deep); }
+  .wr-hero h2 {
+    max-width: 18ch;
+    font-family: var(--serif);
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 500;
+    line-height: 1.1;
+  }
+  .wr-sub { margin-top: 20px; max-width: 70ch; font-size: 16.5px; line-height: 1.7; color: var(--ink-soft); }
+  .wr-note { margin-top: 14px; max-width: 70ch; font-size: 14px; color: var(--ink-soft); }
+
+  /* Sections */
+  .wr-block { position: relative; padding: 70px 0; }
+  .wr-block-tight { padding-top: 0; }
+  .wr-head { max-width: 640px; margin-bottom: 40px; }
+  .wr-head h2 {
+    font-family: var(--serif);
+    font-size: clamp(24px, 2.6vw, 32px);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .wr-head p { margin-top: 12px; font-size: 15px; color: var(--ink-soft); }
+
+  /* Neighbourhoods */
+  .wr-neigh {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--ink);
+    border: 1px solid var(--ink);
+  }
+  .wr-neigh li { background: var(--paper); padding: 26px; }
+  .wr-coord { margin-bottom: 10px; font-family: var(--mono); font-size: 12px; color: var(--survey-green); }
+  .wr-neigh h3 { font-size: 16px; font-weight: 600; }
+  .wr-neigh p { margin-top: 10px; font-size: 14px; line-height: 1.6; color: var(--ink-soft); }
+
+  /* Lifestyle */
+  .wr-life { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+  .wr-life li { padding: 28px; background: var(--white); border: 1px solid var(--paper-line); }
+  .wr-life h3 { margin-bottom: 8px; font-family: var(--serif); font-size: 18px; font-weight: 500; }
+  .wr-life p { font-size: 14.5px; line-height: 1.7; color: var(--ink-soft); }
+
+  /* Nader's take */
+  .wr-take { position: relative; padding: 64px 0; overflow: hidden; background: var(--ink); color: var(--paper); }
+  .wr-take::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(246, 243, 236, .05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(246, 243, 236, .05) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .wr-take-inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  .wr-take-label { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--brass); }
+  .wr-take blockquote { font-family: var(--serif); font-size: clamp(18px, 2vw, 22px); line-height: 1.6; }
+  .wr-take cite { display: block; margin-top: 18px; font-family: var(--mono); font-size: 12px; font-style: normal; color: #B9C1CA; }
+
+  /* FAQ: native &lt;details&gt;, so it works without JavaScript and answers never get clipped */
+  .wr-faq details { border-bottom: 1px solid var(--paper-line); }
+  .wr-faq details:first-child { border-top: 1px solid var(--ink); }
+  .wr-faq summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 22px 0;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+  .wr-faq summary::-webkit-details-marker { display: none; }
+  .wr-faq summary::after {
+    content: "+";
+    flex-shrink: 0;
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--brass-deep);
+    transition: transform .2s ease;
+  }
+  .wr-faq details[open] summary::after { transform: rotate(45deg); }
+  .wr-faq summary:focus-visible { outline: 2px solid var(--brass-deep); outline-offset: 2px; }
+  .wr-faq details p { max-width: 70ch; padding-bottom: 22px; font-size: 15px; line-height: 1.7; color: var(--ink-soft); }
+
+  /* Calls to action */
+  .wr-cta { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--ink); border: 1px solid var(--ink); }
+  .wr-cta &gt; div { padding: 38px; background: var(--paper); }
+  .wr-cta .wr-mono { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--survey-green); }
+  .wr-cta h3 { margin: 10px 0 18px; font-family: var(--serif); font-size: 21px; font-weight: 500; }
+  .wr-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background .15s ease;
+  }
+  .wr a.wr-btn { color: var(--paper); }
+  .wr-btn:hover, .wr a.wr-btn:hover { background: var(--brass-deep); color: var(--paper); }
+
+  /* Market snapshot */
+  .wr-stats { margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+  .wr-stats &gt; div { padding: 24px; border-left: 1px solid var(--paper-line); }
+  .wr-stats &gt; div:first-child { border-left: 0; }
+  .wr-stats dt { margin-bottom: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+  .wr-stats dd { margin: 0; font-family: var(--serif); font-size: 26px; font-weight: 500; }
+  .wr-tablewrap { margin-top: 28px; overflow-x: auto; }
+  .wr-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .wr-table caption { padding-bottom: 10px; text-align: left; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+  .wr-table th, .wr-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--paper-line); }
+  .wr-table thead th { border-bottom: 1px solid var(--ink); font-weight: 600; }
+  .wr-marketnote { max-width: 70ch; margin-top: 22px; font-size: 15px; line-height: 1.7; color: var(--ink-soft); }
+  .wr-src { margin-top: 12px; font-size: 12px; color: var(--muted); }
+
+  /* Compliance */
+  .wr-legal { padding: 0 32px 40px; max-width: 1180px; margin: 0 auto; font-size: 12px; line-height: 1.6; color: var(--muted); }
+
+  @media (max-width: 860px) {
+    .wr-wrap { padding: 0 20px; }
+    .wr-neigh, .wr-life, .wr-cta { grid-template-columns: 1fr; }
+    .wr-take-inner { grid-template-columns: 1fr; gap: 16px; }
+    .wr-legal { padding: 0 20px 40px; }
+    .wr-block { padding: 48px 0; }
+    .wr-stats { grid-template-columns: repeat(2, 1fr); }
+    .wr-stats &gt; div { border-bottom: 1px solid var(--paper-line); }
+    .wr-stats &gt; div:nth-child(3) { border-left: 0; }
+  }
+&lt;/style&gt;
+
+&lt;div class="wr"&gt;
+  &lt;div class="wr-hero-bg"&gt;
+    &lt;div class="wr-wrap"&gt;
+      &lt;nav class="wr-crumbs" aria-label="Breadcrumb"&gt;
+        &lt;ol&gt;
+          &lt;li&gt;&lt;a href="https://home-nader.com/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+          &lt;li aria-current="page"&gt;White Rock&lt;/li&gt;
+        &lt;/ol&gt;
+      &lt;/nav&gt;
+
+      &lt;header class="wr-hero"&gt;
+        &lt;div class="wr-eyebrow"&gt;White Rock, BC&lt;/div&gt;
+        &lt;!-- The platform already outputs the page's single H1 ("White Rock Homes for Sale"), so this stays an H2. --&gt;
+        &lt;h2&gt;White Rock Homes for Sale: Condos, Townhomes &amp;amp; Single&amp;#8209;Family Homes&lt;/h2&gt;
+        &lt;p class="wr-sub"&gt;White Rock is one of the smallest cities in Metro Vancouver by land area, wrapped around Semiahmoo Bay and anchored by the 470&amp;#8209;metre White Rock Pier, built in 1914 and billed by the city's own signage as Canada's longest pier. Though Surrey surrounds it on the north, east, and west, White Rock has governed itself as an independent city since 1957, with its own council, its own hospital, and a beach&amp;#8209;town character that sets it apart from its much larger neighbour. With hundreds of active listings, prices range from smaller condos to homes on the bluff or waterfront. Whether you're after a &lt;strong&gt;condo steps from the promenade&lt;/strong&gt;, a &lt;strong&gt;character home up the hill&lt;/strong&gt;, or something in between, White Rock offers about as short a walk to the water as anywhere in the Lower Mainland.&lt;/p&gt;
+        &lt;p class="wr-note"&gt;Use the filters above to narrow the current listings by price, beds, and property type. Also looking nearby? See &lt;a href="/south-surrey-listings"&gt;South Surrey homes for sale&lt;/a&gt;, &lt;a href="/white-rock-presales"&gt;White Rock presales&lt;/a&gt;, or &lt;a href="/white-rock-sold-listings"&gt;recently sold White Rock homes&lt;/a&gt;.&lt;/p&gt;
+      &lt;/header&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- MARKET SNAPSHOT. Fill in every square-bracket placeholder with real MLS figures before publishing. Update monthly. --&gt;
+  &lt;section class="wr-block" aria-labelledby="wr-market-title"&gt;
+    &lt;div class="wr-wrap"&gt;
+      &lt;div class="wr-head"&gt;
+        &lt;div class="wr-eyebrow"&gt;Market snapshot&lt;/div&gt;
+        &lt;h2 id="wr-market-title"&gt;White Rock Real Estate Market: [Month Year]&lt;/h2&gt;
+        &lt;p&gt;Current figures for White Rock, updated monthly.&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;dl class="wr-stats"&gt;
+        &lt;div&gt;&lt;dt&gt;Active listings&lt;/dt&gt;&lt;dd&gt;[N]&lt;/dd&gt;&lt;/div&gt;
+        &lt;div&gt;&lt;dt&gt;Average list price&lt;/dt&gt;&lt;dd&gt;[$X]&lt;/dd&gt;&lt;/div&gt;
+        &lt;div&gt;&lt;dt&gt;Typical days on market&lt;/dt&gt;&lt;dd&gt;[N]&lt;/dd&gt;&lt;/div&gt;
+        &lt;div&gt;&lt;dt&gt;Sold, last 30 days&lt;/dt&gt;&lt;dd&gt;[N]&lt;/dd&gt;&lt;/div&gt;
+      &lt;/dl&gt;
+
+      &lt;div class="wr-tablewrap"&gt;
+        &lt;table class="wr-table"&gt;
+          &lt;caption&gt;White Rock by property type, [Month Year]&lt;/caption&gt;
+          &lt;thead&gt;
+            &lt;tr&gt;&lt;th scope="col"&gt;Property type&lt;/th&gt;&lt;th scope="col"&gt;Active listings&lt;/th&gt;&lt;th scope="col"&gt;Average list price&lt;/th&gt;&lt;th scope="col"&gt;Sold, last 30 days&lt;/th&gt;&lt;/tr&gt;
+          &lt;/thead&gt;
+          &lt;tbody&gt;
+            &lt;tr&gt;&lt;th scope="row"&gt;Condos&lt;/th&gt;&lt;td&gt;[N]&lt;/td&gt;&lt;td&gt;[$X]&lt;/td&gt;&lt;td&gt;[N]&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;th scope="row"&gt;Townhomes&lt;/th&gt;&lt;td&gt;[N]&lt;/td&gt;&lt;td&gt;[$X]&lt;/td&gt;&lt;td&gt;[N]&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;th scope="row"&gt;Single&amp;#8209;family homes&lt;/th&gt;&lt;td&gt;[N]&lt;/td&gt;&lt;td&gt;[$X]&lt;/td&gt;&lt;td&gt;[N]&lt;/td&gt;&lt;/tr&gt;
+          &lt;/tbody&gt;
+        &lt;/table&gt;
+      &lt;/div&gt;
+
+      &lt;p class="wr-marketnote"&gt;[Write 2 or 3 sentences on what the numbers mean: whether inventory is up or down from last year, which property type is moving fastest, and whether conditions currently favour buyers or sellers.] Want numbers for a specific street or building? &lt;a href="/sell"&gt;Ask for a free home valuation&lt;/a&gt;, or see the &lt;a href="/latest-market-updates"&gt;latest market updates&lt;/a&gt; and &lt;a href="/white-rock-sold-listings"&gt;recently sold White Rock homes&lt;/a&gt;.&lt;/p&gt;
+      &lt;p class="wr-src"&gt;Source: [MLS&amp;reg; data, board name, and the date the figures were pulled]. Figures are for White Rock and may change as listings update.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section class="wr-block" aria-labelledby="wr-neigh-title"&gt;
+    &lt;div class="wr-wrap"&gt;
+      &lt;div class="wr-head"&gt;
+        &lt;div class="wr-eyebrow"&gt;Coverage&lt;/div&gt;
+        &lt;h2 id="wr-neigh-title"&gt;Neighbourhoods in White Rock&lt;/h2&gt;
+        &lt;p&gt;This search spans the following White Rock communities.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;ul class="wr-neigh"&gt;
+        &lt;li&gt;
+          &lt;div class="wr-coord" aria-hidden="true"&gt;01&lt;/div&gt;
+          &lt;h3&gt;Waterfront / Marine Drive&lt;/h3&gt;
+          &lt;p&gt;The promenade and restaurant row along the beach, with condo towers steps from the pier and some of the highest price points in the city.&lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;div class="wr-coord" aria-hidden="true"&gt;02&lt;/div&gt;
+          &lt;h3&gt;East Beach&lt;/h3&gt;
+          &lt;p&gt;A quieter stretch of waterfront east of the pier, with beach access below and older character homes on the bluff above.&lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;div class="wr-coord" aria-hidden="true"&gt;03&lt;/div&gt;
+          &lt;h3&gt;West Beach&lt;/h3&gt;
+          &lt;p&gt;West of the pier, home to some of the city's newer waterfront condo developments.&lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;div class="wr-coord" aria-hidden="true"&gt;04&lt;/div&gt;
+          &lt;h3&gt;Uptown / The Hill&lt;/h3&gt;
+          &lt;p&gt;The higher&amp;#8209;elevation area around the city centre, away from the water, with more single&amp;#8209;family homes and views back down over the bay.&lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;div class="wr-coord" aria-hidden="true"&gt;05&lt;/div&gt;
+          &lt;h3&gt;Five Corners&lt;/h3&gt;
+          &lt;p&gt;The historic commercial intersection near the top of the hill, a walkable hub of shops, cafes, and older homes.&lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;div class="wr-coord" aria-hidden="true"&gt;06&lt;/div&gt;
+          &lt;h3&gt;Johnston Road Corridor&lt;/h3&gt;
+          &lt;p&gt;The main commercial spine running down to the waterfront, increasingly home to newer mid&amp;#8209;rise condo and townhome developments.&lt;/p&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section class="wr-block" aria-labelledby="wr-life-title"&gt;
+    &lt;div class="wr-wrap"&gt;
+      &lt;div class="wr-head"&gt;
+        &lt;div class="wr-eyebrow"&gt;Lifestyle&lt;/div&gt;
+        &lt;h2 id="wr-life-title"&gt;Why White Rock? The Beach, the Pier &amp;amp; an Independent City&lt;/h2&gt;
+        &lt;p&gt;White Rock trades size for waterfront, and most residents wouldn't trade back.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;ul class="wr-life"&gt;
+        &lt;li&gt;
+          &lt;h3&gt;&lt;span aria-hidden="true"&gt;🌉 &lt;/span&gt;The 470&amp;#8209;Metre Pier&lt;/h3&gt;
+          &lt;p&gt;White Rock Pier stretches 470 metres into Semiahmoo Bay. Built in 1914, it is billed by the city's own signage as Canada's longest pier.&lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;h3&gt;&lt;span aria-hidden="true"&gt;🏖️ &lt;/span&gt;The Waterfront Promenade&lt;/h3&gt;
+          &lt;p&gt;A long oceanfront walkway lined with restaurants and cafes on Marine Drive is the social heart of the city, especially at sunset.&lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;h3&gt;&lt;span aria-hidden="true"&gt;🏙️ &lt;/span&gt;One of Metro Vancouver's Smallest Cities&lt;/h3&gt;
+          &lt;p&gt;At just over 5 square kilometres, White Rock is among the smallest municipalities in the region. You can walk from the hill down to the beach in about 15 minutes.&lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;h3&gt;&lt;span aria-hidden="true"&gt;🚫 &lt;/span&gt;No SkyTrain&lt;/h3&gt;
+          &lt;p&gt;White Rock has no direct SkyTrain access; residents rely on bus connections and Highway 99, about 45 minutes to downtown Vancouver by car.&lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;h3&gt;&lt;span aria-hidden="true"&gt;🏥 &lt;/span&gt;Peace Arch Hospital&lt;/h3&gt;
+          &lt;p&gt;The city has its own hospital, serving both White Rock and neighbouring South Surrey.&lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;h3&gt;&lt;span aria-hidden="true"&gt;🗳️ &lt;/span&gt;An Independent City Since 1957&lt;/h3&gt;
+          &lt;p&gt;White Rock split off from the District of Surrey in 1957 and has governed itself ever since, even though Surrey surrounds it on three sides.&lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;h3&gt;&lt;span aria-hidden="true"&gt;📚 &lt;/span&gt;Schools&lt;/h3&gt;
+          &lt;p&gt;Public schools fall under &lt;strong&gt;School District 36&lt;/strong&gt;, the same district that covers Surrey.&lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;h3&gt;&lt;span aria-hidden="true"&gt;🌅 &lt;/span&gt;Sunsets Over Semiahmoo Bay&lt;/h3&gt;
+          &lt;p&gt;The pier and promenade face almost due west, making White Rock one of the best sunset&amp;#8209;watching spots in the Lower Mainland.&lt;/p&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section class="wr-take" aria-label="Nader's take"&gt;
+    &lt;div class="wr-wrap"&gt;
+      &lt;div class="wr-take-inner"&gt;
+        &lt;div class="wr-take-label"&gt;Nader's Take&lt;/div&gt;
+        &lt;figure&gt;
+          &lt;blockquote&gt;
+            &lt;p&gt;"White Rock is the smallest city on this list, and that's really the whole story. Most buyers here aren't choosing between neighbourhoods so much as choosing between the beach and the hill. As an engineer, I pay close attention to the pier's history: it's been damaged and rebuilt more than once after winter storms, which tells you something about building this close to the water. I walk clients through what that history means for any waterfront property, condo or house, before they make an offer."&lt;/p&gt;
+          &lt;/blockquote&gt;
+          &lt;figcaption&gt;&lt;cite&gt;Nader Bakhoum, PMP, P.Eng.&lt;/cite&gt;&lt;/figcaption&gt;
+        &lt;/figure&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section class="wr-block" aria-labelledby="wr-faq-title"&gt;
+    &lt;div class="wr-wrap"&gt;
+      &lt;div class="wr-head"&gt;
+        &lt;div class="wr-eyebrow"&gt;FAQ&lt;/div&gt;
+        &lt;h2 id="wr-faq-title"&gt;Frequently Asked Questions About White Rock Real Estate&lt;/h2&gt;
+      &lt;/div&gt;
+      &lt;div class="wr-faq"&gt;
+        &lt;details name="wr-faq"&gt;
+          &lt;summary&gt;Is White Rock a good place to invest in real estate right now?&lt;/summary&gt;
+          &lt;p&gt;White Rock's small size means very little new land ever comes to market, which has historically helped values hold up well, though it also means prices per square foot near the water rank among the highest in the Fraser Valley. Talk to Nader for a current&amp;#8209;day read on a specific street.&lt;/p&gt;
+        &lt;/details&gt;
+        &lt;details name="wr-faq"&gt;
+          &lt;summary&gt;What's the property transfer tax on a home in White Rock, BC?&lt;/summary&gt;
+          &lt;p&gt;BC's property transfer tax is 1% on the first $200,000, 2% from $200,000 to $2,000,000, 3% from $2,000,000 to $3,000,000, and a further 2% (5% total) on any residential value above $3,000,000. White Rock's higher average price points mean fewer purchases qualify for the first&amp;#8209;time buyer exemption (full up to an $835,000 fair market value, partial to $860,000), though condos away from the waterfront can still fall within range. Use the &lt;a href="/cash-to-close"&gt;Cash to Close calculator&lt;/a&gt; for an exact number.&lt;/p&gt;
+        &lt;/details&gt;
+        &lt;details name="wr-faq"&gt;
+          &lt;summary&gt;Is White Rock part of Surrey?&lt;/summary&gt;
+          &lt;p&gt;No. White Rock has governed itself as an independent city since 1957, when it split off from the District of Surrey, even though Surrey still surrounds it on the north, east, and west.&lt;/p&gt;
+        &lt;/details&gt;
+        &lt;details name="wr-faq"&gt;
+          &lt;summary&gt;Is White Rock on the SkyTrain?&lt;/summary&gt;
+          &lt;p&gt;No. White Rock has no SkyTrain station of its own; the nearest stations are in Surrey, and most residents rely on bus connections or driving Highway 99, about 45 minutes to downtown Vancouver.&lt;/p&gt;
+        &lt;/details&gt;
+        &lt;details name="wr-faq"&gt;
+          &lt;summary&gt;What school district serves White Rock?&lt;/summary&gt;
+          &lt;p&gt;Public schools fall under School District 36, the same district that covers Surrey.&lt;/p&gt;
+        &lt;/details&gt;
+        &lt;details name="wr-faq"&gt;
+          &lt;summary&gt;What areas does this White Rock search cover?&lt;/summary&gt;
+          &lt;p&gt;This search covers White Rock, including Waterfront/Marine Drive, East Beach, West Beach, Uptown/The Hill, Five Corners, and the Johnston Road corridor.&lt;/p&gt;
+        &lt;/details&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section class="wr-block wr-block-tight" aria-label="Next steps"&gt;
+    &lt;div class="wr-wrap"&gt;
+      &lt;div class="wr-cta"&gt;
+        &lt;div&gt;
+          &lt;div class="wr-mono"&gt;For Buyers&lt;/div&gt;
+          &lt;h3&gt;Run the numbers on a White Rock home&lt;/h3&gt;
+          &lt;a href="/mortgage-calculators" class="wr-btn"&gt;Mortgage calculators &lt;span aria-hidden="true"&gt;→&lt;/span&gt;&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+          &lt;div class="wr-mono"&gt;For Sellers&lt;/div&gt;
+          &lt;h3&gt;What's Your White Rock Home Worth?&lt;/h3&gt;
+          &lt;a href="/seller-guide" class="wr-btn"&gt;Get the Seller's Guide &lt;span aria-hidden="true"&gt;→&lt;/span&gt;&lt;/a&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;p class="wr-legal"&gt;IDX information is provided exclusively for consumers' personal, non&amp;#8209;commercial use and may not be used for any purpose other than to identify prospective properties consumers may be interested in purchasing. Information deemed reliable but not guaranteed to be accurate. Listing information updated daily.&lt;/p&gt;
+&lt;/div&gt;
+</textarea>
+</main>
+<script>
+var c=document.getElementById('c'),m=document.getElementById('msg'),l=document.getElementById('left');
+var re=/\[[A-Z$][^\]\n]*\]/g;
+function count(){var n=(c.value.match(re)||[]).length;l.textContent=n?n+' placeholder'+(n>1?'s':'')+' still to fill in':'All placeholders filled in';}
+count();c.addEventListener('input',count);
+var pos=0;
+document.getElementById('f').onclick=function(){
+  re.lastIndex=pos;var x=re.exec(c.value);if(!x){re.lastIndex=0;pos=0;x=re.exec(c.value);}
+  if(!x){m.textContent='None left';return;}
+  pos=x.index+x[0].length;c.focus();c.setSelectionRange(x.index,x.index+x[0].length);
+  var lh=parseFloat(getComputedStyle(c).lineHeight)||18;var line=c.value.slice(0,x.index).split('\n').length;c.scrollTop=Math.max(0,(line-6)*lh);
+};
+document.getElementById('b').onclick=function(){
+  var n=(c.value.match(re)||[]).length;
+  if(n&&!confirm(n+' placeholder(s) are still in the code and would show on your live page. Copy anyway?'))return;
+  c.focus();c.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}
+  m.textContent=ok?'Copied':'Press Ctrl+C to copy';
+  var t=c.value.length;if(!ok&&navigator.clipboard){navigator.clipboard.writeText(c.value).then(function(){m.textContent='Copied'},function(){})}
+};
+</script></body></html>
