@@ -1,10 +1,10 @@
 # Monthly White Rock market refresh (automatic publishing)
 
-The page's Embed code contains a small loader script. It reads `tools/market-refresh/data/market.json` from this public repo
+The page's Edit Page → **Page Script** field contains a small loader (`white-rock-market-loader.txt`; the Lofty Embed box strips `<script>` tags, so it cannot go there). It reads `tools/market-refresh/data/market.json` from this public repo
 (`raw.githubusercontent.com`, branch `claude/practical-wozniak-s89tdk`) and fills in every number marked `data-wr`.
 The numbers written in the HTML are the fallback if JavaScript or the feed is unavailable.
 
-**One-time setup:** paste `white-rock-listings-code.txt` into the Lofty Embed → CODE box, Update Code, Publish.
+**One-time setup:** (1) paste `white-rock-listings-code.txt` into the Lofty Embed → CODE box (Update Code); (2) paste `white-rock-market-loader.txt` (JavaScript only, no `<script>` tags) into Edit Page → Page Script; (3) Save and Publish.
 After that, pushing a new `market.json` updates the live page (within about 5 minutes, the GitHub cache time). No Lofty login, no re-paste.
 
 ```bash

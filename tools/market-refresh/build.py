@@ -84,22 +84,30 @@ def card(i, k, label):
         </li>
 '''
 cards = ''.join(card(i + 1, k, label) for i, (k, label, _) in enumerate(KEYS))
-LOADER = '''  <script>
-    /* Fills the Market snapshot numbers from the monthly data feed. If the feed or JavaScript is unavailable, the numbers written in the HTML stay. */
-    (function () {
-      var FEED = '%FEED%';
-      var ok = /^[A-Za-z0-9$,.\\- ]{1,40}$/;
-      if (!window.fetch || !document.querySelector('[data-wr]')) return;
-      fetch(FEED).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-        if (!d) return;
-        document.querySelectorAll('[data-wr]').forEach(function (el) {
-          var v = d[el.getAttribute('data-wr')];
-          if (v !== undefined && ok.test(String(v))) el.textContent = String(v);
-        });
-      }).catch(function () {});
+LOADER_JS = """/* White Rock market snapshot: fills the numbers marked data-wr from the monthly data feed.
+   If the feed or this script is unavailable, the numbers written in the page HTML stay. */
+(function () {
+  var FEED = '%FEED%';
+  var ok = /^[A-Za-z0-9$,.\\- ]{1,40}$/;
+  function fill(d) {
+    var tries = 0;
+    (function go() {
+      var els = document.querySelectorAll('[data-wr]');
+      if (els.length) {
+        for (var i = 0; i < els.length; i++) {
+          var v = d[els[i].getAttribute('data-wr')];
+          if (v !== undefined && ok.test(String(v))) els[i].textContent = String(v);
+        }
+      } else if (tries++ < 40) { setTimeout(go, 250); }
     })();
-  </script>
-'''.replace('%FEED%', FEED_URL)
+  }
+  function run() {
+    if (!window.fetch) return;
+    fetch(FEED).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { if (d) fill(d); }).catch(function () {});
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+})();
+""".replace('%FEED%', FEED_URL)
 section = f'''  <!-- MARKET SNAPSHOT: baseline counted {asof}; sales {w1} to {w2}. Numbers marked data-wr refresh from the monthly feed (tools/market-refresh). -->
   <section class="wr-block" aria-labelledby="wr-market-title">
     <div class="wr-wrap">
@@ -119,7 +127,7 @@ section = f'''  <!-- MARKET SNAPSHOT: baseline counted {asof}; sales {w1} to {w2
       <p class="wr-src">Source: MLS&reg; listing and sold data shown on this site. Active listings were counted on {S('asOf', asof)}. Sales cover {S('windowStart', w1)} to {S('windowEnd', w2)} because sales from the most recent weeks are not yet fully reported. Days to sell is the time from listing date to sale date. The cards leave out {S('otherActive', otherA)} other active listings and {S('otherSales', otherS)} other sales (vacant land, manufactured and multi&#8209;family).</p>
     </div>
   </section>
-{LOADER}
+
 '''
 F = f'{ROOT}/white-rock-listings-improved.html'
 s = open(F, encoding='utf8').read()
@@ -131,3 +139,6 @@ page = open(P, encoding='utf8').read()
 page = re.sub(r'<textarea id="c" readonly spellcheck="false">.*?</textarea>', lambda m: '<textarea id="c" readonly spellcheck="false">' + html.escape(s, quote=False) + '</textarea>', page, flags=re.S)
 open(P, 'w', encoding='utf8').write(page)
 print('updated', F, 'and', LIVE)
+
+open(f'{ROOT}/white-rock-market-loader.txt', 'w', encoding='utf8').write(LOADER_JS)
+print('wrote white-rock-market-loader.txt')

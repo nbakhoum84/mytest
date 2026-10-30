@@ -404,21 +404,6 @@
       <p class="wr-src">Source: MLS&reg; listing and sold data shown on this site. Active listings were counted on <span data-wr="asOf">October 30, 2026</span>. Sales cover <span data-wr="windowStart">September 2025</span> to <span data-wr="windowEnd">August 2026</span> because sales from the most recent weeks are not yet fully reported. Days to sell is the time from listing date to sale date. The cards leave out <span data-wr="otherActive">8</span> other active listings and <span data-wr="otherSales">12</span> other sales (vacant land, manufactured and multi&#8209;family).</p>
     </div>
   </section>
-  <script>
-    /* Fills the Market snapshot numbers from the monthly data feed. If the feed or JavaScript is unavailable, the numbers written in the HTML stay. */
-    (function () {
-      var FEED = 'https://raw.githubusercontent.com/nbakhoum84/mytest/claude/practical-wozniak-s89tdk/tools/market-refresh/data/market.json';
-      var ok = /^[A-Za-z0-9$,.\- ]{1,40}$/;
-      if (!window.fetch || !document.querySelector('[data-wr]')) return;
-      fetch(FEED).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-        if (!d) return;
-        document.querySelectorAll('[data-wr]').forEach(function (el) {
-          var v = d[el.getAttribute('data-wr')];
-          if (v !== undefined && ok.test(String(v))) el.textContent = String(v);
-        });
-      }).catch(function () {});
-    })();
-  </script>
 
   <section class="wr-block" aria-labelledby="wr-neigh-title">
     <div class="wr-wrap">
