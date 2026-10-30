@@ -1115,7 +1115,6 @@ style.textContent =
 '@keyframes hnPtPan1{0%{transform:scale(1.4) translate(4%,3%)}50%{transform:scale(1)}100%{transform:scale(1.35) translate(-4%,-3%)}}' +
 '@keyframes hnPtPan2{0%{transform:scale(1) translateX(-6%) rotateY(6deg)}50%{transform:scale(1.4) translateX(0) rotateY(0)}100%{transform:scale(1.1) translateX(6%) rotateY(-6deg)}}' +
 '@keyframes hnPtPan3{0%{transform:scale(1.4) translate(-4%,3%)}50%{transform:scale(1)}100%{transform:scale(1.35) translate(4%,-3%)}}' +
-'@media (prefers-reduced-motion:reduce){#hn-vt-modal .hn-pt-frame img{animation:none!important}}' +
 '#hn-vt-modal .hn-pt-foot{z-index:2;position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;gap:12px;padding:8px 14px;background:rgba(0,0,0,.6);color:#fff;font-family:inherit;font-size:13px}' +
 // Commercial list cards (Nader 2026-10-27): Lofty pins the "Listed by" row to the card bottom (absolute), so with our buttons it covered
 // the description. Put it back in the normal flow, under the description, on cards that have our buttons.
