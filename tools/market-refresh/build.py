@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Rebuilds the Market snapshot section of a city page from data, and writes that city's live data feed.
 
-Usage: python3 build.py [whiterock|abbotsford] [YYYY-MM-DD] [--force]      (default city: whiterock; date: today)
+Usage: python3 build.py [whiterock|abbotsford|burnaby] [YYYY-MM-DD] [--force]      (default city: whiterock; date: today)
 
 * The page's Lofty Page Script (<city>-market-loader.txt) loads the feed from GitHub and fills in every number marked data-wr,
   so after the one-time paste, monthly updates need no Lofty login and no re-paste.
@@ -19,6 +19,7 @@ CITIES = {
   'whiterock':  dict(label='White Rock', dir='', slug='white-rock', page='white-rock-listings', loader='white-rock-market-loader.txt',
                      other='vacant land, manufactured and multi&#8209;family'),
   'abbotsford': dict(label='Abbotsford', dir='abbotsford', slug='abbotsford', page='abbotsford-listings', loader='abbotsford-market-loader.txt', other=None),
+  'burnaby':    dict(label='Burnaby', dir='burnaby', slug='burnaby', page='burnaby-listings', loader='burnaby-market-loader.txt', other=None),
 }
 args = [a for a in sys.argv[1:] if not a.startswith('--')]; force = '--force' in sys.argv
 city_key = 'whiterock'
