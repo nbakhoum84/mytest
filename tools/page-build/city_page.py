@@ -265,6 +265,43 @@ CONFIGS['richmond'] = dict(
   ],
   take=(f"Richmond is a market where geography matters more than almost anywhere else in the region. Much of the city is low{NH}lying, and that shapes everything from foundation type to insurance to how a property is built. As an engineer, that's exactly the kind of detail I dig into before a client makes an offer. Between Steveston's older housing stock and the newer highrises around the Canada Line, the due diligence looks completely different depending on where you're looking."),
 )
+CONFIGS['southsurrey'] = dict(
+  label='South Surrey', page='south-surrey-listings', hero_word='Homes',
+  hero_h2='South Surrey Homes for Sale – Estates, Townhomes &amp; Beachside Properties',
+  nearby=[('/white-rock-listings', 'White Rock homes for sale'), ('/south-surrey-presales', 'South Surrey presales'), ('/south-surrey-sold-listings', 'recently sold South Surrey homes')],
+  life_h2='Why South Surrey? Space, Golf &amp; the Water',
+  life_sub=f"South Surrey is known for larger lots, golf courses, and beach access.",
+  areas=["White Rock", "Surrey", "South Surrey", "Langley", "Delta", "Richmond", "Burnaby", "New Westminster", "Coquitlam", "Port Coquitlam", "Port Moody", "Abbotsford"],
+  agent_cities='White Rock, Surrey, South Surrey, Langley, Delta, Richmond, Burnaby, New Westminster, Coquitlam, Port Coquitlam, Port Moody and Abbotsford',
+  sub=(f"South Surrey is one of Surrey's six town centres, on the Semiahmoo Peninsula between the city's northern communities and the U.S. border at the Peace Arch crossing. It's a market built around larger lots, golf courses, and beach access, with a lower{NH}density feel than many parts of Surrey. With hundreds of active listings, prices range widely, from a townhome to a golf{NH}course or waterfront home. Whether you're after a <strong>golf{NH}course home in Morgan Creek</strong>, a <strong>cottage in Crescent Beach</strong>, or a <strong>family home in Grandview Heights</strong>, South Surrey trades density for space."),
+  faq=[
+   ("Is South Surrey a good place to invest in real estate right now?", f"South Surrey offers a mix of townhomes, condos and single{NH}family homes, with larger lots in many pockets and Highway 99 access to the border and Vancouver. Talk to Nader for a current{NH}day read on a specific street or community."),
+   ("What's the property transfer tax on a home in South Surrey, BC?", f"BC's property transfer tax is 1% on the first $200,000, 2% from $200,000 to $2,000,000, 3% from $2,000,000 to $3,000,000, and a further 2% (5% total) on any residential value above $3,000,000. South Surrey's range spans from townhomes and condos, some near the first{NH}time buyer exemption threshold (up to an $835,000 fair market value), to larger homes that sit above it. Use the <a href=\"/cash-to-close\">Cash to Close calculator</a> for an exact number."),
+   ("How far is South Surrey from downtown Vancouver?", f"By car it's roughly a 40 to 60 minute drive via Highway 99, depending on the neighbourhood and traffic. There's no SkyTrain station in South Surrey itself, so check TransLink for current transit options."),
+   ("Is South Surrey a separate city from Surrey?", f"No. South Surrey is one of Surrey's six town centres, not a separate municipality, but it's searched separately because its housing stock and price points differ from much of the rest of the city."),
+   ("What school district serves South Surrey?", f"Public schools fall under School District 36 Surrey, the same district that covers the rest of Surrey."),
+   ("What areas does this South Surrey search cover?", f"This search covers South Surrey, including Ocean Park, Crescent Beach, Elgin/Chantrell, Grandview Heights, Morgan Creek, and Sunnyside Park."),
+  ],
+  neigh=[
+   ("Ocean Park", f"An established neighbourhood near the water, known for mature trees and easy beach access."),
+   ("Crescent Beach", f"A small beach community reached by crossing the BNSF rail line, with a cottage{NH}town feel."),
+   ("Elgin / Chantrell", f"An established area of larger lots and estate{NH}style homes."),
+   ("Grandview Heights", f"A newer, fast{NH}growing area of townhomes and single{NH}family homes."),
+   ("Morgan Creek", f"A master{NH}planned community built around the Morgan Creek Golf Course."),
+   ("Sunnyside Park", f"An established, family{NH}friendly neighbourhood."),
+  ],
+  life=[
+   ("🕊️", "The Peace Arch", f"South Surrey borders the U.S. at the Peace Arch crossing, home to the historic 1921 Peace Arch monument."),
+   ("🏖️", "Crescent Beach", f"A small beach community with a summer{NH}cottage feel."),
+   ("⛳", "Golf Course Living", f"Morgan Creek and other golf courses anchor some of South Surrey's established communities."),
+   ("🌳", "More Space, Fewer Towers", f"South Surrey is known for larger lots and lower{NH}rise streets."),
+   ("🛍️", "Semiahmoo Shopping Centre", f"A long{NH}standing retail hub serving South Surrey and White Rock."),
+   ("🚶", "Semiahmoo Trail", f"A multi{NH}use trail in South Surrey, popular with walkers and cyclists."),
+   ("📚", "Schools", f"Public schools fall under <strong>School District 36 Surrey</strong>, the same district as the rest of the city."),
+   ("🚗", "Highway 99 &amp; the Border", f"Highway 99 connects South Surrey to Vancouver and the U.S. border."),
+  ],
+  take=(f"South Surrey feels different from much of the rest of Surrey, and that's the point. Buyers here are often choosing space, golf courses, or beach access over density. As an engineer, I pay close attention to lot grading and drainage, especially on older streets near the water. I help my clients understand what an older lot actually needs before they commit to it."),
+)
 def plain(s): return re.sub(r'<[^>]+>', '', s).replace(NH, '-').replace('&amp;', '&')
 def render(key):
     c = CONFIGS[key]; L = c['label']; PAGE = c['page']
