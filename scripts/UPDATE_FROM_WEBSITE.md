@@ -2,7 +2,7 @@
 
 This file is the runbook for the daily scheduled task. Repository: `nbakhoum84/mytest`,
 branch `claude/home-nader-app-code-qq450r`. The web app is published from a second repository,
-`nbakhoum84/nbakhoum84.github.io` (GitHub Pages, branch `main`, address https://nbakhoum84.github.io/).
+`nbakhoum84/nbakhoum84.github.io` (GitHub Pages, branch `main`, address https://nbakhoum84.github.io/; the public link customers use is https://home-nader.com/app).
 
 ## Rules
 - Only change what the website clearly shows has changed. Never invent values. If something is unclear, leave it and say so in the report.
