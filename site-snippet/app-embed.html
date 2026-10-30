@@ -1,0 +1,10 @@
+<!-- home-nader app: paste into an HTML block on the Lofty page home-nader.com/app.
+     Shows the installable app (hosted at https://nbakhoum84.github.io/) inside the page, so the address stays on home-nader.com.
+     Set the page's Lofty slug to "app". If the block sits inside a narrow column, the iframe still fills the column width. -->
+<style>
+  #hn-app-frame{display:block;width:100%;max-width:480px;height:80vh;min-height:560px;margin:0 auto;border:1px solid rgba(128,128,128,.3);border-radius:16px;background:#fff}
+  #hn-app-open{text-align:center;font-size:14px;margin:12px 0 24px;color:inherit}
+  #hn-app-open a{color:inherit;text-decoration:underline}
+</style>
+<iframe id="hn-app-frame" src="https://nbakhoum84.github.io/" title="home-nader app" loading="lazy" allow="clipboard-write"></iframe>
+<p id="hn-app-open">Want it on your phone? <a href="https://nbakhoum84.github.io/" target="_blank" rel="noopener">Open the full app</a>, then iPhone: Share &rarr; Add to Home Screen. Android: &#8942; menu &rarr; Install app.</p>
