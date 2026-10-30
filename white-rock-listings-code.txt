@@ -351,38 +351,38 @@
     </div>
   </div>
 
-  <!-- MARKET SNAPSHOT: figures counted from the live White Rock search on October 30, 2026. Refresh monthly. -->
+  <!-- MARKET SNAPSHOT: active listings counted Oct 30, 2026; sales Sep 2025 to Aug 2026 from the Lofty sold feed. Refresh monthly. -->
   <section class="wr-block" aria-labelledby="wr-market-title">
     <div class="wr-wrap">
       <div class="wr-head">
         <div class="wr-eyebrow">Market snapshot</div>
         <h2 id="wr-market-title">White Rock Real Estate Market: October 2026</h2>
-        <p>What is for sale in White Rock right now, as of October 30, 2026.</p>
+        <p>Active listings as of October 30, 2026, and sales over the past 12 complete months (September 2025 to August 2026).</p>
       </div>
 
       <dl class="wr-stats">
         <div><dt>Active listings</dt><dd>322</dd></div>
         <div><dt>Median list price</dt><dd>$1,139,000</dd></div>
-        <div><dt>Condos for sale</dt><dd>164</dd></div>
-        <div><dt>Single&#8209;family homes</dt><dd>133</dd></div>
+        <div><dt>Sold, past 12 months</dt><dd>372</dd></div>
+        <div><dt>Median days to sell</dt><dd>31</dd></div>
       </dl>
 
       <div class="wr-tablewrap">
         <table class="wr-table">
-          <caption>White Rock active listings by property type, October 30, 2026</caption>
+          <caption>White Rock by property type</caption>
           <thead>
-            <tr><th scope="col">Property type</th><th scope="col">Active listings</th><th scope="col">Median list price</th><th scope="col">Middle half priced between</th></tr>
+            <tr><th scope="col">Property type</th><th scope="col">Active now</th><th scope="col">Median list price</th><th scope="col">Sold, past 12 months</th><th scope="col">Median sold price</th><th scope="col">Median days to sell</th></tr>
           </thead>
           <tbody>
-            <tr><th scope="row">Condos</th><td>164</td><td>$638,500</td><td>$474,975 to $949,075</td></tr>
-            <tr><th scope="row">Townhomes</th><td>17</td><td>$869,000</td><td>$648,000 to $1,075,000</td></tr>
-            <tr><th scope="row">Single&#8209;family homes</th><td>133</td><td>$1,938,000</td><td>$1,449,000 to $2,798,000</td></tr>
+            <tr><th scope="row">Condos</th><td>164</td><td>$638,500</td><td>238</td><td>$549,000</td><td>32</td></tr>
+            <tr><th scope="row">Townhomes</th><td>17</td><td>$869,000</td><td>23</td><td>$845,000</td><td>25</td></tr>
+            <tr><th scope="row">Single&#8209;family homes</th><td>133</td><td>$1,938,000</td><td>99</td><td>$1,565,000</td><td>32</td></tr>
           </tbody>
         </table>
       </div>
 
-      <p class="wr-marketnote">Condos make up about half of what is for sale in White Rock (164 of 322 active listings), and the typical condo is listed at about $638,500 compared with about $1,938,000 for a single&#8209;family home. Townhomes are the scarcest option, with only 17 active listings. Medians are used instead of averages because a handful of very high&#8209;priced properties would pull an average up. Want numbers for a specific street or building? <a href="/sell">Ask for a free home valuation</a>, or see the <a href="/latest-market-updates">latest market updates</a> and <a href="/white-rock-sold-listings">recently sold White Rock homes</a>.</p>
-      <p class="wr-src">Source: active MLS&reg; listings in the White Rock search on this site, counted on October 30, 2026. These are asking prices for homes currently for sale, not sale prices. The table excludes 8 other listings (vacant land, manufactured and multi&#8209;family).</p>
+      <p class="wr-marketnote">About 31 homes sold per month over the past year, and half of them sold within 31 days of listing. Condos are the bulk of the market: 238 of the 372 sales and 164 of the 322 active listings, with a median sold price of $549,000 against $1,565,000 for single&#8209;family homes. At the past year's sales pace, today's active listings equal roughly 10 months of supply overall, about 8 months for condos and about 16 for single&#8209;family homes. Supply above about six months generally favours buyers. Want numbers for a specific street or building? <a href="/sell">Ask for a free home valuation</a>, or see the <a href="/latest-market-updates">latest market updates</a> and <a href="/white-rock-sold-listings">recently sold White Rock homes</a>.</p>
+      <p class="wr-src">Source: MLS&reg; listing and sold data shown on this site. Active listings were counted on October 30, 2026. Sales cover September 2025 to August 2026 because sales from the most recent weeks are not yet fully reported. Days to sell is the time from listing date to sale date. The table leaves out 8 other active listings and 12 other sales (vacant land, manufactured and multi&#8209;family).</p>
     </div>
   </section>
 
