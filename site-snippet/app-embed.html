@@ -7,12 +7,12 @@
   /* The site-wide "Get the home-nader app" card would just link back to this page, so hide it here (this block is only on /app). */
   .hn-app,.hn-app-card-wide{display:none!important}
   #hn-app-frame{display:block;width:100%;max-width:520px;height:1700px;margin:0 auto;border:0;border-radius:0;background:transparent;overflow:hidden}
-  #hn-app-open{text-align:center;font-size:14px;margin:12px 0 24px;color:inherit}
+  #hn-app-open{max-width:520px;margin:12px auto 24px;padding:0 20px;font-size:14px;line-height:1.7;color:inherit}
   #hn-app-open a{color:inherit;text-decoration:underline}
 </style>
 <iframe id="hn-app-frame" src="https://nbakhoum84.github.io/" title="home-nader app" scrolling="no" allow="clipboard-write; web-share"></iframe>
 <img src="x:" alt="" style="display:none" onerror="var s=document.createElement('script');s.src='https://nbakhoum84.github.io/embed-resize.js?v='+Math.floor(Date.now()/6e4);document.head.appendChild(s);this.remove()">
-<p id="hn-app-open">Want it on your phone? <a href="https://nbakhoum84.github.io/" target="_blank" rel="noopener">Open the full app</a>, then iPhone: Share &rarr; Add to Home Screen. Android: &#8942; menu &rarr; Install app.</p>
+<div id="hn-app-open"><b>Install this app on your phone</b><br>1. Tap <a href="https://nbakhoum84.github.io/" target="_blank" rel="noopener">Open the full app</a>.<br>2. <b>iPhone (Safari):</b> tap Share, then &ldquo;Add to Home Screen&rdquo;.<br><b>Android (Chrome):</b> tap the &#8942; menu, then &ldquo;Install app&rdquo;.</div>
 <script>
 (function () {
   var f = document.getElementById('hn-app-frame');
