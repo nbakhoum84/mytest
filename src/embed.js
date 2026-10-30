@@ -49,7 +49,10 @@ export function useEmbedded(tab) {
     const onMsg = (e) => {
       if (e.source !== window.parent || !e.data || e.data.type !== 'hn-view') return;
       const root = document.getElementById('root');
-      const max = Math.max(0, (root ? root.getBoundingClientRect().height : 0) - 56);
+      const rh = Math.ceil(root ? root.getBoundingClientRect().height : 0);
+      // Answer every ping with the height too: the page's script may have loaded after our first message.
+      if (rh) window.parent.postMessage({ type: 'hn-app-height', height: rh }, '*');
+      const max = Math.max(0, rh - 56);
       setStickyTop(Math.min(Math.max(0, Math.round(e.data.top)), max));
     };
     window.addEventListener('message', onMsg);
