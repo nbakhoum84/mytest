@@ -591,7 +591,7 @@ function ptBig(u) { return /\/\/img\.chime\.me\//.test(u) ? u.replace(/\/w\d+_(o
 // Soft background music for the Photo tour (Nader 2026-10-30). The page makes it itself (gentle chords and a slow bell melody), so there is
 // no music file and no copyright. It starts with the tour (the visitor's click allows sound), the Music button turns it off and on, and it
 // stops when the window closes.
-var ptAudio = null, ptLoop = null;
+var ptAudio = null, ptLoop = null, ptLast = -1;
 function ptMusic(on) {
 var AC = window.AudioContext || window.webkitAudioContext;
 if (!on) { clearInterval(ptLoop); ptLoop = null; if (ptAudio) ptAudio.suspend(); return; }
@@ -607,26 +607,32 @@ if (ptLoop) return;
 // Six tunes (Nader 2026-10-30: more random music). Each tour picks one at random, and its bell melody is new every time: each beat plays a
 // random note of the current chord (sometimes an octave up, sometimes a rest). Chords are semitones above the tune's root note.
 var tunes = [
-{ root: 261.63, bar: 4, beats: 4, chords: [[0, 4, 7], [-3, 0, 4], [-7, -3, 0], [-5, -1, 2]] },
-{ root: 293.66, bar: 3.6, beats: 6, chords: [[0, 4, 7], [5, 9, 12], [-3, 0, 4], [-5, -1, 2]] },
-{ root: 220, bar: 4.8, beats: 4, chords: [[0, 3, 7], [-4, 0, 3], [-9, -5, -2], [-2, 2, 5]] },
-{ root: 196, bar: 3.2, beats: 8, chords: [[0, 4, 7, 11], [5, 9, 12, 16], [2, 5, 9, 12], [7, 11, 14, 17]] },
-{ root: 246.94, bar: 4.4, beats: 3, chords: [[0, 4, 7], [-5, -1, 2], [-3, 0, 4], [-7, -3, 0]] },
-{ root: 329.63, bar: 4, beats: 4, chords: [[0, 3, 7], [-2, 2, 5], [-4, 0, 3], [-5, -2, 2]] }
-], tune = tunes[Math.floor(Math.random() * tunes.length)], bar = 0;
+{ name: 'calm piano', root: 261.63, bar: 4, beats: 4, chords: [[0, 4, 7], [-3, 0, 4], [-7, -3, 0], [-5, -1, 2]], pad: 'sine', mel: 'triangle', len: 1.6, bass: 0 },
+{ name: 'bright pop', root: 293.66, bar: 2.4, beats: 8, chords: [[0, 4, 7], [7, 11, 14], [-3, 0, 4], [5, 9, 12]], pad: 'triangle', mel: 'square', len: 0.35, bass: 1, arp: 1 },
+{ name: 'cinematic', root: 146.83, bar: 6, beats: 3, chords: [[0, 3, 7], [-4, 0, 3], [-9, -5, -2], [-2, 2, 5]], pad: 'sawtooth', mel: 'sine', len: 3, bass: 1 },
+{ name: 'jazzy', root: 196, bar: 3.2, beats: 6, chords: [[0, 4, 7, 11], [5, 9, 12, 16], [2, 5, 9, 12], [7, 11, 14, 17]], pad: 'sine', mel: 'triangle', len: 0.5, bass: 1 },
+{ name: 'music box', root: 523.25, bar: 3, beats: 6, chords: [[0, 4, 7], [-5, -1, 2], [-3, 0, 4], [-7, -3, 0]], pad: '', mel: 'sine', len: 1.2, bass: 0, arp: 1 },
+{ name: 'upbeat', root: 329.63, bar: 2, beats: 8, chords: [[0, 3, 7], [-2, 2, 5], [-4, 0, 3], [-5, -2, 2]], pad: 'triangle', mel: 'sawtooth', len: 0.25, bass: 1, arp: 1 }
+];
+// Each tune has its own instruments and speed, and a new tour never repeats the last tune (Nader: they played the same tune).
+var pick; do { pick = Math.floor(Math.random() * tunes.length); } while (pick === ptLast && tunes.length > 1);
+ptLast = pick;
+var tune = tunes[pick], bar = 0;
 function hz(st) { return tune.root * Math.pow(2, st / 12); }
 function note(f, t, len, vol, type) {
 var o = ptAudio.createOscillator(), g = ptAudio.createGain();
 o.type = type; o.frequency.value = f;
-g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + Math.min(0.8, len / 3)); g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + Math.min(0.8, len / 3, 0.02 + len / 10)); g.gain.exponentialRampToValueAtTime(0.0001, t + len);
 o.connect(g); g.connect(ptAudio.hnIn); o.start(t); o.stop(t + len + 0.1);
 }
 function play() {
 var t = ptAudio.currentTime + 0.05, c = tune.chords[bar++ % tune.chords.length], step = tune.bar / tune.beats;
-c.forEach(function (st) { note(hz(st), t, tune.bar + 0.2, 0.2, 'sine'); note(hz(st) / 2, t, tune.bar + 0.2, 0.1, 'triangle'); });
+if (tune.pad) c.forEach(function (st) { note(hz(st), t, tune.bar + 0.2, tune.pad === 'sawtooth' ? 0.08 : 0.18, tune.pad); });
+if (tune.bass) for (var k = 0; k < tune.beats; k += Math.max(1, tune.beats / 4)) note(hz(c[0]) / 2, t + k * step, step * 1.5, 0.22, 'triangle');
 for (var j = 0; j < tune.beats; j++) {
-if (j && Math.random() < 0.2) continue;
-note(hz(c[Math.floor(Math.random() * c.length)]) * (Math.random() < 0.25 ? 4 : 2), t + j * step, step * 1.6, 0.09, 'sine');
+if (j && !tune.arp && Math.random() < 0.2) continue;
+var st = tune.arp ? c[(j + (Math.random() < 0.3 ? 1 : 0)) % c.length] : c[Math.floor(Math.random() * c.length)];
+note(hz(st) * (Math.random() < 0.25 ? 4 : 2), t + j * step, Math.max(step * 0.9, tune.len), tune.mel === 'sine' || tune.mel === 'triangle' ? 0.1 : 0.04, tune.mel);
 }
 }
 play();
@@ -667,6 +673,7 @@ sh.style.display = '';
 var snd = sh.querySelector('.hn-pt-snd');
 snd.onclick = function () { ptMusic(!ptAudio || ptAudio.state !== 'running'); snd.innerHTML = ptAudio && ptAudio.state === 'running' ? '&#9835; Music on' : '&#9835; Music off'; };
 snd.innerHTML = '&#9835; Music on';
+ptMusic(false);
 ptMusic(true);
 show(0);
 auto();
