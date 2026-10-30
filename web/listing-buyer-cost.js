@@ -588,73 +588,19 @@ if (t < 1) requestAnimationFrame(step);
 // Ask the photo server for the 4K (3840px wide) copy instead of the card's 600px one (Nader 2026-10-30); if the server has none, the
 // original address is used. The server never sends more pixels than the listing photo itself has.
 function ptBig(u) { return /\/\/img\.chime\.me\//.test(u) ? u.replace(/\/w\d+_(original_)/, '/w3840_$1') : u; }
-// Soft background music for the Photo tour (Nader 2026-10-30). The page makes it itself (gentle chords and a slow bell melody), so there is
-// no music file and no copyright. It starts with the tour (the visitor's click allows sound), the Music button turns it off and on, and it
+// Photo tour music (Nader 2026-10-30): six real upbeat pop songs from Pixabay (free for business use, no credit needed), saved next to this
+// script in music/. Each tour plays one at random, never the last one played, looping softly. The Music button turns it off and on, and it
 // stops when the window closes.
-var ptAudio = null, ptLoop = null, ptLast = -1;
+var PT_SONGS = 6, ptAudio = null, ptLast = -1, ptOn = false;
 function ptMusic(on) {
-var AC = window.AudioContext || window.webkitAudioContext;
-if (!on) { clearInterval(ptLoop); ptLoop = null; if (ptAudio) ptAudio.suspend(); return; }
-if (!AC) return;
-if (!ptAudio) {
-ptAudio = new AC();
-var out = ptAudio.createGain(); out.gain.value = 0.18;
-var lp = ptAudio.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 9000;
-lp.connect(out); out.connect(ptAudio.destination); ptAudio.hnIn = lp;
-}
-ptAudio.resume();
-if (ptLoop) return;
-// Six upbeat tunes (Nader 2026-10-30: the calm ones were boring): drums (kick, clap, hi-hat), a bouncy bass and a catchy riff, about
-// 110-128 beats a minute. Each tour picks one at random, never the last one played. Chords are semitones above the tune's root; a riff
-// step names a chord note (0-2, 3 = root an octave up) or null for a rest, and the last bar of every four plays a random fill.
-var tunes = [
-{ root: 261.63, bar: 1.9, chords: [[0, 4, 7], [7, 11, 14], [-3, 0, 4], [5, 9, 12]], riff: [3, null, 2, 3, null, 2, 1, 2], lead: 'square', kick: [0, 3, 4] },
-{ root: 293.66, bar: 2, chords: [[0, 3, 7], [-4, 0, 3], [-9, -5, -2], [-2, 2, 5]], riff: [0, 2, 3, 2, null, 3, 2, 1], lead: 'sawtooth', kick: [0, 4, 6] },
-{ root: 220, bar: 1.88, chords: [[0, 4, 7], [5, 9, 12], [7, 11, 14], [5, 9, 12]], riff: [2, 2, null, 3, 2, null, 1, 0], lead: 'square', kick: [0, 2, 4, 6] },
-{ root: 246.94, bar: 2.1, chords: [[0, 3, 7], [-2, 2, 5], [-4, 0, 3], [-5, -1, 2]], riff: [3, 2, 1, null, 3, 2, 1, 2], lead: 'triangle', kick: [0, 3, 4, 7] },
-{ root: 196, bar: 1.95, chords: [[0, 4, 7], [-3, 0, 4], [5, 9, 12], [7, 11, 14]], riff: [0, null, 1, 2, 3, null, 2, null], lead: 'sawtooth', kick: [0, 4] },
-{ root: 329.63, bar: 2, chords: [[0, 4, 7], [-5, -1, 2], [-3, 0, 4], [-7, -3, 0]], riff: [1, 2, 3, null, 2, 1, 0, null], lead: 'square', kick: [0, 3, 6] }
-];
-var pick; do { pick = Math.floor(Math.random() * tunes.length); } while (pick === ptLast && tunes.length > 1);
-ptLast = pick;
-var tune = tunes[pick], bar = 0, noise = ptAudio.createBuffer(1, ptAudio.sampleRate * 0.3, ptAudio.sampleRate), nd = noise.getChannelData(0);
-for (var n = 0; n < nd.length; n++) nd[n] = Math.random() * 2 - 1;
-function hz(st) { return tune.root * Math.pow(2, st / 12); }
-function note(f, t, len, vol, type) {
-var o = ptAudio.createOscillator(), g = ptAudio.createGain();
-o.type = type; o.frequency.value = f;
-g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + len);
-o.connect(g); g.connect(ptAudio.hnIn); o.start(t); o.stop(t + len + 0.05);
-}
-function kick(t) {
-var o = ptAudio.createOscillator(), g = ptAudio.createGain();
-o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.15);
-g.gain.setValueAtTime(0.9, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
-o.connect(g); g.connect(ptAudio.hnIn); o.start(t); o.stop(t + 0.32);
-}
-function hiss(t, len, vol, freq) {
-var src = ptAudio.createBufferSource(), f = ptAudio.createBiquadFilter(), g = ptAudio.createGain();
-src.buffer = noise; f.type = 'highpass'; f.frequency.value = freq;
-g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + len);
-src.connect(f); f.connect(g); g.connect(ptAudio.hnIn); src.start(t); src.stop(t + len + 0.02);
-}
-function play() {
-var t = ptAudio.currentTime + 0.05, c = tune.chords[bar % tune.chords.length], step = tune.bar / 8, fill = bar % 4 === 3;
-bar++;
-function tone(k) { return k === 3 ? c[0] + 12 : c[k]; }
-c.forEach(function (st) { note(hz(st), t, step * 1.5, 0.05, 'triangle'); note(hz(st), t + step * 4, step * 1.5, 0.05, 'triangle'); });
-for (var j = 0; j < 8; j++) {
-var at = t + j * step;
-hiss(at, j % 2 ? 0.04 : 0.06, j % 2 ? 0.08 : 0.12, 7000);
-if (tune.kick.indexOf(j) >= 0) kick(at);
-if (j === 2 || j === 6) hiss(at, 0.18, 0.35, 1500);
-if (j !== 1 && j !== 5) note(hz(c[0]) / (j % 2 ? 1 : 2), at, step * 0.9, 0.22, 'sawtooth');
-var r = fill ? (Math.random() < 0.8 ? Math.floor(Math.random() * 4) : null) : tune.riff[j];
-if (r !== null) note(hz(tone(r)) * 2, at, step * 0.8, tune.lead === 'triangle' ? 0.12 : 0.05, tune.lead);
-}
-}
-play();
-ptLoop = setInterval(play, tune.bar * 1000);
+if (!on) { ptOn = false; if (ptAudio) ptAudio.pause(); return; }
+if (ptOn) return;
+ptOn = true;
+var n; do { n = 1 + Math.floor(Math.random() * PT_SONGS); } while (n === ptLast && PT_SONGS > 1);
+ptLast = n;
+if (!ptAudio) { ptAudio = new Audio(); ptAudio.loop = true; ptAudio.volume = 0.5; }
+ptAudio.src = 'https://nbakhoum84.github.io/mytest/music/tour' + n + '.mp3';
+var p = ptAudio.play(); if (p && p.catch) p.catch(function () { ptOn = false; var b = document.querySelector('#hn-vt-modal .hn-pt-snd'); if (b) b.innerHTML = '&#9835; Music off'; });
 }
 function openPhotos(btn) {
 openTour('about:blank');
@@ -689,7 +635,7 @@ function auto() { clearInterval(ptTimer); ptTimer = setInterval(function () { if
 fr[0].className = fr[1].className = 'hn-pt-frame';
 sh.style.display = '';
 var snd = sh.querySelector('.hn-pt-snd');
-snd.onclick = function () { ptMusic(!ptAudio || ptAudio.state !== 'running'); snd.innerHTML = ptAudio && ptAudio.state === 'running' ? '&#9835; Music on' : '&#9835; Music off'; };
+snd.onclick = function () { ptMusic(!ptOn); snd.innerHTML = ptOn ? '&#9835; Music on' : '&#9835; Music off'; };
 snd.innerHTML = '&#9835; Music on';
 ptMusic(false);
 ptMusic(true);
