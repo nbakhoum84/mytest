@@ -604,7 +604,17 @@ lp.connect(out); out.connect(ptAudio.destination); ptAudio.hnIn = lp;
 }
 ptAudio.resume();
 if (ptLoop) return;
-var chords = [[261.63, 329.63, 392], [220, 261.63, 329.63], [174.61, 220, 261.63], [196, 246.94, 293.66]], bar = 0;
+// Six tunes (Nader 2026-10-30: more random music). Each tour picks one at random, and its bell melody is new every time: each beat plays a
+// random note of the current chord (sometimes an octave up, sometimes a rest). Chords are semitones above the tune's root note.
+var tunes = [
+{ root: 261.63, bar: 4, beats: 4, chords: [[0, 4, 7], [-3, 0, 4], [-7, -3, 0], [-5, -1, 2]] },
+{ root: 293.66, bar: 3.6, beats: 6, chords: [[0, 4, 7], [5, 9, 12], [-3, 0, 4], [-5, -1, 2]] },
+{ root: 220, bar: 4.8, beats: 4, chords: [[0, 3, 7], [-4, 0, 3], [-9, -5, -2], [-2, 2, 5]] },
+{ root: 196, bar: 3.2, beats: 8, chords: [[0, 4, 7, 11], [5, 9, 12, 16], [2, 5, 9, 12], [7, 11, 14, 17]] },
+{ root: 246.94, bar: 4.4, beats: 3, chords: [[0, 4, 7], [-5, -1, 2], [-3, 0, 4], [-7, -3, 0]] },
+{ root: 329.63, bar: 4, beats: 4, chords: [[0, 3, 7], [-2, 2, 5], [-4, 0, 3], [-5, -2, 2]] }
+], tune = tunes[Math.floor(Math.random() * tunes.length)], bar = 0;
+function hz(st) { return tune.root * Math.pow(2, st / 12); }
 function note(f, t, len, vol, type) {
 var o = ptAudio.createOscillator(), g = ptAudio.createGain();
 o.type = type; o.frequency.value = f;
@@ -612,12 +622,15 @@ g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + Math.min(0.
 o.connect(g); g.connect(ptAudio.hnIn); o.start(t); o.stop(t + len + 0.1);
 }
 function play() {
-var t = ptAudio.currentTime + 0.05, c = chords[bar++ % 4];
-c.forEach(function (f) { note(f, t, 4.2, 0.22, 'sine'); note(f / 2, t, 4.2, 0.12, 'triangle'); });
-[0, 1, 2, 1].forEach(function (k, j) { note(c[k] * 2, t + j, 1.6, 0.1, 'sine'); });
+var t = ptAudio.currentTime + 0.05, c = tune.chords[bar++ % tune.chords.length], step = tune.bar / tune.beats;
+c.forEach(function (st) { note(hz(st), t, tune.bar + 0.2, 0.2, 'sine'); note(hz(st) / 2, t, tune.bar + 0.2, 0.1, 'triangle'); });
+for (var j = 0; j < tune.beats; j++) {
+if (j && Math.random() < 0.2) continue;
+note(hz(c[Math.floor(Math.random() * c.length)]) * (Math.random() < 0.25 ? 4 : 2), t + j * step, step * 1.6, 0.09, 'sine');
+}
 }
 play();
-ptLoop = setInterval(play, 4000);
+ptLoop = setInterval(play, tune.bar * 1000);
 }
 function openPhotos(btn) {
 openTour('about:blank');
