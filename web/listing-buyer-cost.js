@@ -1132,3 +1132,28 @@ lastUrl = location.href;
 if (route()) later();
 }, 1000);
 })();
+
+// Home-page "Get the home-nader app" card (built by hn.js): make its button and QR code open https://home-nader.com/app even when a
+// browser or Lofty still serves an older cached hn.js. On the /app page itself the card is removed (it would only link back to the page).
+(function () {
+var APP = 'https://home-nader.com/app';
+var Q = '8tyikf,4j722p,6gmsm5,6gugrh,6gj8f1,4izxoh,8tz2pr,13itc,775eg7,6rcze8,6ecdzj,qlscb,4o9h3i,6wbum5,4qzzur,if7ka,4o8jeo,7zj21o,54rppb,gm6jo,3bsusr,6erq4g,4sy7wf,4qttmp,3bp4yl,47fm1p,6zvq71,m2u69,59erun'.split(','), P = '';
+Q.forEach(function (s, y) { var v = parseInt(s, 36), x = 0, a; for (; x < 29; x++) if (v >> x & 1) { a = x; while (x < 29 && v >> x & 1) x++; P += 'M' + a + ' ' + y + 'h' + (x - a) + 'v1h' + (a - x) + 'z'; } });
+function fix() {
+var onApp = /^\/app\/?$/i.test(location.pathname);
+[].forEach.call(document.querySelectorAll('#hg, .hn-app'), function (card) {
+if (onApp) { card.style.display = 'none'; return; }
+[].forEach.call(card.querySelectorAll('a[href]'), function (a) {
+if (/Open the app/i.test(a.textContent) && a.getAttribute('href') !== APP) a.setAttribute('href', APP);
+});
+var path = card.querySelector('svg path');
+if (path && path.getAttribute('d') !== P) path.setAttribute('d', P);
+});
+}
+var t;
+function later() { clearTimeout(t); t = setTimeout(fix, 150); }
+if (typeof document !== 'undefined' && document.body) {
+fix();
+new MutationObserver(later).observe(document.body, { childList: true, subtree: true });
+}
+})();
