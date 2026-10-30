@@ -339,6 +339,43 @@ CONFIGS['surrey'] = dict(
   ],
   take=(f"Surrey is really several communities under one name. City Centre is going vertical, while Cloverdale still has a smaller{NH}town feel. As an engineer, I find the SkyTrain extension interesting to track, since transit access shapes how people choose between town centres. I help my clients figure out which version of Surrey actually fits what they're looking for."),
 )
+CONFIGS['vancouver'] = dict(
+  label='Vancouver', page='vancouver-listings', hero_word='Homes',
+  hero_h2='Vancouver Homes for Sale – Condos, Townhomes &amp; Character Homes',
+  nearby=[('/burnaby-listings', 'Burnaby homes for sale'), ('/vancouver-presales', 'Vancouver presales'), ('/vancouver-sold-listings', 'recently sold Vancouver homes')],
+  life_h2='Why Vancouver? Parks, Transit &amp; the Waterfront',
+  life_sub=f"Vancouver is the region's largest and most varied market, with a neighbourhood for many kinds of buyers.",
+  areas=["White Rock", "Surrey", "South Surrey", "Vancouver", "Richmond", "Burnaby", "New Westminster", "Coquitlam", "Port Coquitlam", "Port Moody", "Delta", "Langley", "Abbotsford"],
+  agent_cities='White Rock, Surrey, South Surrey, Vancouver, Richmond, Burnaby, New Westminster, Coquitlam, Port Coquitlam, Port Moody, Delta, Langley and Abbotsford',
+  sub=(f"Vancouver is British Columbia's most populous city and the anchor of the region that shares its name, though the provincial capital is Victoria. The city wraps around Stanley Park and is served by the Expo, Millennium, and Canada Line SkyTrain routes, plus the SeaBus across Burrard Inlet. With hundreds of active listings, prices range widely, from a studio condo to a westside estate. Whether you're after a <strong>condo in Yaletown</strong>, a <strong>character home in Kitsilano</strong>, or a <strong>townhome on the East Side</strong>, Vancouver has almost every kind of property."),
+  faq=[
+   ("Is Vancouver a good place to invest in real estate right now?", f"Vancouver's market varies enormously by neighbourhood and property type, and a downtown condo and a westside house behave very differently. Talk to Nader for a current{NH}day read on a specific neighbourhood or building."),
+   ("What's the property transfer tax on a home in Vancouver, BC?", f"BC's property transfer tax is 1% on the first $200,000, 2% from $200,000 to $2,000,000, 3% from $2,000,000 to $3,000,000, and a further 2% (5% total) on any residential value above $3,000,000. Vancouver's range spans from condos, some near the first{NH}time buyer exemption threshold (up to an $835,000 fair market value), to houses well above it. The City of Vancouver also charges its own Empty Homes Tax on vacant properties, which is worth understanding before buying an investment property here, so check the City's site for the current rate. Use the <a href=\"/cash-to-close\">Cash to Close calculator</a> for an exact number."),
+   ("Is Vancouver the capital of British Columbia?", f"No. Although Vancouver is the province's largest city, Victoria, on Vancouver Island, is the provincial capital."),
+   ("What SkyTrain lines run through Vancouver?", f"The Expo Line, Millennium Line, and Canada Line all run through the city. The SeaBus also crosses Burrard Inlet to the North Shore."),
+   ("What school district serves Vancouver?", f"Public schools fall under the Vancouver School Board, School District 39."),
+   ("What areas does this Vancouver search cover?", f"This search covers Vancouver, including Kitsilano, Mount Pleasant, Yaletown, the West End, Commercial Drive, and Dunbar, a sample of the city's many distinct neighbourhoods."),
+  ],
+  neigh=[
+   ("Kitsilano", f"A beach{NH}adjacent neighbourhood of character homes and lowrise apartments, popular for its walkable streets."),
+   ("Mount Pleasant", f"An East Side neighbourhood with a mix of older industrial buildings, townhomes and midrise condos."),
+   ("Yaletown", f"A former warehouse district now filled with highrise condos, steps from False Creek and the Canada Line."),
+   ("West End", f"A dense, walkable neighbourhood wrapped around Stanley Park and English Bay."),
+   ("Commercial Drive", f"A long{NH}standing East Side strip known for its independent shops, cafés, and character homes."),
+   ("Dunbar", f"A quieter, family{NH}oriented westside neighbourhood of character and newer homes, near UBC."),
+  ],
+  life=[
+   ("🌲", "Stanley Park", f"A large urban park at the edge of downtown, with a seawall path around its shoreline."),
+   ("🚇", "Three SkyTrain Lines Plus SeaBus", f"The Expo, Millennium, and Canada Lines all run through Vancouver, alongside the SeaBus across Burrard Inlet."),
+   ("🏛️", "Not the Capital", f"Vancouver is BC's most populous city, but Victoria, on Vancouver Island, is the provincial capital."),
+   ("🎓", "UBC &amp; SFU", f"UBC's Point Grey campus sits beside the city, and SFU has a downtown campus at Harbour Centre."),
+   ("🛶", "Granville Island", f"A public market and artisan district under the Granville Street Bridge, reachable by small passenger ferry across False Creek."),
+   ("🏔️", "2010 Winter Olympics Legacy", f"Vancouver co{NH}hosted the 2010 Winter Olympics, leaving behind the Olympic Village on the False Creek waterfront."),
+   ("📚", "Schools", f"Public schools fall under the <strong>Vancouver School Board, School District 39</strong>."),
+   ("💰", "The Empty Homes Tax", f"The City of Vancouver charges its own Empty Homes Tax on vacant properties."),
+  ],
+  take=(f"Vancouver is a market where almost every rule has an exception. A westside character home and a downtown highrise condo are barely the same asset class, even though both are technically Vancouver real estate. As an engineer, I find the older housing stock in neighbourhoods like Kitsilano and Dunbar the most interesting to dig into, since wiring, plumbing and drainage in older homes deserve a close look. I help my clients read a building's real condition, not just its address."),
+)
 def plain(s): return re.sub(r'<[^>]+>', '', s).replace(NH, '-').replace('&amp;', '&')
 def render(key):
     c = CONFIGS[key]; L = c['label']; PAGE = c['page']
