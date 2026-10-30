@@ -1,0 +1,23 @@
+/* Coquitlam market snapshot: fills the numbers marked data-wr from the monthly data feed.
+   If the feed or this script is unavailable, the numbers written in the page HTML stay. */
+(function () {
+  var FEED = 'https://raw.githubusercontent.com/nbakhoum84/mytest/claude/practical-wozniak-s89tdk/tools/market-refresh/data/coquitlam/market.json';
+  var ok = /^[A-Za-z0-9$,.\- ]{1,40}$/;
+  function fill(d) {
+    var tries = 0;
+    (function go() {
+      var els = document.querySelectorAll('[data-wr]');
+      if (els.length) {
+        for (var i = 0; i < els.length; i++) {
+          var v = d[els[i].getAttribute('data-wr')];
+          if (v !== undefined && ok.test(String(v))) els[i].textContent = String(v);
+        }
+      } else if (tries++ < 40) { setTimeout(go, 250); }
+    })();
+  }
+  function run() {
+    if (!window.fetch) return;
+    fetch(FEED).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { if (d) fill(d); }).catch(function () {});
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+})();
