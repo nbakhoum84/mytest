@@ -564,6 +564,27 @@ document.documentElement.style.overflow = 'hidden';
 }
 // Photo tour: the listing's photos one after another (4s each, arrows or swipe to move), in the same window as the Virtual Tour.
 var ptTimer = null;
+// The zoom/pan is run from the script, frame by frame, with !important: the website's own styles stopped the CSS animation (Nader 2026-10-30).
+// Each move: start, middle, end as [scale, x %, y %, turn deg]; every photo zooms in and back out (or out and back in).
+var PT_MOVES = [
+[[1, 6, 0, -6], [1.4, 0, 0, 0], [1.1, -6, 0, 6]],
+[[1.4, 4, 3, 0], [1, 0, 0, 0], [1.35, -4, -3, 0]],
+[[1, -6, 0, 6], [1.4, 0, 0, 0], [1.1, 6, 0, -6]],
+[[1.4, -4, 3, 0], [1, 0, 0, 0], [1.35, 4, -3, 0]]
+];
+function ptMove(im, mv) {
+var t0 = performance.now(), dur = 5600;
+im.hnMove = t0;
+(function step(now) {
+if (im.hnMove !== t0) return;
+var t = Math.min(1, (now - t0) / dur), a = t < .5 ? mv[0] : mv[1], b = t < .5 ? mv[1] : mv[2], u = t < .5 ? t * 2 : t * 2 - 1;
+u = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+var v = a.map(function (x, k) { return x + (b[k] - x) * u; });
+im.style.setProperty('transform', 'perspective(900px) translate(' + v[1] + '%,' + v[2] + '%) scale(' + v[0] + ') rotateY(' + v[3] + 'deg)', 'important');
+im.style.setProperty('transform-origin', 'center center', 'important');
+if (t < 1) requestAnimationFrame(step);
+})(t0);
+}
 function openPhotos(btn) {
 openTour('about:blank');
 var m = document.getElementById('hn-vt-modal'), box = m.querySelector('.hn-vt-box');
@@ -585,7 +606,7 @@ function show(n) {
 i = (n + pics.length) % pics.length;
 var inF = fr[1 - cur], outF = fr[cur], im = inF.querySelector('img');
 im.src = pics[i];
-im.style.animation = 'none'; void im.offsetWidth; im.style.animation = 'hnPtPan' + (i % 4) + ' 5.6s ease-in-out forwards';
+ptMove(im, PT_MOVES[i % 4]);
 inF.className = 'hn-pt-frame hn-pt-ready'; void inF.offsetWidth; inF.className = 'hn-pt-frame hn-pt-in';
 if (outF.classList.contains('hn-pt-in')) outF.className = 'hn-pt-frame hn-pt-out';
 cur = 1 - cur;
@@ -1102,9 +1123,9 @@ style.textContent =
 '#hn-vt-modal .hn-pt-show{overflow:hidden}' +
 '#hn-vt-modal .hn-pt-frame{position:absolute;inset:0;overflow:hidden;transform:translateX(100%);visibility:hidden}' +
 '#hn-vt-modal .hn-pt-frame.hn-pt-ready{visibility:visible;transition:none}' +
-'#hn-vt-modal .hn-pt-frame.hn-pt-in{visibility:visible;transform:translateX(0);transition:transform 1s cubic-bezier(.6,0,.2,1)}' +
-'#hn-vt-modal .hn-pt-frame.hn-pt-out{visibility:visible;transform:translateX(-100%);transition:transform 1s cubic-bezier(.6,0,.2,1)}' +
-'#hn-vt-modal .hn-pt-frame img{width:100%;height:100%;object-fit:cover;display:block}' +
+'#hn-vt-modal .hn-pt-frame.hn-pt-in{visibility:visible;transform:translateX(0);transition:transform 1s cubic-bezier(.6,0,.2,1)!important}' +
+'#hn-vt-modal .hn-pt-frame.hn-pt-out{visibility:visible;transform:translateX(-100%);transition:transform 1s cubic-bezier(.6,0,.2,1)!important}' +
+'#hn-vt-modal .hn-pt-frame img{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;display:block!important;transition:none!important;will-change:transform}' +
 '#hn-vt-modal .hn-pt-show::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 120px rgba(0,0,0,.55)}' +
 '#hn-vt-modal .hn-pt-bar{position:absolute;left:0;right:0;top:0;height:3px;background:rgba(255,255,255,.25);z-index:2}' +
 '#hn-vt-modal .hn-pt-bar i{display:block;height:100%;width:0;background:#dbae77}' +
