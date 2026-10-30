@@ -155,6 +155,43 @@ CONFIGS['newwestminster'] = dict(
   ],
   take=(f"New Westminster rewards buyers who think in blocks, not kilometres. It's one of the smallest cities in the region, and the difference between the Quay and Queens Park can be a short walk and a completely different kind of property. As an engineer, I pay close attention to building age here, since the mix of century{NH}old character homes and newer highrises means due diligence looks different street to street. I help my clients match the neighbourhood's age profile to what they're actually buying."),
 )
+
+CONFIGS['portcoquitlam'] = dict(
+  label='Port Coquitlam', page='port-coquitlam-listings', hero_word='Homes',
+  nearby=[('/coquitlam-listings', 'Coquitlam homes for sale'), ('/port-coquitlam-presales', 'Port Coquitlam presales'), ('/port-coquitlam-sold-listings', 'recently sold Port Coquitlam homes')],
+  life_h2='Why Port Coquitlam? Trails, Rivers &amp; a Quieter Pace',
+  life_sub=f"PoCo has a more small{NH}town feel than much of the Tri{NH}Cities.",
+  areas=["White Rock", "Surrey", "Burnaby", "New Westminster", "Coquitlam", "Port Coquitlam", "Delta", "Langley", "Abbotsford"],
+  agent_cities='White Rock, Surrey, Burnaby, New Westminster, Coquitlam, Port Coquitlam, Delta, Langley and Abbotsford',
+  sub=(f"Port Coquitlam, known locally as PoCo, is a smaller, family{NH}oriented city at the meeting of the Coquitlam, Fraser and Pitt Rivers, best known for the Traboulay PoCo Trail that loops the entire city and for being where Terry Fox grew up. Unlike neighbouring Coquitlam, PoCo isn't on the SkyTrain network, though Port Coquitlam station connects commuters to downtown Vancouver on the West Coast Express. With hundreds of active listings, prices range widely, from a townhome to a larger family home. Whether you're after a <strong>starter townhome in Oxford Heights</strong>, a <strong>character home downtown</strong>, or a <strong>house near the PoCo Trail</strong>, Port Coquitlam keeps things a little quieter than its neighbours."),
+  faq=[
+   ("Is Port Coquitlam a good place to invest in real estate right now?", f"Port Coquitlam is a smaller, family{NH}oriented market without direct SkyTrain access, and its growth has been more gradual than neighbouring Coquitlam's. Talk to Nader for a current{NH}day read on a specific street."),
+   ("What's the property transfer tax on a home in Port Coquitlam, BC?", f"BC's property transfer tax is 1% on the first $200,000, 2% from $200,000 to $2,000,000, 3% from $2,000,000 to $3,000,000, and a further 2% (5% total) on any residential value above $3,000,000. Some Port Coquitlam purchases, especially townhomes and condos, can qualify for the first{NH}time buyer exemption up to an $835,000 fair market value. Use the <a href=\"/cash-to-close\">Cash to Close calculator</a> for an exact number."),
+   ("How far is Port Coquitlam from downtown Vancouver?", f"By car it's roughly 30 to 60 minutes via the Lougheed Highway or Highway 1, depending on traffic. The West Coast Express from Port Coquitlam station takes roughly 40 to 50 minutes and currently runs on weekday rush{NH}hour schedules, so check TransLink for the latest times."),
+   ("Is Port Coquitlam on the SkyTrain?", f"No. Unlike Coquitlam, Port Coquitlam isn't directly served by SkyTrain. Port Coquitlam station on the West Coast Express and bus connections to nearby Coquitlam stations are the main transit options."),
+   ("What school district serves Port Coquitlam?", f"Public schools fall under School District 43, the same district that covers Coquitlam and Port Moody."),
+   ("What areas does this Port Coquitlam search cover?", f"This search covers Port Coquitlam, including Downtown, Oxford Heights, Citadel Heights, Riverside, Mary Hill, and Birchland Manor."),
+  ],
+  neigh=[
+   ("Downtown PoCo", f"The city's historic core along Shaughnessy Street, with older character homes and an easy walk to Gates Park."),
+   ("Oxford Heights", f"A hillside neighbourhood of established homes and townhomes."),
+   ("Citadel Heights", f"A newer, family{NH}oriented area close to the Coquitlam River and the PoCo Trail."),
+   ("Riverside", f"Bordering the Fraser and Pitt Rivers, mixing industrial land with pockets of newer residential development."),
+   ("Mary Hill", f"An established, hillside neighbourhood with larger lots and views across the valley."),
+   ("Birchland Manor", f"A quiet, established neighbourhood of single{NH}family homes near Birchland Elementary and Hyde Creek."),
+  ],
+  life=[
+   ("🏃", "The PoCo Trail", f"The Traboulay PoCo Trail loops the entire city, giving residents a long, continuous trail system close to home."),
+   ("🏅", "Terry Fox's Hometown", f"Port Coquitlam is where Terry Fox grew up, and the city has honoured him with a secondary school and a library."),
+   ("🚆", "West Coast Express", f"Port Coquitlam station connects commuters to downtown Vancouver on the West Coast Express commuter rail."),
+   ("🎆", "Gates Park", f"Gates Park, close to Downtown PoCo, is a popular spot for community events and everyday outdoor time."),
+   ("🌳", "Rivers &amp; Parks", f"The Coquitlam, Fraser and Pitt Rivers frame the city, with parks and trails running along them."),
+   ("🏘️", "A Quieter Pace", f"PoCo has a more small{NH}town feel than much of the Tri{NH}Cities."),
+   ("📚", "Schools", f"Public schools fall under <strong>School District 43</strong>, shared with Coquitlam and Port Moody."),
+   ("🚗", "Highway Access", f"The Lougheed Highway and Mary Hill Bypass connect PoCo to the rest of the Tri{NH}Cities and beyond."),
+  ],
+  take=(f"Port Coquitlam doesn't try to be Coquitlam, and that's exactly its appeal. It's the quieter, more family{NH}oriented option in the Tri{NH}Cities, without the highrise pace next door. As an engineer, I look closely at the age and condition of a home, which matters most in established neighbourhoods like these. I help my clients weigh that quieter pace against the shorter commute options in neighbouring Coquitlam."),
+)
 def plain(s): return re.sub(r'<[^>]+>', '', s).replace(NH, '-').replace('&amp;', '&')
 def render(key):
     c = CONFIGS[key]; L = c['label']; PAGE = c['page']

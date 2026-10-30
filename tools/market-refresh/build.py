@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Rebuilds the Market snapshot section of a city page from data, and writes that city's live data feed.
 
-Usage: python3 build.py [whiterock|abbotsford|burnaby|coquitlam|delta|langley|newwestminster] [YYYY-MM-DD] [--force]      (default city: whiterock; date: today)
+Usage: python3 build.py [whiterock|abbotsford|burnaby|coquitlam|delta|langley|newwestminster|portcoquitlam] [YYYY-MM-DD] [--force]      (default city: whiterock; date: today)
 
 * The page's Lofty Page Script (<city>-market-loader.txt) loads the feed from GitHub and fills in every number marked data-wr,
   so after the one-time paste, monthly updates need no Lofty login and no re-paste.
@@ -24,6 +24,7 @@ CITIES = {
   'delta':      dict(label='Delta', dir='delta', slug='delta', page='delta-listings', loader='delta-market-loader.txt', other=None),
   'langley':    dict(label='Langley', dir='langley', slug='langley', page='langley-listings', loader='langley-market-loader.txt', other=None),
   'newwestminster': dict(label='New Westminster', dir='newwestminster', slug='new-westminster', page='new-westminster-listings', loader='new-westminster-market-loader.txt', other=None),
+  'portcoquitlam': dict(label='Port Coquitlam', dir='portcoquitlam', slug='port-coquitlam', page='port-coquitlam-listings', loader='port-coquitlam-market-loader.txt', other=None),
 }
 args = [a for a in sys.argv[1:] if not a.startswith('--')]; force = '--force' in sys.argv
 city_key = 'whiterock'
@@ -154,7 +155,7 @@ section = f'''  <!-- MARKET SNAPSHOT: baseline counted {asof}; sales {w1} to {w2
       <div class="wr-neigh wr-types" role="list">
 {cards}      </div>
 
-      <p class="wr-marketnote">About {S('perMonth', round(nS / 12))} homes sold per month over the past year, and half of them sold within {S('domMedian', domAll)} days of listing. {labels[topk]} are the bulk of the market: {S(topk + '.sold', N(Ttop["s"]))} of the {S('sold12', N(nS))} sales and {S(topk + '.active', N(Ttop["a"]))} of the {S('active', N(nA))} active listings, with a median sold price of {S(topk + '.medianSold', M(Ttop["ms"]))} against {S(cmpk + '.medianSold', M(Tc["ms"]))} for {labels[cmpk].lower()}. At the past year's sales pace, today's active listings equal roughly {S('supplyAll', round(sup(nA, nS)))} months of supply overall, about {S('supplyCondo', round(sup(c["a"], c["s"])))} months for condos and about {S('supplySfh', round(sup(f["a"], f["s"])))} for single&#8209;family homes. Supply above about six months generally favours buyers. Want numbers for a specific street or building? <a href="/sell">Ask for a free home valuation</a>, or see the <a href="/latest-market-updates">latest market updates</a> and <a href="/{C['slug']}-sold-listings">recently sold {L} homes</a>.</p>
+      <p class="wr-marketnote">About {S('perMonth', round(nS / 12))} homes sold per month over the past year, and half of them sold within {S('domMedian', domAll)} days of listing. {labels[topk]} {'are the bulk of the market' if (Ttop['s'] / nS if nS else 0) >= 0.55 else 'are the largest group'}: {S(topk + '.sold', N(Ttop["s"]))} of the {S('sold12', N(nS))} sales and {S(topk + '.active', N(Ttop["a"]))} of the {S('active', N(nA))} active listings, with a median sold price of {S(topk + '.medianSold', M(Ttop["ms"]))} against {S(cmpk + '.medianSold', M(Tc["ms"]))} for {labels[cmpk].lower()}. At the past year's sales pace, today's active listings equal roughly {S('supplyAll', round(sup(nA, nS)))} months of supply overall, about {S('supplyCondo', round(sup(c["a"], c["s"])))} months for condos and about {S('supplySfh', round(sup(f["a"], f["s"])))} for single&#8209;family homes. Supply above about six months generally favours buyers. Want numbers for a specific street or building? <a href="/sell">Ask for a free home valuation</a>, or see the <a href="/latest-market-updates">latest market updates</a> and <a href="/{C['slug']}-sold-listings">recently sold {L} homes</a>.</p>
       <p class="wr-src">Source: MLS&reg; listing and sold data shown on this site. Active listings were counted on {S('asOf', asof)}. Sales cover {S('windowStart', w1)} to {S('windowEnd', w2)} because sales from the most recent weeks are not yet fully reported. Days to sell is the time from listing date to sale date. The cards leave out {S('otherActive', N(otherA))} other active listings and {S('otherSales', N(otherS))} other sales ({other_text}).</p>
     </div>
   </section>
