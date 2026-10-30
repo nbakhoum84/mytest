@@ -6,7 +6,10 @@
 <style>
   /* The site-wide "Get the home-nader app" card would just link back to this page, so hide it here (this block is only on /app). */
   .hn-app,.hn-app-card-wide{display:none!important}
-  #hn-app-frame{display:block;width:100%;max-width:520px;height:1450px;margin:0 auto;border:0;border-radius:0;background:transparent;overflow:hidden}
+  #hn-app-frame{display:block;width:100%;max-width:520px;height:800px;margin:0 auto;border:0;border-radius:0;background:transparent;overflow:hidden}
+  #hn-app-wrap{position:relative;max-width:520px;margin:0 auto;min-height:200px}
+  #hn-app-wrap::before{content:'Loading the app\2026';position:absolute;left:0;right:0;top:80px;text-align:center;font-size:15px;opacity:.6}
+  #hn-app-wrap #hn-app-frame{position:relative}
   #hn-app-open{max-width:520px;margin:16px auto 24px;padding:0 20px;font-size:15px;line-height:1.6;color:inherit}
   #hn-app-open h3{margin:0 0 12px;font-size:20px;font-weight:600;text-align:center;color:inherit}
   #hn-app-open details{margin:0 0 10px}
@@ -18,7 +21,7 @@
   #hn-app-open ol{margin:10px 0 0;padding:14px 16px 14px 36px;border:1px solid rgba(128,128,128,.3);border-radius:10px;background:rgba(128,128,128,.08);text-align:left}
   #hn-app-open li{margin:0 0 6px}
 </style>
-<iframe id="hn-app-frame" src="https://nbakhoum84.github.io/" title="home-nader app" scrolling="no" allow="clipboard-write; web-share"></iframe>
+<div id="hn-app-wrap"><iframe id="hn-app-frame" src="https://nbakhoum84.github.io/" title="home-nader app" scrolling="no" allow="clipboard-write; web-share"></iframe></div>
 <img src="x:" alt="" style="display:none" onerror="var s=document.createElement('script');s.src='https://nbakhoum84.github.io/embed-resize.js?v='+Math.floor(Date.now()/6e4);document.head.appendChild(s);this.remove()">
 <div id="hn-app-open">
   <h3>Install this app on your phone</h3>
