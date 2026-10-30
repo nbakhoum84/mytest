@@ -574,18 +574,26 @@ var sh = m.querySelector('.hn-pt-show');
 if (!sh) {
 sh = document.createElement('div');
 sh.className = 'hn-pt-show';
-sh.innerHTML = '<img alt=""><button type="button" class="hn-pt-prev" aria-label="Previous photo">&#8249;</button><button type="button" class="hn-pt-next" aria-label="Next photo">&#8250;</button><div class="hn-pt-foot"><span class="hn-pt-credit"></span><span class="hn-pt-count"></span></div>';
+sh.innerHTML = '<div class="hn-pt-frame"><img alt=""></div><div class="hn-pt-frame"><img alt=""></div><div class="hn-pt-bar"><i></i></div><div class="hn-pt-foot"><span class="hn-pt-credit"></span><span class="hn-pt-count"></span></div>';
 box.appendChild(sh);
 }
-var pics = btn.hnPhotos || [], i = 0, img = sh.querySelector('img');
+var pics = btn.hnPhotos || [], i = -1, fr = sh.querySelectorAll('.hn-pt-frame'), cur = 1;
 sh.querySelector('.hn-pt-credit').textContent = btn.hnCredit || '';
-// Each photo slowly pans and zooms while it's on screen (Nader asked for a 360 feel; flat photos can't turn into true 360, and the photo itself is never edited).
-function show(n) { i = (n + pics.length) % pics.length; img.src = pics[i]; img.style.animation = 'none'; void img.offsetWidth; img.style.animation = 'hnPtPan' + (i % 4) + ' 4.2s ease-in-out forwards'; sh.querySelector('.hn-pt-count').textContent = (i + 1) + ' / ' + pics.length; }
-function auto() { clearInterval(ptTimer); ptTimer = setInterval(function () { if (!m.classList.contains('hn-vt-on')) { clearInterval(ptTimer); return; } show(i + 1); }, 4000); }
-sh.onclick = function (e) { if (e.target.closest('.hn-pt-prev')) { show(i - 1); auto(); } else if (e.target.closest('.hn-pt-next')) { show(i + 1); auto(); } };
-var x0 = null;
-sh.ontouchstart = function (e) { x0 = e.touches[0].clientX; };
-sh.ontouchend = function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 40) { show(i + (dx < 0 ? 1 : -1)); auto(); } };
+// Plays by itself like a video (Nader 2026-10-30: no arrows): every 5s the next photo slides in from the right while the last one slides
+// out, and each photo slowly pans, zooms or turns while it's on screen. A thin bar along the top runs with each photo. Photos are never edited.
+function show(n) {
+i = (n + pics.length) % pics.length;
+var inF = fr[1 - cur], outF = fr[cur], im = inF.querySelector('img');
+im.src = pics[i];
+im.style.animation = 'none'; void im.offsetWidth; im.style.animation = 'hnPtPan' + (i % 4) + ' 5.6s linear forwards';
+inF.className = 'hn-pt-frame hn-pt-ready'; void inF.offsetWidth; inF.className = 'hn-pt-frame hn-pt-in';
+if (outF.classList.contains('hn-pt-in')) outF.className = 'hn-pt-frame hn-pt-out';
+cur = 1 - cur;
+var bar = sh.querySelector('.hn-pt-bar i'); bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = 'hnPtBar 5s linear forwards';
+sh.querySelector('.hn-pt-count').textContent = (i + 1) + ' / ' + pics.length;
+}
+function auto() { clearInterval(ptTimer); ptTimer = setInterval(function () { if (!m.classList.contains('hn-vt-on')) { clearInterval(ptTimer); return; } show(i + 1); }, 5000); }
+fr[0].className = fr[1].className = 'hn-pt-frame';
 sh.style.display = '';
 show(0);
 auto();
@@ -596,7 +604,7 @@ if (link && !btn.hnFull) {
 fetch(link, { credentials: 'include' }).then(function (r) { return r.text(); }).then(function (html) {
 var all = fullPhotos(html, pics);
 btn.hnFull = 1;
-if (all.length > pics.length) { var cur = pics[i]; btn.hnPhotos = pics = all; i = Math.max(0, all.indexOf(cur)); sh.querySelector('.hn-pt-count').textContent = (i + 1) + ' / ' + pics.length; }
+if (all.length > pics.length) { var now = pics[i]; btn.hnPhotos = pics = all; i = Math.max(0, all.indexOf(now)); sh.querySelector('.hn-pt-count').textContent = (i + 1) + ' / ' + pics.length; }
 }).catch(function () {});
 }
 }
@@ -1092,16 +1100,22 @@ style.textContent =
 '#hn-vt-modal iframe{flex:1 1 auto;min-height:0;width:100%;border:0;background:#000}' +
 '#hn-vt-modal .hn-pt-show{position:relative;flex:1 1 auto;min-height:0;background:#000;display:flex;align-items:center;justify-content:center}' +
 '#hn-vt-modal .hn-pt-show{overflow:hidden}' +
-'#hn-vt-modal .hn-pt-show img{width:100%;height:100%;object-fit:cover;display:block}' +
+'#hn-vt-modal .hn-pt-frame{position:absolute;inset:0;overflow:hidden;transform:translateX(100%);visibility:hidden}' +
+'#hn-vt-modal .hn-pt-frame.hn-pt-ready{visibility:visible;transition:none}' +
+'#hn-vt-modal .hn-pt-frame.hn-pt-in{visibility:visible;transform:translateX(0);transition:transform 1s cubic-bezier(.6,0,.2,1)}' +
+'#hn-vt-modal .hn-pt-frame.hn-pt-out{visibility:visible;transform:translateX(-100%);transition:transform 1s cubic-bezier(.6,0,.2,1)}' +
+'#hn-vt-modal .hn-pt-frame img{width:100%;height:100%;object-fit:cover;display:block}' +
+'#hn-vt-modal .hn-pt-show::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 120px rgba(0,0,0,.55)}' +
+'#hn-vt-modal .hn-pt-bar{position:absolute;left:0;right:0;top:0;height:3px;background:rgba(255,255,255,.25);z-index:2}' +
+'#hn-vt-modal .hn-pt-bar i{display:block;height:100%;width:0;background:#dbae77}' +
+'@keyframes hnPtBar{from{width:0}to{width:100%}}' +
 '#hn-vt-modal .hn-pt-show{perspective:900px}' +
-'@keyframes hnPtPan0{0%{opacity:0;transform:scale(1.25) translateX(8%) rotateY(-8deg)}12%{opacity:1}100%{opacity:1;transform:scale(1.25) translateX(-8%) rotateY(8deg)}}' +
-'@keyframes hnPtPan1{0%{opacity:0;transform:scale(1) }12%{opacity:1}100%{opacity:1;transform:scale(1.3) translate(-4%,-3%)}}' +
-'@keyframes hnPtPan2{0%{opacity:0;transform:scale(1.25) translateX(-8%) rotateY(8deg)}12%{opacity:1}100%{opacity:1;transform:scale(1.25) translateX(8%) rotateY(-8deg)}}' +
-'@keyframes hnPtPan3{0%{opacity:0;transform:scale(1.3) translate(4%,3%)}12%{opacity:1}100%{opacity:1;transform:scale(1)}}' +
-'@media (prefers-reduced-motion:reduce){#hn-vt-modal .hn-pt-show img{animation:none!important}}' +
-'#hn-vt-modal .hn-pt-prev,#hn-vt-modal .hn-pt-next{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.85);color:#111;font-size:30px;line-height:40px;cursor:pointer}' +
-'#hn-vt-modal .hn-pt-prev{left:12px}#hn-vt-modal .hn-pt-next{right:12px}' +
-'#hn-vt-modal .hn-pt-foot{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;gap:12px;padding:8px 14px;background:rgba(0,0,0,.6);color:#fff;font-family:inherit;font-size:13px}' +
+'@keyframes hnPtPan0{0%{transform:scale(1.25) translateX(8%) rotateY(-8deg)}100%{transform:scale(1.25) translateX(-8%) rotateY(8deg)}}' +
+'@keyframes hnPtPan1{0%{transform:scale(1) }100%{transform:scale(1.3) translate(-4%,-3%)}}' +
+'@keyframes hnPtPan2{0%{transform:scale(1.25) translateX(-8%) rotateY(8deg)}100%{transform:scale(1.25) translateX(8%) rotateY(-8deg)}}' +
+'@keyframes hnPtPan3{0%{transform:scale(1.3) translate(4%,3%)}100%{transform:scale(1)}}' +
+'@media (prefers-reduced-motion:reduce){#hn-vt-modal .hn-pt-frame img{animation:none!important}}' +
+'#hn-vt-modal .hn-pt-foot{z-index:2;position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;gap:12px;padding:8px 14px;background:rgba(0,0,0,.6);color:#fff;font-family:inherit;font-size:13px}' +
 // Commercial list cards (Nader 2026-10-27): Lofty pins the "Listed by" row to the card bottom (absolute), so with our buttons it covered
 // the description. Put it back in the normal flow, under the description, on cards that have our buttons.
 '.house-list-item.template1 .detail:has(.hn-bcp-row) .property{position:static!important}' +
