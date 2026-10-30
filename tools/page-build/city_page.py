@@ -73,7 +73,7 @@ CONFIGS['delta'] = dict(
    ("🌉", "Highway 91 &amp; the Alex Fraser Bridge", f"Delta's northern edge crosses the Fraser River to New Westminster and Surrey via <strong>Highway 91</strong> and the Alex Fraser Bridge."),
    ("🚗", "Highway 99 &amp; the Massey Tunnel", f"The <strong>George Massey Tunnel</strong> carries Highway 99 under the Fraser River toward Richmond and Vancouver."),
    ("🦢", "Reifel Bird Sanctuary", f"Westham Island's <strong>George C. Reifel Migratory Bird Sanctuary</strong> draws birdwatchers, especially for the winter snow goose migration."),
-   ("⛳", "Golf{NH}Course Living", f"<strong>Tsawwassen Springs</strong> is a master{NH}planned golf{NH}course community at the edge of Tsawwassen."),
+   ("⛳", f"Golf{NH}Course Living", f"<strong>Tsawwassen Springs</strong> is a master{NH}planned golf{NH}course community at the edge of Tsawwassen."),
    ("🌾", "Burns Bog &amp; Farmland", f"Delta protects roughly 40 square kilometres of wetland at <strong>Burns Bog</strong> alongside extensive Agricultural Land Reserve farmland."),
    ("🏖️", "Boundary Bay &amp; Centennial Beach", f"Long, flat beaches make South Delta a favourite for beach walks."),
    ("🏫", "A School District of Its Own", f"<strong>School District 37</strong> serves Delta on its own, without sharing boundaries with a neighbouring city."),
@@ -111,7 +111,7 @@ CONFIGS['langley'] = dict(
    ("🎓", "Two Universities", f"<strong>Trinity Western University</strong> and a <strong>Kwantlen Polytechnic University</strong> campus both call Langley home."),
    ("🏗️", "Still Being Built", f"Willoughby is one of the region's major areas of master{NH}planned new construction."),
    ("🌳", "Parks &amp; Farmland", f"From Campbell Valley Regional Park to working farms, Langley has plenty of open space."),
-   ("🛍️", "Walking{NH}Village Shopping", f"Fort Langley's village core and Willoughby Town Centre offer two very different retail experiences."),
+   ("🛍️", f"Walking{NH}Village Shopping", f"Fort Langley's village core and Willoughby Town Centre offer two very different retail experiences."),
    ("📚", "Schools", f"Public schools fall under <strong>School District 35 Langley</strong>."),
    ("🚗", "Highway 1 Corridor", f"Langley sits directly on the Trans{NH}Canada Highway, midway between Abbotsford and Surrey."),
   ],
@@ -191,6 +191,43 @@ CONFIGS['portcoquitlam'] = dict(
    ("🚗", "Highway Access", f"The Lougheed Highway and Mary Hill Bypass connect PoCo to the rest of the Tri{NH}Cities and beyond."),
   ],
   take=(f"Port Coquitlam doesn't try to be Coquitlam, and that's exactly its appeal. It's the quieter, more family{NH}oriented option in the Tri{NH}Cities, without the highrise pace next door. As an engineer, I look closely at the age and condition of a home, which matters most in established neighbourhoods like these. I help my clients weigh that quieter pace against the shorter commute options in neighbouring Coquitlam."),
+)
+
+CONFIGS['portmoody'] = dict(
+  label='Port Moody', page='port-moody-listings', hero_word='Homes',
+  nearby=[('/coquitlam-listings', 'Coquitlam homes for sale'), ('/port-moody-presales', 'Port Moody presales'), ('/port-moody-sold-listings', 'recently sold Port Moody homes')],
+  life_h2='Why Port Moody? The Arts, the Water &amp; Brewers Row',
+  life_sub=f"Port Moody stays small by geography, and that's part of what makes it distinct.",
+  areas=["White Rock", "Surrey", "Burnaby", "New Westminster", "Coquitlam", "Port Coquitlam", "Port Moody", "Delta", "Langley", "Abbotsford"],
+  agent_cities='White Rock, Surrey, Burnaby, New Westminster, Coquitlam, Port Coquitlam, Port Moody, Delta, Langley and Abbotsford',
+  sub=(f"Port Moody is the smallest of the Tri{NH}Cities and was the original terminus of the Canadian Pacific Railway before the line was extended on to Vancouver. Today it's known as the City of the Arts, with a waterfront centred on Rocky Point Park and a cluster of craft breweries along what locals call Brewers Row. The Millennium Line's Evergreen extension serves the city at Moody Centre and Inlet Centre stations. With hundreds of active listings, prices range widely, from a condo near the station to a home on Heritage Mountain. Whether you're after a <strong>condo near Moody Centre</strong>, a <strong>family home on Heritage Mountain</strong>, or a <strong>character property near Rocky Point</strong>, Port Moody stays smaller by design."),
+  faq=[
+   ("Is Port Moody a good place to invest in real estate right now?", f"Port Moody's small size can limit new supply compared to its Tri{NH}Cities neighbours, and SkyTrain access near Moody Centre and Inlet Centre stations is a draw for many buyers. Talk to Nader for a current{NH}day read on a specific street."),
+   ("What's the property transfer tax on a home in Port Moody, BC?", f"BC's property transfer tax is 1% on the first $200,000, 2% from $200,000 to $2,000,000, 3% from $2,000,000 to $3,000,000, and a further 2% (5% total) on any residential value above $3,000,000. Port Moody's range spans from condos near Moody Centre station, some near the first{NH}time buyer exemption threshold (up to an $835,000 fair market value), to larger homes on Heritage Mountain that sit above it. Use the <a href=\"/cash-to-close\">Cash to Close calculator</a> for an exact number."),
+   ("How far is Port Moody from downtown Vancouver?", f"By car it's roughly 30 to 60 minutes depending on traffic. By transit, take the Millennium Line SkyTrain from Moody Centre or Inlet Centre station, with a transfer for downtown, so check TransLink for current trip times."),
+   ("Is Port Moody part of Metro Vancouver?", f"Yes. Port Moody is a member municipality of the Metro Vancouver Regional District, and the smallest of the three Tri{NH}Cities municipalities (Coquitlam, Port Coquitlam, and Port Moody) by both population and land area."),
+   ("What school district serves Port Moody?", f"Public schools fall under School District 43, the same district that covers Coquitlam and Port Coquitlam."),
+   ("What areas does this Port Moody search cover?", f"This search covers Port Moody, including Moody Centre, Heritage Mountain, Glenayre, College Park, Ioco, and Newport Village."),
+  ],
+  neigh=[
+   ("Moody Centre", f"The city's SkyTrain{NH}connected core, walkable to Rocky Point Park and the Brewers Row craft breweries."),
+   ("Heritage Mountain", f"A hillside, family{NH}oriented neighbourhood of larger homes with views."),
+   ("Glenayre", f"An established neighbourhood on quiet, tree{NH}lined streets."),
+   ("College Park", f"A mix of townhomes and single{NH}family houses near Eagle Ridge Hospital and Port Moody's schools."),
+   ("Ioco", f"A small, close{NH}knit community on the city's eastern edge, near Buntzen Lake and Belcarra Regional Park."),
+   ("Newport Village", f"A walkable, mixed{NH}use pocket of condos and townhomes built around shops and a public plaza."),
+  ],
+  life=[
+   ("🎨", "The City of the Arts", f"Port Moody's official tagline reflects its arts centre, galleries, and community theatre."),
+   ("🚂", "Where the Railway Almost Ended", f"Port Moody was the original terminus of the Canadian Pacific Railway before it was extended to Vancouver."),
+   ("🍺", "Brewers Row", f"A cluster of craft breweries along Murray Street has made Port Moody a regional destination for beer lovers."),
+   ("🌊", "Rocky Point Park", f"A waterfront park with a pier and splash pad on Burrard Inlet."),
+   ("🚇", "Two SkyTrain Stations", f"Moody Centre and Inlet Centre both sit on the Evergreen extension of the Millennium Line."),
+   ("🌲", "Buntzen Lake Nearby", f"Just outside the city, Buntzen Lake and Belcarra Regional Park are popular for hiking and swimming."),
+   ("📚", "Schools", f"Public schools fall under <strong>School District 43</strong>, shared with Coquitlam and Port Coquitlam."),
+   ("🏘️", f"The Smallest of the Tri{NH}Cities", f"Port Moody's small size and hillside geography keep it more compact than its Tri{NH}Cities neighbours."),
+  ],
+  take=(f"Port Moody is proof that small can still be desirable. It's the smallest of the Tri{NH}Cities, but the combination of Rocky Point Park, the breweries, and two SkyTrain stations punches above its size. As an engineer, I pay attention to the hillside grading on Heritage Mountain and Glenayre in particular, since slope affects everything from drainage to renovation cost. I help my clients understand what they're taking on before they fall for the view."),
 )
 def plain(s): return re.sub(r'<[^>]+>', '', s).replace(NH, '-').replace('&amp;', '&')
 def render(key):
@@ -316,6 +353,9 @@ def render(key):
   <p class="wr-legal">IDX information is provided exclusively for consumers' personal, non{NH}commercial use and may not be used for any purpose other than to identify prospective properties consumers may be interested in purchasing. Information deemed reliable but not guaranteed to be accurate. Listing information updated daily.</p>
 </div>
 '''
+    leftovers = re.findall(r'\{[A-Za-z_][A-Za-z_0-9]*\}', re.sub(r'<style>.*?</style>', '', page, flags=re.S))
+    if leftovers:
+        raise SystemExit(f'ERROR: unrendered placeholder(s) in {PAGE}: {sorted(set(leftovers))}. A string is probably missing its f prefix.')
     open(f'{ROOT}/{PAGE}-improved.html', 'w', encoding='utf8').write(page)
     print('wrote', f'{PAGE}-improved.html', len(page), 'chars | neighbourhood marker:', '<section class="wr-block" aria-labelledby="wr-neigh-title">' in page, '| list elements:', len(re.findall(r'<(?:ul|ol|li)[ >]', page)))
 if __name__ == '__main__': render(sys.argv[1])
