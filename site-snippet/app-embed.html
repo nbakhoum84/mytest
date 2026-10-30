@@ -1,7 +1,7 @@
 <!-- home-nader app: paste into an HTML block on the Lofty page home-nader.com/app.
      Shows the installable app (hosted at https://nbakhoum84.github.io/) in the page with no frame. The frame grows to the
-     app's full height, so the page itself scrolls. The resizing code is in the global script hn.js (nbakhoum84.github.io),
-     because scripts inside a Lofty HTML block do not run on the published page.
+     app's full height, so the page itself scrolls. The script below does the resizing in the Lofty editor; on the published page
+     the same code runs from the global script hn.js (nbakhoum84.github.io), because scripts in an HTML block do not run there.
      Set the page's Lofty slug to "app". -->
 <style>
   /* The site-wide "Get the home-nader app" card would just link back to this page, so hide it here (this block is only on /app). */
@@ -12,3 +12,28 @@
 </style>
 <iframe id="hn-app-frame" src="https://nbakhoum84.github.io/" title="home-nader app" scrolling="no" allow="clipboard-write; web-share"></iframe>
 <p id="hn-app-open">Want it on your phone? <a href="https://nbakhoum84.github.io/" target="_blank" rel="noopener">Open the full app</a>, then iPhone: Share &rarr; Add to Home Screen. Android: &#8942; menu &rarr; Install app.</p>
+<script>
+(function () {
+  var f = document.getElementById('hn-app-frame');
+  if (!f) return;
+  var O = 'https://nbakhoum84.github.io';
+  function view() {
+    if (!f.contentWindow) return;
+    var r = f.getBoundingClientRect(), n = 0, e = document.elementFromPoint(innerWidth / 2, 4);
+    for (; e && e !== document.body; e = e.parentElement) {
+      var p = getComputedStyle(e).position;
+      if (p === 'fixed' || p === 'sticky') { n = e.getBoundingClientRect().bottom; break; }
+    }
+    f.contentWindow.postMessage({ type: 'hn-view', top: Math.max(0, n - r.top) }, O);
+  }
+  addEventListener('scroll', view, { passive: true });
+  addEventListener('resize', view);
+  addEventListener('message', function (e) {
+    if (e.origin !== O || e.source !== f.contentWindow || !e.data) return;
+    var d = e.data;
+    if (d.type === 'hn-app-height' && d.height > 0) { f.style.height = Math.ceil(d.height) + 'px'; view(); }
+    if (d.type === 'hn-app-ready') view();
+    if (d.type === 'hn-app-top') { var r = f.getBoundingClientRect(); if (r.top < 0) scrollTo({ top: pageYOffset + r.top - 80 }); }
+  });
+})();
+</script>
