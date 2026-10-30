@@ -479,27 +479,67 @@ if (top && !document.querySelector('.hn-bcp')) mark(top, parsePrice(priceText(to
 tours();
 }
 
-// Residential cards (Nader 2026-10-27): a "Virtual Tour" button beside the price / open house badge when the listing has a tour.
+// Residential cards (Nader 2026-10-27): a "Virtual Tour" button right of the "Est. $/mo" button (laptops and phones), when the listing has a tour.
 // The site keeps the tour address in each card's data (house.link; null when there's none), the same one the listing page's
 // Virtual Tour button opens. Cards are reused when results are paged or sorted, so the button is re-checked on every scan.
+var CUBE = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l8.5 4.75v9.5L12 21.5l-8.5-4.75v-9.5z"/><path d="M3.5 7.25L12 12l8.5-4.75M12 12v9.5"/></svg>';
 function tours() {
 if (DETAIL) return;
 var cards = document.querySelectorAll('li.house-grid-item');
 for (var i = 0; i < cards.length; i++) {
 var vc = cards[i].__vueParentComponent, h = vc && vc.props && vc.props.house;
 var url = h && typeof h.link === 'string' && /^https?:\/\//i.test(h.link.trim()) ? h.link.trim() : '';
-var box = cards[i].querySelector('.house-price-container');
+var mtg = cards[i].querySelector('.hn-bcp-mtg');
 var b = cards[i].querySelector('.hn-vt-btn');
-if (!url || !box) { if (b) b.remove(); continue; }
+if (!url || !mtg) { if (b) b.remove(); continue; }
 if (!b) {
 b = document.createElement('button');
 b.type = 'button';
 b.className = 'hn-vt-btn';
-b.textContent = 'Virtual Tour';
+b.innerHTML = CUBE + '<span>Virtual Tour</span>';
 }
-if (b.parentElement !== box) box.appendChild(b);
+// The Est. button and the tour button share one line, so the tour button never drops below on a narrow phone card.
+var pair = mtg.parentElement;
+if (!pair.classList.contains('hn-vt-pair')) { pair = document.createElement('div'); pair.className = 'hn-vt-pair'; mtg.parentElement.insertBefore(pair, mtg); pair.appendChild(mtg); }
+if (b.parentElement !== pair || b.previousElementSibling !== mtg) pair.appendChild(b);
 b.setAttribute('data-hn-vt', url);
 }
+}
+// The tour plays in a window on the page, not a new tab (Nader 2026-10-28). YouTube links are switched to their embeddable form.
+function tourSrc(u) {
+var m = u.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{6,})/i);
+return m ? 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1&rel=0' : u;
+}
+function openTour(url) {
+var m = document.getElementById('hn-vt-modal');
+if (!m) {
+m = document.createElement('div');
+m.id = 'hn-vt-modal';
+m.innerHTML = '<div class="hn-vt-box" role="dialog" aria-modal="true" aria-label="Virtual Tour"><div class="hn-vt-bar"><b>Virtual Tour</b>' +
+'<a class="hn-vt-new" target="_blank" rel="noopener">Not loading? Open it here</a><button type="button" class="hn-vt-x" aria-label="Close">&times;</button></div>' +
+'<iframe title="Virtual Tour" allow="autoplay; fullscreen; xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen></iframe></div>';
+document.body.appendChild(m);
+m.addEventListener('click', function (e) {
+if (e.target === m || e.target.closest('.hn-vt-x')) { m.classList.remove('hn-vt-on'); m.querySelector('iframe').src = 'about:blank'; document.documentElement.style.overflow = ''; }
+});
+}
+m.querySelector('.hn-vt-new').href = url;
+m.querySelector('iframe').src = tourSrc(url);
+m.classList.add('hn-vt-on');
+document.documentElement.style.overflow = 'hidden';
+}
+// Signed-out visitors (new leads) get the registration form first; the tour opens once they have registered (Nader 2026-10-27).
+var tourWait = null;
+function tourAfterSignup(url, data) {
+clearInterval(tourWait);
+if (!registerLink()) { track('hn_virtual_tour_open', data); openTour(url); return; }
+track('hn_virtual_tour_signup_prompt', data);
+openRegistration();
+var n = 0;
+tourWait = setInterval(function () {
+if (++n > 900) { clearInterval(tourWait); return; }
+if (!registerLink()) { clearInterval(tourWait); track('hn_virtual_tour_open', data); openTour(url); }
+}, 1000);
 }
 
 // For troubleshooting on the live site: type hnBuyerCostDebug() in the browser console to see every price it found and why it was used or skipped.
@@ -856,12 +896,14 @@ m.querySelector('.hn-bcp-x').focus();
 function onClick(e) {
 var vt = e.target && e.target.closest && e.target.closest('.hn-vt-btn');
 if (vt) {
-// The card is one big link to the listing; the tour opens in a new tab instead.
+// The card is one big link to the listing; the tour opens in a window on the page instead.
 e.preventDefault();
 e.stopPropagation();
-window.open(vt.getAttribute('data-hn-vt'), '_blank', 'noopener');
-track('hn_virtual_tour_click', { button_text: 'Virtual Tour', tour_url: vt.getAttribute('data-hn-vt'), listing_url: ((cardOf(vt) || vt).querySelector('a[href*="/listing-detail/"]') || {}).href || '',
-utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaign: 'virtual_tour', utm_content: 'residential' });
+if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+var vtData = { button_text: 'Virtual Tour', tour_url: vt.getAttribute('data-hn-vt'), listing_url: ((cardOf(vt) || vt).querySelector('a[href*="/listing-detail/"]') || {}).href || '',
+utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaign: 'virtual_tour', utm_content: 'residential' };
+track('hn_virtual_tour_click', vtData);
+tourAfterSignup(vt.getAttribute('data-hn-vt'), vtData);
 return;
 }
 var el = e.target && e.target.closest && e.target.closest('.hn-bcp,.hn-bcp-btn,.hn-bcp-hint');
@@ -934,8 +976,17 @@ var style = document.createElement('style');
 style.textContent =
 '.hn-bcp{cursor:pointer!important}' +
 '.hn-bcp-row{display:flex!important;flex-wrap:wrap;gap:8px;margin:8px 0 6px!important}' +
-'button.hn-vt-btn{display:inline-flex!important;align-items:center!important;gap:6px!important;margin:0 0 0 10px!important;padding:3px 10px!important;border:0!important;border-radius:6px!important;background:#1e8e3e!important;color:#fff!important;font-family:inherit!important;font-weight:700!important;font-size:14px!important;line-height:1.4!important;white-space:nowrap!important;cursor:pointer!important;vertical-align:middle!important;text-transform:none!important}' +
-'.hn-vt-btn::before{content:"\\25B6";font-size:10px}' +
+// Virtual Tour button: same look as the listing page's Virtual Tour button (cube icon, blue on light blue), same height as the green buttons.
+'.hn-vt-pair{display:flex!important;align-items:stretch!important;gap:8px!important}' +
+'button.hn-vt-btn{display:flex!important;align-items:center!important;gap:6px!important;width:max-content!important;margin:0!important;padding:6px 12px!important;border:0!important;border-radius:8px!important;background:#eef3fd!important;color:#3a6fd8!important;font-family:inherit!important;font-weight:600!important;font-size:14px!important;line-height:1.2!important;white-space:nowrap!important;cursor:pointer!important;text-transform:none!important;box-shadow:none!important}' +
+'button.hn-vt-btn:hover{background:#dfe9fb!important}' +
+'#hn-vt-modal{display:none;position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:16px}' +
+'#hn-vt-modal.hn-vt-on{display:flex}' +
+'#hn-vt-modal .hn-vt-box{width:1000px;max-width:100%;height:min(700px,100%);background:#fff;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.35)}' +
+'#hn-vt-modal .hn-vt-bar{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 18px;border-bottom:1px solid #e6e2d9;background:#f4f2ee;color:#111;font-family:inherit;font-size:15px}' +
+'#hn-vt-modal .hn-vt-new{flex:1;text-align:right;color:#555;font-size:13px;text-decoration:underline}' +
+'#hn-vt-modal .hn-vt-x{border:0;background:none;font-size:28px;line-height:1;padding:0 6px;cursor:pointer;color:#111}' +
+'#hn-vt-modal iframe{flex:1 1 auto;min-height:0;width:100%;border:0;background:#000}' +
 // Commercial list cards (Nader 2026-10-27): Lofty pins the "Listed by" row to the card bottom (absolute), so with our buttons it covered
 // the description. Put it back in the normal flow, under the description, on cards that have our buttons.
 '.house-list-item.template1 .detail:has(.hn-bcp-row) .property{position:static!important}' +
@@ -973,7 +1024,7 @@ document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && do
 // Listing cards load and change as visitors search, filter and page, so rescan (throttled) when the page changes.
 // Our own buttons coming and going are ignored, so adding them never triggers another round.
 var timer = null;
-function ours(n) { return n.nodeType === 1 && (n.classList.contains('hn-bcp-row') || n.id === 'hn-bcp-modal'); }
+function ours(n) { return n.nodeType === 1 && (n.classList.contains('hn-bcp-row') || n.id === 'hn-bcp-modal' || n.id === 'hn-vt-modal'); }
 new MutationObserver(function (list) {
 if (timer) return;
 for (var i = 0; i < list.length; i++) {
