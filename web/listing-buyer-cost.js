@@ -532,7 +532,7 @@ document.documentElement.style.overflow = 'hidden';
 var tourWait = null;
 function tourAfterSignup(url, data) {
 clearInterval(tourWait);
-if (!registerLink()) { track('hn_virtual_tour_open', data); openTour(url); return; }
+if (!registerLink() || fromEmail()) { track('hn_virtual_tour_open', data); openTour(url); return; }
 track('hn_virtual_tour_signup_prompt', data);
 openRegistration();
 var n = 0;
@@ -584,6 +584,14 @@ var viaSite = false;
 try { viaSite = naderExp('event', name, Object.assign({ send_to: 'G-N9D71PSLL6' }, data)); } catch (e) {}
 try { if (typeof window.gtag === 'function') window.gtag('event', name, Object.assign({ send_to: viaSite ? 'G-50BX6YT24D' : ['G-N9D71PSLL6', 'G-50BX6YT24D'] }, data)); } catch (e) {}
 try { if (typeof window.fbq === 'function') window.fbq('trackCustom', name, data); } catch (e) {}
+}
+// Leads who arrive from Nader's Lofty emails (links carry ?hnlead=1) are already leads: they never get the registration form (Nader 2026-10-30).
+// Remembered in this browser so later visits skip it too.
+function fromEmail() {
+try {
+if (/[?&]hnlead=1/.test(location.search)) localStorage.setItem('hnLead', '1');
+return localStorage.getItem('hnLead') === '1';
+} catch (e) { return /[?&]hnlead=1/.test(location.search); }
 }
 // The site's own "Register/Sign In" link; it's only there while the visitor isn't signed in.
 // On phones it sits in the collapsed menu (hidden), so hidden links count too. Picks the innermost match,
@@ -702,6 +710,7 @@ var MENU = 'button[aria-label*="menu" i],[class*="hamburger" i],[class*="menu-to
 // Open the site's registration form. If it hasn't appeared a moment later (phones: link hidden in the menu, or only drawn
 // once the menu is open), open the menu and try the link again.
 function openRegistration() {
+if (fromEmail()) { dbg('visitor came from one of Nader\'s emails: no registration form'); return; }
 var reg = registerLink();
 dbg('register link: ' + describe(reg));
 // No longer puts back what the site stored after the form is closed (watchRegistration): that made the site forget the visitor had
