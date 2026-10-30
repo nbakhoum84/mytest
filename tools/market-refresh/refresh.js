@@ -1,5 +1,5 @@
 // Collects White Rock active listings and sold records from the live site (Lofty feeds).
-// Usage: node refresh.js [whiterock|abbotsford|burnaby|coquitlam]      (default whiterock; needs Playwright)
+// Usage: node refresh.js [whiterock|abbotsford|burnaby|coquitlam|delta]      (default whiterock; needs Playwright)
 const { chromium } = require('playwright');
 const fs = require('fs'); const path = require('path');
 const CITIES = {
@@ -7,9 +7,10 @@ const CITIES = {
   abbotsford: { page: '/abbotsford-listings', snap: 'Abbotsford,%20BC', dir: 'abbotsford' },
   burnaby:    { page: '/burnaby-listings',    snap: 'Burnaby,%20BC',    dir: 'burnaby' },
   coquitlam:  { page: '/coquitlam-listings',  snap: 'Coquitlam,%20BC',  dir: 'coquitlam' },
+  delta:      { page: '/delta-listings',      snap: 'Delta,%20BC',      dir: 'delta' },
 };
 const CITY = CITIES[process.argv[2] || 'whiterock'];
-if (!CITY) { console.error('unknown city; use whiterock, abbotsford, burnaby or coquitlam'); process.exit(1); }
+if (!CITY) { console.error('unknown city; use whiterock, abbotsford, burnaby, coquitlam or delta'); process.exit(1); }
 const OUT = path.join(__dirname, 'data', CITY.dir);
 fs.mkdirSync(OUT, { recursive: true });
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
