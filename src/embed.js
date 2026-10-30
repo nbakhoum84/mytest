@@ -42,5 +42,20 @@ export function useEmbedded(tab) {
     if (embedded) window.parent.postMessage({ type: 'hn-app-top' }, '*');
   }, [embedded, tab]);
 
-  return embedded;
+  // The page tells us how far down the app its visible area starts, so the tab bar can stay in view while the page scrolls.
+  const [stickyTop, setStickyTop] = useState(0);
+  useEffect(() => {
+    if (!embedded) return undefined;
+    const onMsg = (e) => {
+      if (e.source !== window.parent || !e.data || e.data.type !== 'hn-view') return;
+      const root = document.getElementById('root');
+      const max = Math.max(0, (root ? root.getBoundingClientRect().height : 0) - 56);
+      setStickyTop(Math.min(Math.max(0, Math.round(e.data.top)), max));
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: 'hn-app-ready' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, [embedded]);
+
+  return { embedded, stickyTop };
 }

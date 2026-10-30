@@ -9,14 +9,27 @@
   #hn-app-open{text-align:center;font-size:14px;margin:12px 0 24px;color:inherit}
   #hn-app-open a{color:inherit;text-decoration:underline}
 </style>
-<iframe id="hn-app-frame" src="https://nbakhoum84.github.io/" title="home-nader app" scrolling="no" allow="clipboard-write"></iframe>
+<iframe id="hn-app-frame" src="https://nbakhoum84.github.io/" title="home-nader app" scrolling="no" allow="clipboard-write; web-share"></iframe>
 <p id="hn-app-open">Want it on your phone? <a href="https://nbakhoum84.github.io/" target="_blank" rel="noopener">Open the full app</a>, then iPhone: Share &rarr; Add to Home Screen. Android: &#8942; menu &rarr; Install app.</p>
 <script>
 (function () {
   var f = document.getElementById('hn-app-frame');
+  // Tell the app which part of it is on screen (below the site's sticky header), so its tab bar stays in view.
+  function view() {
+    if (!f.contentWindow) return;
+    var r = f.getBoundingClientRect(), inset = 0, el = document.elementFromPoint(innerWidth / 2, 4);
+    for (; el && el !== document.body; el = el.parentElement) {
+      var p = getComputedStyle(el).position;
+      if (p === 'fixed' || p === 'sticky') { inset = el.getBoundingClientRect().bottom; break; }
+    }
+    f.contentWindow.postMessage({ type: 'hn-view', top: Math.max(0, inset - r.top) }, 'https://nbakhoum84.github.io');
+  }
+  addEventListener('scroll', view, { passive: true });
+  addEventListener('resize', view);
   window.addEventListener('message', function (e) {
     if (e.origin !== 'https://nbakhoum84.github.io' || e.source !== f.contentWindow || !e.data) return;
-    if (e.data.type === 'hn-app-height' && e.data.height > 0) f.style.height = Math.ceil(e.data.height) + 'px';
+    if (e.data.type === 'hn-app-height' && e.data.height > 0) { f.style.height = Math.ceil(e.data.height) + 'px'; view(); }
+    if (e.data.type === 'hn-app-ready') view();
     if (e.data.type === 'hn-app-top') { var r = f.getBoundingClientRect(); if (r.top < 0) window.scrollTo({ top: window.pageYOffset + r.top - 80 }); }
   });
 })();
