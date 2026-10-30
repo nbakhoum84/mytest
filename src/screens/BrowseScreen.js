@@ -1,19 +1,6 @@
 import React, { useState } from 'react';
-import { FlatList, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { CATEGORIES, CITIES, COLORS } from '../config';
-
-// Opens the phone's share sheet for a listings page (Messages, WhatsApp, email and so on).
-function sharePage(title, url) {
-  Share.share({ title, message: `${title}: ${url}`, url }).catch(() => {});
-}
-
-function ShareBtn({ title, url }) {
-  return (
-    <TouchableOpacity onPress={() => sharePage(title, url)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={styles.share}>
-      <Text style={styles.shareText}>Share</Text>
-    </TouchableOpacity>
-  );
-}
 
 export default function BrowseScreen({ openWeb }) {
   const [category, setCategory] = useState(CATEGORIES[0]);
@@ -44,7 +31,6 @@ export default function BrowseScreen({ openWeb }) {
                   <Text style={styles.extraTitle}>{e.label}</Text>
                   <Text style={styles.extraDesc}>{e.desc}</Text>
                 </View>
-                <ShareBtn title={e.label} url={e.url} />
                 <Text style={styles.arrow}>›</Text>
               </TouchableOpacity>
             ))}
@@ -55,7 +41,6 @@ export default function BrowseScreen({ openWeb }) {
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.row} onPress={() => openWeb(category.url(item), `${item} · ${category.label}`)}>
             <Text style={[styles.rowText, { flex: 1 }]}>{item}</Text>
-            <ShareBtn title={`${item} · ${category.label}`} url={category.url(item)} />
             <Text style={styles.arrow}>›</Text>
           </TouchableOpacity>
         )}
@@ -80,7 +65,5 @@ const styles = StyleSheet.create({
   extraTitle: { fontSize: 16, fontWeight: '700', color: COLORS.text },
   extraDesc: { fontSize: 13, color: COLORS.muted, marginTop: 2 },
   sectionLabel: { fontSize: 13, fontWeight: '700', color: COLORS.muted, letterSpacing: 0.5, textTransform: 'uppercase', marginTop: 8 },
-  share: { paddingHorizontal: 10, paddingVertical: 2, marginRight: 6 },
-  shareText: { color: COLORS.accentDark, fontWeight: '600', fontSize: 14 },
   empty: { textAlign: 'center', color: COLORS.muted, marginTop: 24 },
 });
