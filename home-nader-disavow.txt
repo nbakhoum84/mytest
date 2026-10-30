@@ -1,0 +1,74 @@
+# Disavow file for home-nader.com
+# Built 2026-10-30 from the backlink index (61 referring domains). Upload at:
+#   https://search.google.com/search-console/disavow-links   (choose the home-nader.com property)
+#
+# Tier 1 below: domains with a spam score of 45 or more (scale 0-100). Many were first seen Aug-Oct 2026,
+# and many link with paid-link / PBN / Telegram link-farm anchor text. All are low-quality or unrelated sites
+# (URL shorteners, web directories, SEO tool pages, gambling, unrelated blogs).
+# Domains reviewed and deliberately NOT included are listed at the bottom as comments.
+
+domain:alljobs.info
+domain:anchorurl.cloud
+domain:archive-hu.com
+domain:australianwebdirectory.shop
+domain:bestdapachecker.store
+domain:betulcrime.com
+domain:betwinnermirror.com
+domain:booksreadr.org
+domain:bureatag.com
+domain:bye.fyi
+domain:clifflisting.com
+domain:cvillico.com
+domain:dbike-us.com
+domain:drjack.world
+domain:dupurgeniefr.com
+domain:fashionclothingnews.com
+domain:getwebsiteworth.com
+domain:ggmap.us.com
+domain:globalecommerce.org
+domain:homesforsaleoldgreenwichct.com
+domain:jake.eu
+domain:kernelpanicpodcast.com
+domain:m98ufa.com
+domain:musweb.org
+domain:onvaxs.com
+domain:pagesearch.net
+domain:plumeriamarketing.com
+domain:quero.party
+domain:quotesblom.com
+domain:read.org.in
+domain:ready.pro
+domain:sahammurah.com
+domain:seofrontpages.info
+domain:seonix.agency
+domain:sergechel.info
+domain:shortenurls.eu
+domain:simplewebdirectory.com
+domain:techbumppy.com
+domain:technicalseochecker.online
+domain:thcradar.com
+domain:thedocmag.com
+domain:theforbestimes.com
+domain:torun-stolarz.pl
+domain:uncledspizza.com
+domain:urls-shortener.eu
+domain:websiterace.com
+domain:ycm.info
+
+# ---- NOT disavowed: low spam score but spam-style anchor text. Check each site by hand, then add a 'domain:' line if it looks junk ----
+# seomuda.id
+# shoplogist.com
+# sisgroup.lk
+# xedulichdaklak.com
+
+# ---- NOT disavowed: look legitimate (spam score 0-5), keep ----
+# bcbizsales.ca
+# bcsales.ca
+# dekkerteam.com
+# egynet.ca
+# elfsight.com
+# kvtemplates.com
+# realtylink.org
+# sellwithscarlett.com
+# tomjahed.ca
+# vancouverbc.homes
