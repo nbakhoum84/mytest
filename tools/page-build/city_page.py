@@ -117,6 +117,44 @@ CONFIGS['langley'] = dict(
   ],
   take=(f"Langley is a market in two speeds: Willoughby is being built out almost block by block, while Fort Langley changes very little. As an engineer, I like watching how a new SkyTrain extension can reshape value along its corridor, and the question for any buyer is how much of that is already in today's prices. I help my clients figure out whether they're buying the neighbourhood as it is today, or the one it's about to become."),
 )
+
+CONFIGS['newwestminster'] = dict(
+  label='New Westminster', page='new-westminster-listings', hero_word='Homes',
+  hero_h2="New Westminster Homes for Sale: Condos, Townhomes &amp; Character Homes",
+  nearby=[('/burnaby-listings', 'Burnaby homes for sale'), ('/new-westminster-presales', 'New Westminster presales'), ('/new-westminster-sold-listings', 'recently sold New Westminster homes')],
+  life_h2='Why New Westminster? History, Transit &amp; the Waterfront',
+  life_sub=f"New Westminster fits a lot of history and transit into one of the region's smallest cities.",
+  areas=["White Rock", "Surrey", "Burnaby", "New Westminster", "Coquitlam", "Delta", "Langley", "Abbotsford"],
+  agent_cities='White Rock, Surrey, Burnaby, New Westminster, Coquitlam, Delta, Langley and Abbotsford',
+  sub=(f"New Westminster, known as the Royal City, was the original capital of the Colony of British Columbia before Victoria took over the role in 1868, and it's one of the smallest, most densely built cities in Metro Vancouver today. Both the Expo and Millennium SkyTrain lines serve it, with several stations packed into a compact city. With hundreds of active listings, prices range widely, from a Downtown condo to a character home in Queens Park. Whether you're after a <strong>highrise unit along the Quay</strong>, a <strong>heritage home in Queens Park</strong>, or a <strong>townhome in Sapperton</strong>, New West packs a lot into a small footprint."),
+  faq=[
+   ("Is New Westminster a good place to invest in real estate right now?", f"New Westminster's small footprint and SkyTrain access tend to support steady demand, particularly for condos near the Quay and Uptown. Talk to Nader for a current{NH}day read on a specific building or street."),
+   ("What's the property transfer tax on a home in New Westminster, BC?", f"BC's property transfer tax is 1% on the first $200,000, 2% from $200,000 to $2,000,000, 3% from $2,000,000 to $3,000,000, and a further 2% (5% total) on any residential value above $3,000,000. New Westminster's smaller average price points mean some purchases, especially condos, can qualify for the first{NH}time buyer exemption up to an $835,000 fair market value. Use the <a href=\"/cash-to-close\">Cash to Close calculator</a> for an exact number."),
+   ("How far is New Westminster from downtown Vancouver?", f"About 25 to 40 minutes by SkyTrain on the Expo Line, or roughly 25 to 40 minutes by car depending on traffic."),
+   ("Is New Westminster part of Metro Vancouver?", f"Yes. New Westminster is a member municipality of the Metro Vancouver Regional District and one of the smallest by land area."),
+   ("What school district and post-secondary options serve New Westminster?", f"Public schools fall under School District 40. The city is also home to Douglas College's New Westminster campus."),
+   ("What areas does this New Westminster search cover?", f"This search covers New Westminster, including Downtown/The Quay, Queens Park, Sapperton, Uptown, Glenbrooke North, and Queensborough."),
+  ],
+  neigh=[
+   ("Downtown / The Quay", f"New Westminster's SkyTrain{NH}connected waterfront core, with a boardwalk market and a fast{NH}growing cluster of highrise condos along the Fraser River."),
+   ("Queens Park", f"The city's best{NH}known heritage neighbourhood, full of character homes around Queen's Park itself."),
+   ("Sapperton", f"Home to Royal Columbian Hospital, with a growing mix of townhomes and low{NH}rise condos near the Braid and Sapperton SkyTrain stations."),
+   ("Uptown", f"New Westminster's commercial spine along Sixth Street and Sixth Avenue, walkable and increasingly dense with new development."),
+   ("Glenbrooke North", f"An established, mid{NH}density neighbourhood of older houses and low{NH}rise apartments between Uptown and Queens Park."),
+   ("Queensborough", f"A distinct community on Lulu Island, connected by the Queensborough Bridge, with newer master{NH}planned townhome and single{NH}family development."),
+  ],
+  life=[
+   ("👑", "The Royal City", f"New Westminster was the original capital of the Colony of British Columbia, before Victoria took over the role in 1868."),
+   ("🚇", "Two SkyTrain Lines", f"The Expo and Millennium lines both serve New Westminster, including the 22nd Street, New Westminster, Columbia, Sapperton, and Braid stations. That's a lot of rapid transit for a small city."),
+   ("🏥", "Royal Columbian Hospital", f"One of the region's major hospitals, with trauma and cardiac services, is based in Sapperton."),
+   ("🎓", "Douglas College", f"New Westminster is home to a main campus of Douglas College."),
+   ("🏞️", "The Quay Boardwalk", f"A riverfront walkway and market along the Fraser River, a short walk from the SkyTrain."),
+   ("🏘️", "Heritage Streets", f"Queens Park's tree{NH}lined streets hold some of the city's best{NH}known character homes."),
+   ("📚", "Schools", f"Public schools fall under <strong>School District 40 New Westminster</strong>."),
+   ("📏", "Compact by Design", f"New Westminster is one of the smallest cities by land area in Metro Vancouver, which is part of why it's so walkable."),
+  ],
+  take=(f"New Westminster rewards buyers who think in blocks, not kilometres. It's one of the smallest cities in the region, and the difference between the Quay and Queens Park can be a short walk and a completely different kind of property. As an engineer, I pay close attention to building age here, since the mix of century{NH}old character homes and newer highrises means due diligence looks different street to street. I help my clients match the neighbourhood's age profile to what they're actually buying."),
+)
 def plain(s): return re.sub(r'<[^>]+>', '', s).replace(NH, '-').replace('&amp;', '&')
 def render(key):
     c = CONFIGS[key]; L = c['label']; PAGE = c['page']
