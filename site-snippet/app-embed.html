@@ -1,12 +1,23 @@
 <!-- home-nader app: paste into an HTML block on the Lofty page home-nader.com/app.
-     Shows the installable app (hosted at https://nbakhoum84.github.io/) inside the page, so the address stays on home-nader.com.
-     Set the page's Lofty slug to "app". If the block sits inside a narrow column, the iframe still fills the column width. -->
+     Shows the installable app (hosted at https://nbakhoum84.github.io/) in the page with no frame. The frame grows to the
+     app's full height, so the page itself scrolls (the app reports its height; see src/embed.js).
+     Set the page's Lofty slug to "app". -->
 <style>
   /* The site-wide "Get the home-nader app" card would just link back to this page, so hide it here (this block is only on /app). */
   .hn-app,.hn-app-card-wide{display:none!important}
-  #hn-app-frame{display:block;width:100%;max-width:480px;height:calc(100vh - 120px);min-height:600px;margin:0 auto;border:0;border-radius:0;background:transparent}
+  #hn-app-frame{display:block;width:100%;max-width:520px;height:900px;margin:0 auto;border:0;border-radius:0;background:transparent;overflow:hidden}
   #hn-app-open{text-align:center;font-size:14px;margin:12px 0 24px;color:inherit}
   #hn-app-open a{color:inherit;text-decoration:underline}
 </style>
-<iframe id="hn-app-frame" src="https://nbakhoum84.github.io/" title="home-nader app" loading="lazy" allow="clipboard-write"></iframe>
+<iframe id="hn-app-frame" src="https://nbakhoum84.github.io/" title="home-nader app" scrolling="no" allow="clipboard-write"></iframe>
 <p id="hn-app-open">Want it on your phone? <a href="https://nbakhoum84.github.io/" target="_blank" rel="noopener">Open the full app</a>, then iPhone: Share &rarr; Add to Home Screen. Android: &#8942; menu &rarr; Install app.</p>
+<script>
+(function () {
+  var f = document.getElementById('hn-app-frame');
+  window.addEventListener('message', function (e) {
+    if (e.origin !== 'https://nbakhoum84.github.io' || e.source !== f.contentWindow || !e.data) return;
+    if (e.data.type === 'hn-app-height' && e.data.height > 0) f.style.height = Math.ceil(e.data.height) + 'px';
+    if (e.data.type === 'hn-app-top') { var r = f.getBoundingClientRect(); if (r.top < 0) window.scrollTo({ top: window.pageYOffset + r.top - 80 }); }
+  });
+})();
+</script>

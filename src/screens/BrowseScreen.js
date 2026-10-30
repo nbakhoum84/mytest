@@ -34,6 +34,7 @@ export default function BrowseScreen({ openWeb }) {
       <TextInput style={styles.search} placeholder="Search city" value={query} onChangeText={setQuery} />
       <FlatList
         data={cities}
+        initialNumToRender={100}
         keyExtractor={(c) => c}
         ListHeaderComponent={extras.length ? (
           <View style={styles.extras}>
