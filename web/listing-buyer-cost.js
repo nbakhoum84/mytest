@@ -549,7 +549,7 @@ m.innerHTML = '<div class="hn-vt-box" role="dialog" aria-modal="true" aria-label
 '<iframe title="Virtual Tour" allow="autoplay; fullscreen; xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen></iframe></div>';
 document.body.appendChild(m);
 m.addEventListener('click', function (e) {
-if (e.target === m || e.target.closest('.hn-vt-x')) { m.classList.remove('hn-vt-on'); m.querySelector('iframe').src = 'about:blank'; document.documentElement.style.overflow = ''; }
+if (e.target === m || e.target.closest('.hn-vt-x')) { ptMusic(false); m.classList.remove('hn-vt-on'); m.querySelector('iframe').src = 'about:blank'; document.documentElement.style.overflow = ''; }
 });
 }
 m.querySelector('.hn-vt-new').href = url;
@@ -588,6 +588,37 @@ if (t < 1) requestAnimationFrame(step);
 // Ask the photo server for the 4K (3840px wide) copy instead of the card's 600px one (Nader 2026-10-30); if the server has none, the
 // original address is used. The server never sends more pixels than the listing photo itself has.
 function ptBig(u) { return /\/\/img\.chime\.me\//.test(u) ? u.replace(/\/w\d+_(original_)/, '/w3840_$1') : u; }
+// Soft background music for the Photo tour (Nader 2026-10-30). The page makes it itself (gentle chords and a slow bell melody), so there is
+// no music file and no copyright. It starts with the tour (the visitor's click allows sound), the Music button turns it off and on, and it
+// stops when the window closes.
+var ptAudio = null, ptLoop = null;
+function ptMusic(on) {
+var AC = window.AudioContext || window.webkitAudioContext;
+if (!on) { clearInterval(ptLoop); ptLoop = null; if (ptAudio) ptAudio.suspend(); return; }
+if (!AC) return;
+if (!ptAudio) {
+ptAudio = new AC();
+var out = ptAudio.createGain(); out.gain.value = 0.18;
+var lp = ptAudio.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2200;
+lp.connect(out); out.connect(ptAudio.destination); ptAudio.hnIn = lp;
+}
+ptAudio.resume();
+if (ptLoop) return;
+var chords = [[261.63, 329.63, 392], [220, 261.63, 329.63], [174.61, 220, 261.63], [196, 246.94, 293.66]], bar = 0;
+function note(f, t, len, vol, type) {
+var o = ptAudio.createOscillator(), g = ptAudio.createGain();
+o.type = type; o.frequency.value = f;
+g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + Math.min(0.8, len / 3)); g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+o.connect(g); g.connect(ptAudio.hnIn); o.start(t); o.stop(t + len + 0.1);
+}
+function play() {
+var t = ptAudio.currentTime + 0.05, c = chords[bar++ % 4];
+c.forEach(function (f) { note(f, t, 4.2, 0.22, 'sine'); note(f / 2, t, 4.2, 0.12, 'triangle'); });
+[0, 1, 2, 1].forEach(function (k, j) { note(c[k] * 2, t + j, 1.6, 0.1, 'sine'); });
+}
+play();
+ptLoop = setInterval(play, 4000);
+}
 function openPhotos(btn) {
 openTour('about:blank');
 var m = document.getElementById('hn-vt-modal'), box = m.querySelector('.hn-vt-box');
@@ -598,7 +629,7 @@ var sh = m.querySelector('.hn-pt-show');
 if (!sh) {
 sh = document.createElement('div');
 sh.className = 'hn-pt-show';
-sh.innerHTML = '<div class="hn-pt-frame"><img alt=""></div><div class="hn-pt-frame"><img alt=""></div><div class="hn-pt-bar"><i></i></div><div class="hn-pt-foot"><span class="hn-pt-credit"></span><span class="hn-pt-count"></span></div>';
+sh.innerHTML = '<div class="hn-pt-frame"><img alt=""></div><div class="hn-pt-frame"><img alt=""></div><div class="hn-pt-bar"><i></i></div><div class="hn-pt-foot"><span class="hn-pt-credit"></span><span><button type="button" class="hn-pt-snd" aria-label="Music on or off">&#9835; Music on</button> <span class="hn-pt-count"></span></span></div>';
 box.appendChild(sh);
 }
 var pics = btn.hnPhotos || [], i = -1, fr = sh.querySelectorAll('.hn-pt-frame'), cur = 1;
@@ -617,9 +648,13 @@ cur = 1 - cur;
 var bar = sh.querySelector('.hn-pt-bar i'); bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = 'hnPtBar 5s linear forwards';
 sh.querySelector('.hn-pt-count').textContent = (i + 1) + ' / ' + pics.length;
 }
-function auto() { clearInterval(ptTimer); ptTimer = setInterval(function () { if (!m.classList.contains('hn-vt-on')) { clearInterval(ptTimer); return; } show(i + 1); }, 5000); }
+function auto() { clearInterval(ptTimer); ptTimer = setInterval(function () { if (!m.classList.contains('hn-vt-on')) { clearInterval(ptTimer); ptMusic(false); return; } show(i + 1); }, 5000); }
 fr[0].className = fr[1].className = 'hn-pt-frame';
 sh.style.display = '';
+var snd = sh.querySelector('.hn-pt-snd');
+snd.onclick = function () { ptMusic(!ptAudio || ptAudio.state !== 'running'); snd.innerHTML = ptAudio && ptAudio.state === 'running' ? '&#9835; Music on' : '&#9835; Music off'; };
+snd.innerHTML = '&#9835; Music on';
+ptMusic(true);
 show(0);
 auto();
 // The card only carries a few photos; the listing page has them all. Read that one page (only on this click, never in bulk: the site
@@ -1140,6 +1175,7 @@ style.textContent =
 '@keyframes hnPtPan1{0%{transform:scale(1.4) translate(4%,3%)}50%{transform:scale(1)}100%{transform:scale(1.35) translate(-4%,-3%)}}' +
 '@keyframes hnPtPan2{0%{transform:scale(1) translateX(-6%) rotateY(6deg)}50%{transform:scale(1.4) translateX(0) rotateY(0)}100%{transform:scale(1.1) translateX(6%) rotateY(-6deg)}}' +
 '@keyframes hnPtPan3{0%{transform:scale(1.4) translate(-4%,3%)}50%{transform:scale(1)}100%{transform:scale(1.35) translate(4%,-3%)}}' +
+'#hn-vt-modal .hn-pt-snd{border:1px solid rgba(255,255,255,.6);background:none;color:#fff;border-radius:12px;padding:1px 9px;margin-right:8px;font:inherit;font-size:12px;cursor:pointer}' +
 '#hn-vt-modal .hn-pt-foot{z-index:2;position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;gap:12px;padding:8px 14px;background:rgba(0,0,0,.6);color:#fff;font-family:inherit;font-size:13px}' +
 // Commercial list cards (Nader 2026-10-27): Lofty pins the "Listed by" row to the card bottom (absolute), so with our buttons it covered
 // the description. Put it back in the normal flow, under the description, on cards that have our buttons.
