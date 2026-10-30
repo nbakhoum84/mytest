@@ -585,7 +585,7 @@ function show(n) {
 i = (n + pics.length) % pics.length;
 var inF = fr[1 - cur], outF = fr[cur], im = inF.querySelector('img');
 im.src = pics[i];
-im.style.animation = 'none'; void im.offsetWidth; im.style.animation = 'hnPtPan' + (i % 4) + ' 5.6s linear forwards';
+im.style.animation = 'none'; void im.offsetWidth; im.style.animation = 'hnPtPan' + (i % 4) + ' 5.6s ease-in-out forwards';
 inF.className = 'hn-pt-frame hn-pt-ready'; void inF.offsetWidth; inF.className = 'hn-pt-frame hn-pt-in';
 if (outF.classList.contains('hn-pt-in')) outF.className = 'hn-pt-frame hn-pt-out';
 cur = 1 - cur;
@@ -1110,10 +1110,11 @@ style.textContent =
 '#hn-vt-modal .hn-pt-bar i{display:block;height:100%;width:0;background:#dbae77}' +
 '@keyframes hnPtBar{from{width:0}to{width:100%}}' +
 '#hn-vt-modal .hn-pt-show{perspective:900px}' +
-'@keyframes hnPtPan0{0%{transform:scale(1.25) translateX(8%) rotateY(-8deg)}100%{transform:scale(1.25) translateX(-8%) rotateY(8deg)}}' +
-'@keyframes hnPtPan1{0%{transform:scale(1) }100%{transform:scale(1.3) translate(-4%,-3%)}}' +
-'@keyframes hnPtPan2{0%{transform:scale(1.25) translateX(-8%) rotateY(8deg)}100%{transform:scale(1.25) translateX(8%) rotateY(-8deg)}}' +
-'@keyframes hnPtPan3{0%{transform:scale(1.3) translate(4%,3%)}100%{transform:scale(1)}}' +
+// Every photo zooms in, then back out while it's on screen, with a pan or slight 3D turn on top (Nader 2026-10-30).
+'@keyframes hnPtPan0{0%{transform:scale(1) translateX(6%) rotateY(-6deg)}50%{transform:scale(1.4) translateX(0) rotateY(0)}100%{transform:scale(1.1) translateX(-6%) rotateY(6deg)}}' +
+'@keyframes hnPtPan1{0%{transform:scale(1.4) translate(4%,3%)}50%{transform:scale(1)}100%{transform:scale(1.35) translate(-4%,-3%)}}' +
+'@keyframes hnPtPan2{0%{transform:scale(1) translateX(-6%) rotateY(6deg)}50%{transform:scale(1.4) translateX(0) rotateY(0)}100%{transform:scale(1.1) translateX(6%) rotateY(-6deg)}}' +
+'@keyframes hnPtPan3{0%{transform:scale(1.4) translate(-4%,3%)}50%{transform:scale(1)}100%{transform:scale(1.35) translate(4%,-3%)}}' +
 '@media (prefers-reduced-motion:reduce){#hn-vt-modal .hn-pt-frame img{animation:none!important}}' +
 '#hn-vt-modal .hn-pt-foot{z-index:2;position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;gap:12px;padding:8px 14px;background:rgba(0,0,0,.6);color:#fff;font-family:inherit;font-size:13px}' +
 // Commercial list cards (Nader 2026-10-27): Lofty pins the "Listed by" row to the card bottom (absolute), so with our buttons it covered
