@@ -1471,3 +1471,17 @@ if (seen !== today) { try { localStorage.setItem('hn_app_launch', today); } catc
 } catch (e) {}
 window.addEventListener('appinstalled', function () { send('app_installed'); });
 })();
+
+// Accessibility (Nader 2026-10-30, PageSpeed report): the home page guide covers ("How to buy a home", "How to sell a home") are links with no
+// name, so screen readers and Google's check can't tell what they open. Give each one the guide's own title as its name. Nothing visible changes.
+(function () {
+function name() {
+[].forEach.call(document.querySelectorAll('.guile-list .item a.mask:not([aria-label]), .guide-container .item a.mask:not([aria-label])'), function (a) {
+var item = a.closest('.item'), t = item && item.querySelector('h1, h2, h3, h4, .title, .name');
+var label = (t ? t.textContent : item ? item.textContent : '').replace(/\s+/g, ' ').trim().slice(0, 80);
+a.setAttribute('aria-label', label || 'Open guide');
+});
+}
+name();
+var n = 0, t = setInterval(function () { name(); if (++n > 20) clearInterval(t); }, 1000);
+})();
