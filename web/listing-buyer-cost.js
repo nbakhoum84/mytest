@@ -579,7 +579,8 @@ box.appendChild(sh);
 }
 var pics = btn.hnPhotos || [], i = 0, img = sh.querySelector('img');
 sh.querySelector('.hn-pt-credit').textContent = btn.hnCredit || '';
-function show(n) { i = (n + pics.length) % pics.length; img.src = pics[i]; sh.querySelector('.hn-pt-count').textContent = (i + 1) + ' / ' + pics.length; }
+// Each photo slowly pans and zooms while it's on screen (Nader asked for a 360 feel; flat photos can't turn into true 360, and the photo itself is never edited).
+function show(n) { i = (n + pics.length) % pics.length; img.src = pics[i]; img.style.animation = 'none'; void img.offsetWidth; img.style.animation = 'hnPtPan' + (i % 2) + ' 4.2s ease-in-out forwards'; sh.querySelector('.hn-pt-count').textContent = (i + 1) + ' / ' + pics.length; }
 function auto() { clearInterval(ptTimer); ptTimer = setInterval(function () { if (!m.classList.contains('hn-vt-on')) { clearInterval(ptTimer); return; } show(i + 1); }, 4000); }
 sh.onclick = function (e) { if (e.target.closest('.hn-pt-prev')) { show(i - 1); auto(); } else if (e.target.closest('.hn-pt-next')) { show(i + 1); auto(); } };
 var x0 = null;
@@ -1066,7 +1067,11 @@ style.textContent =
 '#hn-vt-modal .hn-vt-x{border:0;background:none;font-size:28px;line-height:1;padding:0 6px;cursor:pointer;color:#111}' +
 '#hn-vt-modal iframe{flex:1 1 auto;min-height:0;width:100%;border:0;background:#000}' +
 '#hn-vt-modal .hn-pt-show{position:relative;flex:1 1 auto;min-height:0;background:#000;display:flex;align-items:center;justify-content:center}' +
-'#hn-vt-modal .hn-pt-show img{max-width:100%;max-height:100%;object-fit:contain;display:block}' +
+'#hn-vt-modal .hn-pt-show{overflow:hidden}' +
+'#hn-vt-modal .hn-pt-show img{width:100%;height:100%;object-fit:cover;display:block}' +
+'@keyframes hnPtPan0{from{transform:scale(1.15) translateX(5%)}to{transform:scale(1.15) translateX(-5%)}}' +
+'@keyframes hnPtPan1{from{transform:scale(1.15) translateX(-5%)}to{transform:scale(1.15) translateX(5%)}}' +
+'@media (prefers-reduced-motion:reduce){#hn-vt-modal .hn-pt-show img{animation:none!important}}' +
 '#hn-vt-modal .hn-pt-prev,#hn-vt-modal .hn-pt-next{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.85);color:#111;font-size:30px;line-height:40px;cursor:pointer}' +
 '#hn-vt-modal .hn-pt-prev{left:12px}#hn-vt-modal .hn-pt-next{right:12px}' +
 '#hn-vt-modal .hn-pt-foot{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;gap:12px;padding:8px 14px;background:rgba(0,0,0,.6);color:#fff;font-family:inherit;font-size:13px}' +
