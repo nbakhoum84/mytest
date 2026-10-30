@@ -98,7 +98,7 @@ export default function HomeScreen({ goTo, openWeb }) {
       </View>
 
       {/* Get the app */}
-      {Platform.OS === 'web' ? (
+      {Platform.OS === 'web' && typeof window !== 'undefined' && window.parent !== window ? null : Platform.OS === 'web' ? (
         <>
           <Text style={styles.h2}>Install this app</Text>
           <View style={styles.installBox}>
