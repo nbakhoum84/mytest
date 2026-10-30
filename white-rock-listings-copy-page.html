@@ -20,7 +20,7 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
   /white-rock-listings: improved custom code
 
   PART 1: paste into the CMS "Head / custom code" field (fonts + structured data).
-  PART 2: paste into the page's HTML/content block.
+  PART 2: paste into the page's HTML/content block (includes the Market snapshot).
   Title, meta description, canonical and Open Graph are NOT included on purpose:
   set them in the CMS SEO fields (values are in white-rock-listings-seo-notes.md),
   because the platform already outputs those tags and duplicates cause conflicts.
@@ -320,6 +320,20 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
   .wr a.wr-btn { color: var(--paper); }
   .wr-btn:hover, .wr a.wr-btn:hover { background: var(--brass-deep); color: var(--paper); }
 
+  /* Market snapshot */
+  .wr-stats { margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+  .wr-stats &gt; div { padding: 24px; border-left: 1px solid var(--paper-line); }
+  .wr-stats &gt; div:first-child { border-left: 0; }
+  .wr-stats dt { margin-bottom: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+  .wr-stats dd { margin: 0; font-family: var(--serif); font-size: 26px; font-weight: 500; }
+  .wr-tablewrap { margin-top: 28px; overflow-x: auto; }
+  .wr-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .wr-table caption { padding-bottom: 10px; text-align: left; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+  .wr-table th, .wr-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--paper-line); }
+  .wr-table thead th { border-bottom: 1px solid var(--ink); font-weight: 600; }
+  .wr-marketnote { max-width: 70ch; margin-top: 22px; font-size: 15px; line-height: 1.7; color: var(--ink-soft); }
+  .wr-src { margin-top: 12px; font-size: 12px; color: var(--muted); }
+
   /* Compliance */
   .wr-legal { padding: 0 32px 40px; max-width: 1180px; margin: 0 auto; font-size: 12px; line-height: 1.6; color: var(--muted); }
 
@@ -329,6 +343,9 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
     .wr-take-inner { grid-template-columns: 1fr; gap: 16px; }
     .wr-legal { padding: 0 20px 40px; }
     .wr-block { padding: 48px 0; }
+    .wr-stats { grid-template-columns: repeat(2, 1fr); }
+    .wr-stats &gt; div { border-bottom: 1px solid var(--paper-line); }
+    .wr-stats &gt; div:nth-child(3) { border-left: 0; }
   }
 &lt;/style&gt;
 
@@ -351,6 +368,41 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
       &lt;/header&gt;
     &lt;/div&gt;
   &lt;/div&gt;
+
+  &lt;!-- MARKET SNAPSHOT: figures counted from the live White Rock search on October 30, 2026. Refresh monthly. --&gt;
+  &lt;section class="wr-block" aria-labelledby="wr-market-title"&gt;
+    &lt;div class="wr-wrap"&gt;
+      &lt;div class="wr-head"&gt;
+        &lt;div class="wr-eyebrow"&gt;Market snapshot&lt;/div&gt;
+        &lt;h2 id="wr-market-title"&gt;White Rock Real Estate Market: October 2026&lt;/h2&gt;
+        &lt;p&gt;What is for sale in White Rock right now, as of October 30, 2026.&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;dl class="wr-stats"&gt;
+        &lt;div&gt;&lt;dt&gt;Active listings&lt;/dt&gt;&lt;dd&gt;322&lt;/dd&gt;&lt;/div&gt;
+        &lt;div&gt;&lt;dt&gt;Median list price&lt;/dt&gt;&lt;dd&gt;$1,139,000&lt;/dd&gt;&lt;/div&gt;
+        &lt;div&gt;&lt;dt&gt;Condos for sale&lt;/dt&gt;&lt;dd&gt;164&lt;/dd&gt;&lt;/div&gt;
+        &lt;div&gt;&lt;dt&gt;Single&amp;#8209;family homes&lt;/dt&gt;&lt;dd&gt;133&lt;/dd&gt;&lt;/div&gt;
+      &lt;/dl&gt;
+
+      &lt;div class="wr-tablewrap"&gt;
+        &lt;table class="wr-table"&gt;
+          &lt;caption&gt;White Rock active listings by property type, October 30, 2026&lt;/caption&gt;
+          &lt;thead&gt;
+            &lt;tr&gt;&lt;th scope="col"&gt;Property type&lt;/th&gt;&lt;th scope="col"&gt;Active listings&lt;/th&gt;&lt;th scope="col"&gt;Median list price&lt;/th&gt;&lt;th scope="col"&gt;Middle half priced between&lt;/th&gt;&lt;/tr&gt;
+          &lt;/thead&gt;
+          &lt;tbody&gt;
+            &lt;tr&gt;&lt;th scope="row"&gt;Condos&lt;/th&gt;&lt;td&gt;164&lt;/td&gt;&lt;td&gt;$638,500&lt;/td&gt;&lt;td&gt;$474,975 to $949,075&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;th scope="row"&gt;Townhomes&lt;/th&gt;&lt;td&gt;17&lt;/td&gt;&lt;td&gt;$869,000&lt;/td&gt;&lt;td&gt;$648,000 to $1,075,000&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;th scope="row"&gt;Single&amp;#8209;family homes&lt;/th&gt;&lt;td&gt;133&lt;/td&gt;&lt;td&gt;$1,938,000&lt;/td&gt;&lt;td&gt;$1,449,000 to $2,798,000&lt;/td&gt;&lt;/tr&gt;
+          &lt;/tbody&gt;
+        &lt;/table&gt;
+      &lt;/div&gt;
+
+      &lt;p class="wr-marketnote"&gt;Condos make up about half of what is for sale in White Rock (164 of 322 active listings), and the typical condo is listed at about $638,500 compared with about $1,938,000 for a single&amp;#8209;family home. Townhomes are the scarcest option, with only 17 active listings. Medians are used instead of averages because a handful of very high&amp;#8209;priced properties would pull an average up. Want numbers for a specific street or building? &lt;a href="/sell"&gt;Ask for a free home valuation&lt;/a&gt;, or see the &lt;a href="/latest-market-updates"&gt;latest market updates&lt;/a&gt; and &lt;a href="/white-rock-sold-listings"&gt;recently sold White Rock homes&lt;/a&gt;.&lt;/p&gt;
+      &lt;p class="wr-src"&gt;Source: active MLS&amp;reg; listings in the White Rock search on this site, counted on October 30, 2026. These are asking prices for homes currently for sale, not sale prices. The table excludes 8 other listings (vacant land, manufactured and multi&amp;#8209;family).&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
 
   &lt;section class="wr-block" aria-labelledby="wr-neigh-title"&gt;
     &lt;div class="wr-wrap"&gt;
