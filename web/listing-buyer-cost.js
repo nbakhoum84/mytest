@@ -585,6 +585,9 @@ im.style.setProperty('transform-origin', 'center center', 'important');
 if (t < 1) requestAnimationFrame(step);
 })(t0);
 }
+// Ask the photo server for the 4K (3840px wide) copy instead of the card's 600px one (Nader 2026-10-30); if the server has none, the
+// original address is used. The server never sends more pixels than the listing photo itself has.
+function ptBig(u) { return /\/\/img\.chime\.me\//.test(u) ? u.replace(/\/w\d+_(original_)/, '/w3840_$1') : u; }
 function openPhotos(btn) {
 openTour('about:blank');
 var m = document.getElementById('hn-vt-modal'), box = m.querySelector('.hn-vt-box');
@@ -605,7 +608,8 @@ sh.querySelector('.hn-pt-credit').textContent = btn.hnCredit || '';
 function show(n) {
 i = (n + pics.length) % pics.length;
 var inF = fr[1 - cur], outF = fr[cur], im = inF.querySelector('img');
-im.src = pics[i];
+im.onerror = function () { im.onerror = null; im.src = pics[i]; };
+im.src = ptBig(pics[i]);
 ptMove(im, PT_MOVES[i % 4]);
 inF.className = 'hn-pt-frame hn-pt-ready'; void inF.offsetWidth; inF.className = 'hn-pt-frame hn-pt-in';
 if (outF.classList.contains('hn-pt-in')) outF.className = 'hn-pt-frame hn-pt-out';
