@@ -332,6 +332,19 @@
   .wr a.wr-btn { color: var(--paper); }
   .wr-btn:hover, .wr a.wr-btn:hover { background: var(--brass-deep); color: var(--paper); }
 
+  /* Market snapshot (reuses the .wr-neigh grid so it matches the neighbourhood block) */
+  .wr-neigh-4 { grid-template-columns: repeat(4, 1fr); }
+  .wr-kpis li { padding: 22px 26px; }
+  .wr-kpi-val { font-family: var(--serif); font-size: 26px; font-weight: 500; line-height: 1.2; }
+  .wr-types { margin-top: 28px; }
+  .wr-facts { margin: 14px 0 0; }
+  .wr-facts > div { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px solid var(--paper-line); font-size: 14px; }
+  .wr-facts > div:last-child { border-bottom: 0; }
+  .wr-facts dt { color: var(--ink-soft); }
+  .wr-facts dd { margin: 0; font-weight: 600; text-align: right; }
+  .wr-marketnote { max-width: 70ch; margin-top: 28px; font-size: 15px; line-height: 1.7; color: var(--ink-soft); }
+  .wr-src { margin-top: 12px; font-size: 12px; color: var(--muted); }
+
   /* Compliance */
   .wr-legal { padding: 0 32px 40px; max-width: 1180px; margin: 0 auto; font-size: 12px; line-height: 1.6; color: var(--muted); }
 
@@ -341,6 +354,7 @@
     .wr-take-inner { grid-template-columns: 1fr; gap: 16px; }
     .wr-legal { padding: 0 20px 40px; }
     .wr-block { padding: 48px 0; }
+    .wr-neigh-4 { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 
@@ -363,6 +377,63 @@
       </header>
     </div>
   </div>
+
+  <!-- MARKET SNAPSHOT: baseline counted October 30, 2026; sales September 2025 to August 2026. Numbers marked data-wr refresh from the monthly feed (tools/market-refresh). -->
+  <section class="wr-block" aria-labelledby="wr-market-title">
+    <div class="wr-wrap">
+      <div class="wr-head">
+        <div class="wr-eyebrow">Market snapshot</div>
+        <h2 id="wr-market-title">Abbotsford Real Estate Market: <span data-wr="monthYear">October 2026</span></h2>
+        <p>Active listings as of <span data-wr="asOf">October 30, 2026</span>, and sales over the past 12 complete months (<span data-wr="windowStart">September 2025</span> to <span data-wr="windowEnd">August 2026</span>).</p>
+      </div>
+
+      <ul class="wr-neigh wr-neigh-4 wr-kpis">
+        <li><div class="wr-coord">Active listings</div><div class="wr-kpi-val"><span data-wr="active">1083</span></div></li>
+        <li><div class="wr-coord">Median list price</div><div class="wr-kpi-val"><span data-wr="medianList">$769,000</span></div></li>
+        <li><div class="wr-coord">Sold, past 12 months</div><div class="wr-kpi-val"><span data-wr="sold12">1660</span></div></li>
+        <li><div class="wr-coord">Median days to sell</div><div class="wr-kpi-val"><span data-wr="domMedian">26</span></div></li>
+      </ul>
+
+      <ul class="wr-neigh wr-types">
+        <li>
+          <div class="wr-coord" aria-hidden="true">01</div>
+          <h3>Condos</h3>
+          <dl class="wr-facts">
+            <div><dt>Active now</dt><dd><span data-wr="condo.active">310</span></dd></div>
+            <div><dt>Median list price</dt><dd><span data-wr="condo.medianList">$399,000</span></dd></div>
+            <div><dt>Sold, past 12 months</dt><dd><span data-wr="condo.sold">523</span></dd></div>
+            <div><dt>Median sold price</dt><dd><span data-wr="condo.medianSold">$390,000</span></dd></div>
+            <div><dt>Median days to sell</dt><dd><span data-wr="condo.dom">34</span></dd></div>
+          </dl>
+        </li>
+        <li>
+          <div class="wr-coord" aria-hidden="true">02</div>
+          <h3>Townhomes</h3>
+          <dl class="wr-facts">
+            <div><dt>Active now</dt><dd><span data-wr="townhome.active">215</span></dd></div>
+            <div><dt>Median list price</dt><dd><span data-wr="townhome.medianList">$649,900</span></dd></div>
+            <div><dt>Sold, past 12 months</dt><dd><span data-wr="townhome.sold">437</span></dd></div>
+            <div><dt>Median sold price</dt><dd><span data-wr="townhome.medianSold">$649,900</span></dd></div>
+            <div><dt>Median days to sell</dt><dd><span data-wr="townhome.dom">25</span></dd></div>
+          </dl>
+        </li>
+        <li>
+          <div class="wr-coord" aria-hidden="true">03</div>
+          <h3>Single&#8209;family homes</h3>
+          <dl class="wr-facts">
+            <div><dt>Active now</dt><dd><span data-wr="sfh.active">451</span></dd></div>
+            <div><dt>Median list price</dt><dd><span data-wr="sfh.medianList">$1,259,000</span></dd></div>
+            <div><dt>Sold, past 12 months</dt><dd><span data-wr="sfh.sold">646</span></dd></div>
+            <div><dt>Median sold price</dt><dd><span data-wr="sfh.medianSold">$1,075,000</span></dd></div>
+            <div><dt>Median days to sell</dt><dd><span data-wr="sfh.dom">21</span></dd></div>
+          </dl>
+        </li>
+      </ul>
+
+      <p class="wr-marketnote">About <span data-wr="perMonth">138</span> homes sold per month over the past year, and half of them sold within <span data-wr="domMedian">26</span> days of listing. Single&#8209;family homes are the bulk of the market: <span data-wr="sfh.sold">646</span> of the <span data-wr="sold12">1660</span> sales and <span data-wr="sfh.active">451</span> of the <span data-wr="active">1083</span> active listings, with a median sold price of <span data-wr="sfh.medianSold">$1,075,000</span> against <span data-wr="condo.medianSold">$390,000</span> for condos. At the past year's sales pace, today's active listings equal roughly <span data-wr="supplyAll">8</span> months of supply overall, about <span data-wr="supplyCondo">7</span> months for condos and about <span data-wr="supplySfh">8</span> for single&#8209;family homes. Supply above about six months generally favours buyers. Want numbers for a specific street or building? <a href="/sell">Ask for a free home valuation</a>, or see the <a href="/latest-market-updates">latest market updates</a> and <a href="/abbotsford-sold-listings">recently sold Abbotsford homes</a>.</p>
+      <p class="wr-src">Source: MLS&reg; listing and sold data shown on this site. Active listings were counted on <span data-wr="asOf">October 30, 2026</span>. Sales cover <span data-wr="windowStart">September 2025</span> to <span data-wr="windowEnd">August 2026</span> because sales from the most recent weeks are not yet fully reported. Days to sell is the time from listing date to sale date. The cards leave out <span data-wr="otherActive">107</span> other active listings and <span data-wr="otherSales">54</span> other sales (vacant land, manufactured home and multi&#8209;family).</p>
+    </div>
+  </section>
 
   <section class="wr-block" aria-labelledby="wr-neigh-title">
     <div class="wr-wrap">
