@@ -1135,10 +1135,13 @@ if (route()) later();
 
 // Home-page "Get the home-nader app" card (built by hn.js): make its button and QR code open https://home-nader.com/app even when a
 // browser or Lofty still serves an older cached hn.js. On the /app page itself the card is removed (it would only link back to the page).
+// Both carry UTM tags (utm_campaign=app_install; the button is utm_medium=app_card, the QR code utm_source=qr) so Google Analytics can
+// credit visits, and the app_open_click / app_install_click events below, to this card.
 (function () {
-var APP = 'https://home-nader.com/app';
-var Q = '8tyikf,4j722p,6gmsm5,6gugrh,6gj8f1,4izxoh,8tz2pr,13itc,775eg7,6rcze8,6ecdzj,qlscb,4o9h3i,6wbum5,4qzzur,if7ka,4o8jeo,7zj21o,54rppb,gm6jo,3bsusr,6erq4g,4sy7wf,4qttmp,3bp4yl,47fm1p,6zvq71,m2u69,59erun'.split(','), P = '';
-Q.forEach(function (s, y) { var v = parseInt(s, 36), x = 0, a; for (; x < 29; x++) if (v >> x & 1) { a = x; while (x < 29 && v >> x & 1) x++; P += 'M' + a + ' ' + y + 'h' + (x - a) + 'v1h' + (a - x) + 'z'; } });
+var APP = 'https://home-nader.com/app?utm_source=home-nader.com&utm_medium=app_card&utm_campaign=app_install';
+var Q = '1111111010000110011001010011101111111,1000001010011110000100100000101000001,1011101011001001011001011010101011101,1011101011101000101000111111001011101,1011101001101011100001110101101011101,1000001011100000001100100100101000001,1111111010101010101010101010101111111,0000000000110101010101010010000000000,1100111000101101010111111001100101111,0100100101000111101001010100100110110,1100111111000001010011110101001011010,1000100010001011111111111001011001101,0001101001010110010001101001011000101,1010100111101001111101010111100011110,0100011110011111110010011101110100000,1100100111110101011011011011001101110,1110011001101100110011101000111100101,1110110011000111101001010111100011110,1000111000100001001001011011001000000,0011000000101010111011011011001100110,1110101000110110110101111010111100111,0111110111001001111000010001100010110,0011011011111111101011011011001101100,0101000110010100010011001010000000110,0010011111101101011100110001101100111,1000000100100111110001100101000011110,0011011110100001011000011001101010000,0000100001101011111111011011101110110,1111001101010111010111111000111110100,0000000011001001101010010101100011100,1111111001011111010000110100101010100,1000001010110100011011011000100010111,1011101011001101110111100010111110111,1011101000100110100000010110011101011,1011101001000001110001111111111100100,1000001010101011110101011000010101110,1111111011110110110101100001011000111'.split(','), N = Q.length, P = '';
+Q.forEach(function (row, y) { for (var x = 0, a; x < N; x++) if (row.charAt(x) === '1') { a = x; while (x < N && row.charAt(x) === '1') x++; P += 'M' + a + ' ' + y + 'h' + (x - a) + 'v1h' + (a - x) + 'z'; } });
+var VB = '-2 -2 ' + (N + 4) + ' ' + (N + 4);
 function fix() {
 var onApp = /^\/app\/?$/i.test(location.pathname);
 [].forEach.call(document.querySelectorAll('#hg, .hn-app'), function (card) {
@@ -1146,8 +1149,13 @@ if (onApp) { card.style.display = 'none'; return; }
 [].forEach.call(card.querySelectorAll('a[href]'), function (a) {
 if (/Open the app/i.test(a.textContent) && a.getAttribute('href') !== APP) a.setAttribute('href', APP);
 });
-var path = card.querySelector('svg path');
-if (path && path.getAttribute('d') !== P) path.setAttribute('d', P);
+var svg = card.querySelector('svg'), path = svg && svg.querySelector('path');
+if (path && path.getAttribute('d') !== P) {
+path.setAttribute('d', P);
+svg.setAttribute('viewBox', VB);
+var bg = svg.querySelector('rect'); // the pasted block has a white background rect sized to the old viewBox
+if (bg) { bg.setAttribute('width', N + 4); bg.setAttribute('height', N + 4); }
+}
 });
 }
 var t;
@@ -1201,4 +1209,40 @@ var f = fr();
 if (f && !f._hn) { f._hn = 1; f.addEventListener('load', ping); for (var i = 0; i <= 8; i++) setTimeout(ping, i * 500); }
 }, 500);
 function ping() { last = -1; post({ type: 'hn-ping' }); sched(); }
+})();
+
+// Google Analytics events for the home-nader app (Nader's GA4 property, same route the listing buttons use). In GA4 mark them as key events
+// (Admin > Events > "Mark as key event"): app_open_click (card button), app_install_click (Install on iPhone / Android buttons on /app,
+// platform = iphone | android), app_standalone_launch (the app opened from the phone's home screen, which only happens after installing it)
+// and app_installed (the browser's own "app installed" signal, when it gives one). Visits from the card or QR code also arrive with
+// utm_campaign=app_install, which GA4 reports as the session's campaign.
+(function () {
+if (window.__hnAppTrack) return;
+window.__hnAppTrack = 1;
+function send(name, data) {
+data = Object.assign({ app_name: 'home-nader', page_path: location.pathname }, data || {});
+try { (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: name }, data)); } catch (e) {}
+var viaSite = false;
+try { var l = window.customSiteDataLayer; if (l && typeof l.push === 'function') { l.push(['event', name, Object.assign({ send_to: 'G-N9D71PSLL6' }, data)]); viaSite = true; } } catch (e) {}
+try { if (typeof window.gtag === 'function') window.gtag('event', name, Object.assign({ send_to: viaSite ? 'G-50BX6YT24D' : ['G-N9D71PSLL6', 'G-50BX6YT24D'] }, data)); } catch (e) {}
+try { if (typeof window.fbq === 'function') window.fbq('trackCustom', name, data); } catch (e) {}
+}
+document.addEventListener('click', function (e) {
+var t = e.target;
+if (!t || !t.closest) return;
+var a = t.closest('a[href]');
+if (a && /Open the app/i.test(a.textContent) && a.closest('#hg, .hn-app')) { send('app_open_click', { utm_source: 'home-nader.com', utm_medium: 'app_card', utm_campaign: 'app_install' }); return; }
+var s = t.closest('#hn-app-open summary');
+if (s && !s.parentNode.open) send('app_install_click', { platform: /android/i.test(s.textContent) ? 'android' : 'iphone', utm_source: 'home-nader.com', utm_medium: 'app_page', utm_campaign: 'app_install' });
+}, true);
+// Opened from the home screen icon (iPhone: navigator.standalone, Android: display-mode standalone): the app is installed. Once per day per device.
+try {
+var standalone = window.navigator.standalone === true || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+if (standalone && /^\/app\/?$/i.test(location.pathname)) {
+var today = new Date().toISOString().slice(0, 10), seen = null;
+try { seen = localStorage.getItem('hn_app_launch'); } catch (e) {}
+if (seen !== today) { try { localStorage.setItem('hn_app_launch', today); } catch (e) {} setTimeout(function () { send('app_standalone_launch'); }, 1500); }
+}
+} catch (e) {}
+window.addEventListener('appinstalled', function () { send('app_installed'); });
 })();
