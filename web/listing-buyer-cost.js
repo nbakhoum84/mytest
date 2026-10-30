@@ -526,7 +526,7 @@ b.className = 'hn-vt-btn';
 b.setAttribute('data-hn-type', kind);
 b.innerHTML = kind === 'vt' ? CUBE + '<span>Virtual Tour</span>' : CAM + '<span>Photo tour</span>';
 }
-if (kind === 'pt') { b.hnPhotos = pics; b.hnCredit = creditOf(h, cards[i]); }
+if (kind === 'pt') { if (!b.hnFull) b.hnPhotos = pics; b.hnCredit = creditOf(h, cards[i]); var la = cards[i].querySelector('a[href*="/listing-detail/"]'); b.hnLink = la ? la.href : ''; }
 // The Est. button and the tour button share one line, so the tour button never drops below on a narrow phone card.
 var pair = mtg.parentElement;
 if (!pair.classList.contains('hn-vt-pair')) { pair = document.createElement('div'); pair.className = 'hn-vt-pair'; mtg.parentElement.insertBefore(pair, mtg); pair.appendChild(mtg); }
@@ -580,7 +580,7 @@ box.appendChild(sh);
 var pics = btn.hnPhotos || [], i = 0, img = sh.querySelector('img');
 sh.querySelector('.hn-pt-credit').textContent = btn.hnCredit || '';
 // Each photo slowly pans and zooms while it's on screen (Nader asked for a 360 feel; flat photos can't turn into true 360, and the photo itself is never edited).
-function show(n) { i = (n + pics.length) % pics.length; img.src = pics[i]; img.style.animation = 'none'; void img.offsetWidth; img.style.animation = 'hnPtPan' + (i % 2) + ' 4.2s ease-in-out forwards'; sh.querySelector('.hn-pt-count').textContent = (i + 1) + ' / ' + pics.length; }
+function show(n) { i = (n + pics.length) % pics.length; img.src = pics[i]; img.style.animation = 'none'; void img.offsetWidth; img.style.animation = 'hnPtPan' + (i % 4) + ' 4.2s ease-in-out forwards'; sh.querySelector('.hn-pt-count').textContent = (i + 1) + ' / ' + pics.length; }
 function auto() { clearInterval(ptTimer); ptTimer = setInterval(function () { if (!m.classList.contains('hn-vt-on')) { clearInterval(ptTimer); return; } show(i + 1); }, 4000); }
 sh.onclick = function (e) { if (e.target.closest('.hn-pt-prev')) { show(i - 1); auto(); } else if (e.target.closest('.hn-pt-next')) { show(i + 1); auto(); } };
 var x0 = null;
@@ -589,6 +589,30 @@ sh.ontouchend = function (e) { if (x0 === null) return; var dx = e.changedTouche
 sh.style.display = '';
 show(0);
 auto();
+// The card only carries a few photos; the listing page has them all. Read that one page (only on this click, never in bulk: the site
+// blocks fast repeated page loads) and switch to its full set, keeping the photo on screen (Nader 2026-10-30).
+var link = btn.hnLink;
+if (link && !btn.hnFull) {
+fetch(link, { credentials: 'include' }).then(function (r) { return r.text(); }).then(function (html) {
+var all = fullPhotos(html, pics);
+btn.hnFull = 1;
+if (all.length > pics.length) { var cur = pics[i]; btn.hnPhotos = pics = all; i = Math.max(0, all.indexOf(cur)); sh.querySelector('.hn-pt-count').textContent = (i + 1) + ' / ' + pics.length; }
+}).catch(function () {});
+}
+}
+// Every listing photo address on the listing page, in order: same photo server as the card's photos, no repeats, no tiny thumbnails twice.
+function fullPhotos(html, known) {
+var host = '';
+try { host = new URL(known[0]).host; } catch (e) {}
+var re = /https?:\\?\/\\?\/[^"'\s<>()\\]+?\.(?:jpe?g|png|webp)(?:\?[^"'\s<>()\\]*)?/gi, m, out = [], seen = {};
+html = html.replace(/\\u002F/gi, '/').replace(/\\\//g, '/');
+while ((m = re.exec(html))) {
+var u = m[0].replace(/&amp;/g, '&');
+if (host && u.indexOf('//' + host + '/') < 0) continue;
+var key = u.split('?')[0];
+if (!seen[key]) { seen[key] = 1; out.push(u); }
+}
+return out;
 }
 // Signed-out visitors (new leads) get the registration form first; the tour opens once they have registered (Nader 2026-10-27).
 var tourWait = null;
@@ -1069,8 +1093,11 @@ style.textContent =
 '#hn-vt-modal .hn-pt-show{position:relative;flex:1 1 auto;min-height:0;background:#000;display:flex;align-items:center;justify-content:center}' +
 '#hn-vt-modal .hn-pt-show{overflow:hidden}' +
 '#hn-vt-modal .hn-pt-show img{width:100%;height:100%;object-fit:cover;display:block}' +
-'@keyframes hnPtPan0{from{transform:scale(1.15) translateX(5%)}to{transform:scale(1.15) translateX(-5%)}}' +
-'@keyframes hnPtPan1{from{transform:scale(1.15) translateX(-5%)}to{transform:scale(1.15) translateX(5%)}}' +
+'#hn-vt-modal .hn-pt-show{perspective:900px}' +
+'@keyframes hnPtPan0{0%{opacity:0;transform:scale(1.25) translateX(8%) rotateY(-8deg)}12%{opacity:1}100%{opacity:1;transform:scale(1.25) translateX(-8%) rotateY(8deg)}}' +
+'@keyframes hnPtPan1{0%{opacity:0;transform:scale(1) }12%{opacity:1}100%{opacity:1;transform:scale(1.3) translate(-4%,-3%)}}' +
+'@keyframes hnPtPan2{0%{opacity:0;transform:scale(1.25) translateX(-8%) rotateY(8deg)}12%{opacity:1}100%{opacity:1;transform:scale(1.25) translateX(8%) rotateY(-8deg)}}' +
+'@keyframes hnPtPan3{0%{opacity:0;transform:scale(1.3) translate(4%,3%)}12%{opacity:1}100%{opacity:1;transform:scale(1)}}' +
 '@media (prefers-reduced-motion:reduce){#hn-vt-modal .hn-pt-show img{animation:none!important}}' +
 '#hn-vt-modal .hn-pt-prev,#hn-vt-modal .hn-pt-next{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.85);color:#111;font-size:30px;line-height:40px;cursor:pointer}' +
 '#hn-vt-modal .hn-pt-prev{left:12px}#hn-vt-modal .hn-pt-next{right:12px}' +
