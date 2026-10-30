@@ -1,0 +1,591 @@
+<!--
+  /langley-listings: improved custom code
+
+  This file = the page's HTML/content block (Embed CODE box). It includes the fonts and structured data at the top.
+  The Market snapshot numbers update automatically through the Page Script (langley-market-loader.txt).
+  Title, meta description, canonical and Open Graph are NOT included on purpose: set them in the CMS SEO fields.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Langley a good place to invest in real estate right now?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Langley is in the middle of two long-term changes at once: the Surrey-Langley SkyTrain extension under construction, and the ongoing build-out of Willoughby. Both tend to support demand along their corridors, though timing and location within Langley matter a lot. Talk to Nader for a read on a specific area."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the property transfer tax on a home in Langley, BC?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "BC's property transfer tax is 1% on the first $200,000, 2% from $200,000 to $2,000,000, 3% from $2,000,000 to $3,000,000, and a further 2% (5% total) on any residential value above $3,000,000. Some Willoughby condos and townhomes can qualify for the first-time buyer exemption (up to an $835,000 fair market value), while larger acreages can land in the higher tax tiers. Use the Cash to Close calculator for an exact number."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How far is Langley from downtown Vancouver?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "About 45 to 60 minutes by car via Highway 1, depending on traffic and which part of Langley you're in. Transit times are expected to improve once the Surrey-Langley SkyTrain extension opens, which is currently scheduled for late 2029."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Langley part of Metro Vancouver?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Both the Township of Langley and the City of Langley are member municipalities of the Metro Vancouver Regional District."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the difference between the Township of Langley and the City of Langley?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "They're two separate municipalities with their own councils, even though they share a name and are usually searched and marketed together. The City of Langley is the smaller, denser core; the Township surrounds it and includes Willoughby, Walnut Grove, Fort Langley, Brookswood, Murrayville, and Aldergrove."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What areas does this Langley search cover?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "This search covers Langley, including Fort Langley, Willoughby, Walnut Grove, Brookswood, Murrayville, and Aldergrove."
+      }
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://home-nader.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Langley Homes for Sale",
+      "item": "https://home-nader.com/langley-listings"
+    }
+  ]
+}
+</script>
+
+<!-- One agent entity. Same @id as the platform's own block and the other city pages so they merge. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  "@id": "https://home-nader.com/#agent",
+  "name": "Nader Bakhoum, P.Eng., PMP",
+  "url": "https://home-nader.com/",
+  "telephone": "+1-604-612-7228",
+  "email": "info@home-nader.com",
+  "description": "Residential, commercial and presale real estate in Metro Vancouver and the Fraser Valley, including White Rock, Surrey, Burnaby, Coquitlam, Delta, Langley and Abbotsford.",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "7565 132 St",
+    "addressLocality": "Surrey",
+    "addressRegion": "BC",
+    "postalCode": "V3W 1K5",
+    "addressCountry": "CA"
+  },
+  "affiliation": {
+    "@type": "Organization",
+    "name": "eXp Realty Canada"
+  },
+  "areaServed": [
+    {
+      "@type": "City",
+      "name": "White Rock"
+    },
+    {
+      "@type": "City",
+      "name": "Surrey"
+    },
+    {
+      "@type": "City",
+      "name": "Burnaby"
+    },
+    {
+      "@type": "City",
+      "name": "Coquitlam"
+    },
+    {
+      "@type": "City",
+      "name": "Delta"
+    },
+    {
+      "@type": "City",
+      "name": "Langley"
+    },
+    {
+      "@type": "City",
+      "name": "Abbotsford"
+    }
+  ]
+}
+</script>
+
+
+<style>
+
+
+  /* Everything is scoped under .wr so it cannot restyle the platform's header,
+     listing grid or footer. Class names are prefixed wr- to avoid collisions. */
+  .wr {
+    --paper: #F6F3EC;
+    --paper-line: #DAD4C4;
+    --ink: #1C2B39;
+    --ink-soft: #48576A;
+    --brass: #B0793A;
+    --brass-deep: #8E5F27;
+    --survey-green: #54746A;
+    --muted: #6B6556;
+    --white: #FFFFFF;
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wr *, .wr *::before, .wr *::after { box-sizing: border-box; }
+  /* :where() keeps the reset at zero specificity so the component rules below always win */
+  .wr :where(h1, h2, h3, p, ul, ol, li, blockquote, figure) { margin: 0; padding: 0; }
+  .wr :where(ul, ol) { list-style: none; }
+  .wr a { color: var(--brass-deep); }
+  .wr a:hover { color: var(--ink); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+
+  .wr-wrap { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+  .wr-mono { font-family: var(--mono); }
+
+  /* Hero */
+  .wr-hero-bg { position: relative; }
+  .wr-hero-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(28, 43, 57, .05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(28, 43, 57, .05) 1px, transparent 1px);
+    background-size: 220px 220px;
+    pointer-events: none;
+  }
+  .wr-crumbs {
+    position: relative;
+    padding-top: 26px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .04em;
+    color: var(--ink-soft);
+  }
+  .wr-crumbs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .wr-crumbs a { color: inherit; text-decoration: none; }
+  .wr-crumbs a:hover { color: var(--brass-deep); }
+
+  .wr-hero { position: relative; padding: 22px 0 44px; }
+  .wr-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--brass-deep);
+  }
+  .wr-eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--brass-deep); }
+  .wr-hero h2 {
+    max-width: 18ch;
+    font-family: var(--serif);
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 500;
+    line-height: 1.1;
+  }
+  .wr-sub { margin-top: 20px; max-width: 70ch; font-size: 16.5px; line-height: 1.7; color: var(--ink-soft); }
+  .wr-note { margin-top: 14px; max-width: 70ch; font-size: 14px; color: var(--ink-soft); }
+
+  /* Sections */
+  .wr-block { position: relative; padding: 70px 0; }
+  .wr-block-tight { padding-top: 0; }
+  .wr-head { max-width: 640px; margin-bottom: 40px; }
+  .wr-head h2 {
+    font-family: var(--serif);
+    font-size: clamp(24px, 2.6vw, 32px);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .wr-head p { margin-top: 12px; font-size: 15px; color: var(--ink-soft); }
+
+  /* Neighbourhoods */
+  .wr-neigh {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--ink);
+    border: 1px solid var(--ink);
+  }
+  .wr-neigh > div { background: var(--paper); padding: 26px; }
+  .wr-coord { margin-bottom: 10px; font-family: var(--mono); font-size: 12px; color: var(--survey-green); }
+  .wr-neigh h3 { font-size: 16px; font-weight: 600; }
+  .wr-neigh p { margin-top: 10px; font-size: 14px; line-height: 1.6; color: var(--ink-soft); }
+
+  /* Lifestyle */
+  .wr-life { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+  .wr-life > div { padding: 28px; background: var(--white); border: 1px solid var(--paper-line); }
+  .wr-life h3 { margin-bottom: 8px; font-family: var(--serif); font-size: 18px; font-weight: 500; }
+  .wr-life p { font-size: 14.5px; line-height: 1.7; color: var(--ink-soft); }
+
+  /* Nader's take */
+  .wr-take { position: relative; padding: 64px 0; overflow: hidden; background: var(--ink); color: var(--paper); }
+  .wr-take::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(246, 243, 236, .05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(246, 243, 236, .05) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .wr-take-inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  .wr-take-label { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--brass); }
+  .wr-take blockquote { font-family: var(--serif); font-size: clamp(18px, 2vw, 22px); line-height: 1.6; }
+  .wr-take cite { display: block; margin-top: 18px; font-family: var(--mono); font-size: 12px; font-style: normal; color: #B9C1CA; }
+
+  /* FAQ: native <details>, so it works without JavaScript and answers never get clipped */
+  .wr-faq details { border-bottom: 1px solid var(--paper-line); }
+  .wr-faq details:first-child { border-top: 1px solid var(--ink); }
+  .wr-faq summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 22px 0;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+  .wr-faq summary::-webkit-details-marker { display: none; }
+  .wr-faq summary::after {
+    content: "+";
+    flex-shrink: 0;
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--brass-deep);
+    transition: transform .2s ease;
+  }
+  .wr-faq details[open] summary::after { transform: rotate(45deg); }
+  .wr-faq summary:focus-visible { outline: 2px solid var(--brass-deep); outline-offset: 2px; }
+  .wr-faq details p { max-width: 70ch; padding-bottom: 22px; font-size: 15px; line-height: 1.7; color: var(--ink-soft); }
+
+  /* Calls to action */
+  .wr-cta { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--ink); border: 1px solid var(--ink); }
+  .wr-cta > div { padding: 38px; background: var(--paper); }
+  .wr-cta .wr-mono { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--survey-green); }
+  .wr-cta h3 { margin: 10px 0 18px; font-family: var(--serif); font-size: 21px; font-weight: 500; }
+  .wr-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background .15s ease;
+  }
+  .wr a.wr-btn { color: var(--paper); }
+  .wr-btn:hover, .wr a.wr-btn:hover { background: var(--brass-deep); color: var(--paper); }
+
+  /* Market snapshot (reuses the .wr-neigh grid so it matches the neighbourhood block) */
+  .wr-neigh-4 { grid-template-columns: repeat(4, 1fr); }
+  .wr-kpis > div { padding: 22px 26px; }
+  .wr-kpi-val { font-family: var(--serif); font-size: 26px; font-weight: 500; line-height: 1.2; }
+  .wr-types { margin-top: 28px; }
+  .wr-facts { margin: 14px 0 0; }
+  .wr-facts > div { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px solid var(--paper-line); font-size: 14px; }
+  .wr-facts > div:last-child { border-bottom: 0; }
+  .wr-facts dt { color: var(--ink-soft); }
+  .wr-facts dd { margin: 0; font-weight: 600; text-align: right; }
+  .wr-marketnote { max-width: 70ch; margin-top: 28px; font-size: 15px; line-height: 1.7; color: var(--ink-soft); }
+  .wr-src { margin-top: 12px; font-size: 12px; color: var(--muted); }
+
+  /* Compliance */
+  .wr-legal { padding: 0 32px 40px; max-width: 1180px; margin: 0 auto; font-size: 12px; line-height: 1.6; color: var(--muted); }
+
+  @media (max-width: 860px) {
+    .wr-wrap { padding: 0 20px; }
+    .wr-neigh, .wr-life, .wr-cta { grid-template-columns: 1fr; }
+    .wr-take-inner { grid-template-columns: 1fr; gap: 16px; }
+    .wr-legal { padding: 0 20px 40px; }
+    .wr-block { padding: 48px 0; }
+    .wr-neigh-4 { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+
+<div class="wr">
+  <div class="wr-hero-bg">
+    <div class="wr-wrap">
+      <nav class="wr-crumbs" aria-label="Breadcrumb">
+          <a href="https://home-nader.com/">Home</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Langley</span>
+        </nav>
+
+      <header class="wr-hero">
+        <div class="wr-eyebrow">Langley, BC</div>
+        <!-- The platform already outputs the page's single H1, so this stays an H2. -->
+        <h2>Langley Homes for Sale: Condos, Townhomes &amp; Single&#8209;Family Homes</h2>
+        <p class="wr-sub">Langley spans both the Township of Langley and the City of Langley, and it's one of the Fraser Valley corridor's major growth areas. Willoughby is one of the region's fastest&#8209;growing master&#8209;planned communities, the Surrey&#8209;Langley SkyTrain extension is under construction and currently scheduled to reach Langley City Centre in late 2029, and Fort Langley, a National Historic Site, is where the mainland Colony of British Columbia was proclaimed in 1858. With hundreds of active listings, prices range widely, from a Willoughby condo to an acreage near Fort Langley. Whether you're after a <strong>new townhome in Willoughby</strong>, a <strong>family home in Walnut Grove</strong>, or a <strong>character property near Fort Langley</strong>, Langley has it.</p>
+        <p class="wr-note">Use the filters above to narrow the current listings by price, beds, and property type. Also looking nearby? See <a href="/surrey-listings">Surrey homes for sale</a>, <a href="/langley-presales">Langley presales</a>, or <a href="/langley-sold-listings">recently sold Langley homes</a>.</p>
+      </header>
+    </div>
+  </div>
+
+  <!-- MARKET SNAPSHOT: baseline counted October 30, 2026; sales September 2025 to August 2026. Numbers marked data-wr refresh from the monthly feed (tools/market-refresh). -->
+  <section class="wr-block" aria-labelledby="wr-market-title">
+    <div class="wr-wrap">
+      <div class="wr-head">
+        <div class="wr-eyebrow">Market snapshot</div>
+        <h2 id="wr-market-title">Langley Real Estate Market: <span data-wr="monthYear">October 2026</span></h2>
+        <p>Active listings as of <span data-wr="asOf">October 30, 2026</span>, and sales over the past 12 complete months (<span data-wr="windowStart">September 2025</span> to <span data-wr="windowEnd">August 2026</span>).</p>
+      </div>
+
+      <div class="wr-neigh wr-neigh-4 wr-kpis" role="list">
+        <div role="listitem"><div class="wr-coord">Active listings</div><div class="wr-kpi-val"><span data-wr="active">1,320</span></div></div>
+        <div role="listitem"><div class="wr-coord">Median list price</div><div class="wr-kpi-val"><span data-wr="medianList">$1,019,950</span></div></div>
+        <div role="listitem"><div class="wr-coord">Sold, past 12 months</div><div class="wr-kpi-val"><span data-wr="sold12">2,722</span></div></div>
+        <div role="listitem"><div class="wr-coord">Median days to sell</div><div class="wr-kpi-val"><span data-wr="domMedian">24</span></div></div>
+      </div>
+
+      <div class="wr-neigh wr-types" role="list">
+        <div role="listitem">
+          <div class="wr-coord" aria-hidden="true">01</div>
+          <h3>Condos</h3>
+          <dl class="wr-facts">
+            <div><dt>Active now</dt><dd><span data-wr="condo.active">381</span></dd></div>
+            <div><dt>Median list price</dt><dd><span data-wr="condo.medianList">$499,990</span></dd></div>
+            <div><dt>Sold, past 12 months</dt><dd><span data-wr="condo.sold">805</span></dd></div>
+            <div><dt>Median sold price</dt><dd><span data-wr="condo.medianSold">$520,000</span></dd></div>
+            <div><dt>Median days to sell</dt><dd><span data-wr="condo.dom">25</span></dd></div>
+          </dl>
+        </div>
+        <div role="listitem">
+          <div class="wr-coord" aria-hidden="true">02</div>
+          <h3>Townhomes</h3>
+          <dl class="wr-facts">
+            <div><dt>Active now</dt><dd><span data-wr="townhome.active">234</span></dd></div>
+            <div><dt>Median list price</dt><dd><span data-wr="townhome.medianList">$829,400</span></dd></div>
+            <div><dt>Sold, past 12 months</dt><dd><span data-wr="townhome.sold">801</span></dd></div>
+            <div><dt>Median sold price</dt><dd><span data-wr="townhome.medianSold">$819,900</span></dd></div>
+            <div><dt>Median days to sell</dt><dd><span data-wr="townhome.dom">21</span></dd></div>
+          </dl>
+        </div>
+        <div role="listitem">
+          <div class="wr-coord" aria-hidden="true">03</div>
+          <h3>Single&#8209;family homes</h3>
+          <dl class="wr-facts">
+            <div><dt>Active now</dt><dd><span data-wr="sfh.active">599</span></dd></div>
+            <div><dt>Median list price</dt><dd><span data-wr="sfh.medianList">$1,750,000</span></dd></div>
+            <div><dt>Sold, past 12 months</dt><dd><span data-wr="sfh.sold">991</span></dd></div>
+            <div><dt>Median sold price</dt><dd><span data-wr="sfh.medianSold">$1,422,000</span></dd></div>
+            <div><dt>Median days to sell</dt><dd><span data-wr="sfh.dom">24</span></dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <p class="wr-marketnote">About <span data-wr="perMonth">227</span> homes sold per month over the past year, and half of them sold within <span data-wr="domMedian">24</span> days of listing. Single&#8209;family homes are the bulk of the market: <span data-wr="sfh.sold">991</span> of the <span data-wr="sold12">2,722</span> sales and <span data-wr="sfh.active">599</span> of the <span data-wr="active">1,320</span> active listings, with a median sold price of <span data-wr="sfh.medianSold">$1,422,000</span> against <span data-wr="condo.medianSold">$520,000</span> for condos. At the past year's sales pace, today's active listings equal roughly <span data-wr="supplyAll">6</span> months of supply overall, about <span data-wr="supplyCondo">6</span> months for condos and about <span data-wr="supplySfh">7</span> for single&#8209;family homes. Supply above about six months generally favours buyers. Want numbers for a specific street or building? <a href="/sell">Ask for a free home valuation</a>, or see the <a href="/latest-market-updates">latest market updates</a> and <a href="/langley-sold-listings">recently sold Langley homes</a>.</p>
+      <p class="wr-src">Source: MLS&reg; listing and sold data shown on this site. Active listings were counted on <span data-wr="asOf">October 30, 2026</span>. Sales cover <span data-wr="windowStart">September 2025</span> to <span data-wr="windowEnd">August 2026</span> because sales from the most recent weeks are not yet fully reported. Days to sell is the time from listing date to sale date. The cards leave out <span data-wr="otherActive">106</span> other active listings and <span data-wr="otherSales">125</span> other sales (manufactured home, vacant land and multi&#8209;family).</p>
+    </div>
+  </section>
+
+  <section class="wr-block" aria-labelledby="wr-neigh-title">
+    <div class="wr-wrap">
+      <div class="wr-head">
+        <div class="wr-eyebrow">Coverage</div>
+        <h2 id="wr-neigh-title">Neighbourhoods in Langley</h2>
+        <p>This search spans the following Langley communities.</p>
+      </div>
+      <div class="wr-neigh" role="list">
+        <div role="listitem">
+          <div class="wr-coord" aria-hidden="true">01</div>
+          <h3>Fort Langley</h3>
+          <p>A National Historic Site and the birthplace of the mainland Colony of British Columbia, with a walkable village core of shops, caf&eacute;s, and heritage homes.</p>
+        </div>
+        <div role="listitem">
+          <div class="wr-coord" aria-hidden="true">02</div>
+          <h3>Willoughby</h3>
+          <p>One of Langley's fastest&#8209;growing areas, with new townhome and condo construction around Willoughby Town Centre.</p>
+        </div>
+        <div role="listitem">
+          <div class="wr-coord" aria-hidden="true">03</div>
+          <h3>Walnut Grove</h3>
+          <p>An established, family&#8209;oriented community near the Fraser River, popular for its schools and parks.</p>
+        </div>
+        <div role="listitem">
+          <div class="wr-coord" aria-hidden="true">04</div>
+          <h3>Brookswood</h3>
+          <p>A leafy, low&#8209;density neighbourhood of larger lots that's slowly transitioning to newer construction as the area redevelops.</p>
+        </div>
+        <div role="listitem">
+          <div class="wr-coord" aria-hidden="true">05</div>
+          <h3>Murrayville</h3>
+          <p>A quiet, established pocket around Murrayville's small commercial strip, close to Langley's hospital and recreation centre.</p>
+        </div>
+        <div role="listitem">
+          <div class="wr-coord" aria-hidden="true">06</div>
+          <h3>Aldergrove</h3>
+          <p>Langley's easternmost community, more rural in feel, with larger acreages and easy access to Highway 1.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wr-block" aria-labelledby="wr-life-title">
+    <div class="wr-wrap">
+      <div class="wr-head">
+        <div class="wr-eyebrow">Lifestyle</div>
+        <h2 id="wr-life-title">Why Langley? History, Growth &amp; Open Space</h2>
+        <p>Langley pairs one of the region's fastest&#8209;growing suburbs with some of its deepest history.</p>
+      </div>
+      <div class="wr-life" role="list">
+        <div role="listitem">
+          <h3><span aria-hidden="true">🚇 </span>SkyTrain Is Coming</h3>
+          <p>The <strong>Surrey&#8209;Langley SkyTrain</strong> extension is under construction and currently scheduled to reach Langley City Centre in late 2029.</p>
+        </div>
+        <div role="listitem">
+          <h3><span aria-hidden="true">🏰 </span>Fort Langley</h3>
+          <p>A National Historic Site marking where the mainland Colony of British Columbia was proclaimed in 1858.</p>
+        </div>
+        <div role="listitem">
+          <h3><span aria-hidden="true">🎓 </span>Two Universities</h3>
+          <p><strong>Trinity Western University</strong> and a <strong>Kwantlen Polytechnic University</strong> campus both call Langley home.</p>
+        </div>
+        <div role="listitem">
+          <h3><span aria-hidden="true">🏗️ </span>Still Being Built</h3>
+          <p>Willoughby is one of the region's major areas of master&#8209;planned new construction.</p>
+        </div>
+        <div role="listitem">
+          <h3><span aria-hidden="true">🌳 </span>Parks &amp; Farmland</h3>
+          <p>From Campbell Valley Regional Park to working farms, Langley has plenty of open space.</p>
+        </div>
+        <div role="listitem">
+          <h3><span aria-hidden="true">🛍️ </span>Walking{NH}Village Shopping</h3>
+          <p>Fort Langley's village core and Willoughby Town Centre offer two very different retail experiences.</p>
+        </div>
+        <div role="listitem">
+          <h3><span aria-hidden="true">📚 </span>Schools</h3>
+          <p>Public schools fall under <strong>School District 35 Langley</strong>.</p>
+        </div>
+        <div role="listitem">
+          <h3><span aria-hidden="true">🚗 </span>Highway 1 Corridor</h3>
+          <p>Langley sits directly on the Trans&#8209;Canada Highway, midway between Abbotsford and Surrey.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wr-take" aria-label="Nader's take">
+    <div class="wr-wrap">
+      <div class="wr-take-inner">
+        <div class="wr-take-label">Nader's Take</div>
+        <figure>
+          <blockquote>
+            <p>"Langley is a market in two speeds: Willoughby is being built out almost block by block, while Fort Langley changes very little. As an engineer, I like watching how a new SkyTrain extension can reshape value along its corridor, and the question for any buyer is how much of that is already in today's prices. I help my clients figure out whether they're buying the neighbourhood as it is today, or the one it's about to become."</p>
+          </blockquote>
+          <figcaption><cite>Nader Bakhoum, PMP, P.Eng.</cite></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="wr-block" aria-labelledby="wr-faq-title">
+    <div class="wr-wrap">
+      <div class="wr-head">
+        <div class="wr-eyebrow">FAQ</div>
+        <h2 id="wr-faq-title">Frequently Asked Questions About Langley Real Estate</h2>
+      </div>
+      <div class="wr-faq">
+        <details name="wr-faq">
+          <summary>Is Langley a good place to invest in real estate right now?</summary>
+          <p>Langley is in the middle of two long&#8209;term changes at once: the Surrey&#8209;Langley SkyTrain extension under construction, and the ongoing build&#8209;out of Willoughby. Both tend to support demand along their corridors, though timing and location within Langley matter a lot. Talk to Nader for a read on a specific area.</p>
+        </details>
+        <details name="wr-faq">
+          <summary>What's the property transfer tax on a home in Langley, BC?</summary>
+          <p>BC's property transfer tax is 1% on the first $200,000, 2% from $200,000 to $2,000,000, 3% from $2,000,000 to $3,000,000, and a further 2% (5% total) on any residential value above $3,000,000. Some Willoughby condos and townhomes can qualify for the first&#8209;time buyer exemption (up to an $835,000 fair market value), while larger acreages can land in the higher tax tiers. Use the <a href="/cash-to-close">Cash to Close calculator</a> for an exact number.</p>
+        </details>
+        <details name="wr-faq">
+          <summary>How far is Langley from downtown Vancouver?</summary>
+          <p>About 45 to 60 minutes by car via Highway 1, depending on traffic and which part of Langley you're in. Transit times are expected to improve once the Surrey&#8209;Langley SkyTrain extension opens, which is currently scheduled for late 2029.</p>
+        </details>
+        <details name="wr-faq">
+          <summary>Is Langley part of Metro Vancouver?</summary>
+          <p>Yes. Both the Township of Langley and the City of Langley are member municipalities of the Metro Vancouver Regional District.</p>
+        </details>
+        <details name="wr-faq">
+          <summary>What's the difference between the Township of Langley and the City of Langley?</summary>
+          <p>They're two separate municipalities with their own councils, even though they share a name and are usually searched and marketed together. The City of Langley is the smaller, denser core; the Township surrounds it and includes Willoughby, Walnut Grove, Fort Langley, Brookswood, Murrayville, and Aldergrove.</p>
+        </details>
+        <details name="wr-faq">
+          <summary>What areas does this Langley search cover?</summary>
+          <p>This search covers Langley, including Fort Langley, Willoughby, Walnut Grove, Brookswood, Murrayville, and Aldergrove.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="wr-block wr-block-tight" aria-label="Next steps">
+    <div class="wr-wrap">
+      <div class="wr-cta">
+        <div>
+          <div class="wr-mono">For Buyers</div>
+          <h3>Run the numbers on a Langley home</h3>
+          <a href="/mortgage-calculators" class="wr-btn">Mortgage calculators <span aria-hidden="true">→</span></a>
+        </div>
+        <div>
+          <div class="wr-mono">For Sellers</div>
+          <h3>What's Your Langley Home Worth?</h3>
+          <a href="/seller-guide" class="wr-btn">Get the Seller's Guide <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="wr-legal">IDX information is provided exclusively for consumers' personal, non&#8209;commercial use and may not be used for any purpose other than to identify prospective properties consumers may be interested in purchasing. Information deemed reliable but not guaranteed to be accurate. Listing information updated daily.</p>
+</div>

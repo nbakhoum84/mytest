@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Rebuilds the Market snapshot section of a city page from data, and writes that city's live data feed.
 
-Usage: python3 build.py [whiterock|abbotsford|burnaby|coquitlam|delta] [YYYY-MM-DD] [--force]      (default city: whiterock; date: today)
+Usage: python3 build.py [whiterock|abbotsford|burnaby|coquitlam|delta|langley] [YYYY-MM-DD] [--force]      (default city: whiterock; date: today)
 
 * The page's Lofty Page Script (<city>-market-loader.txt) loads the feed from GitHub and fills in every number marked data-wr,
   so after the one-time paste, monthly updates need no Lofty login and no re-paste.
@@ -22,6 +22,7 @@ CITIES = {
   'burnaby':    dict(label='Burnaby', dir='burnaby', slug='burnaby', page='burnaby-listings', loader='burnaby-market-loader.txt', other=None),
   'coquitlam':  dict(label='Coquitlam', dir='coquitlam', slug='coquitlam', page='coquitlam-listings', loader='coquitlam-market-loader.txt', other=None),
   'delta':      dict(label='Delta', dir='delta', slug='delta', page='delta-listings', loader='delta-market-loader.txt', other=None),
+  'langley':    dict(label='Langley', dir='langley', slug='langley', page='langley-listings', loader='langley-market-loader.txt', other=None),
 }
 args = [a for a in sys.argv[1:] if not a.startswith('--')]; force = '--force' in sys.argv
 city_key = 'whiterock'

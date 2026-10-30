@@ -80,6 +80,43 @@ CONFIGS['delta'] = dict(
   ],
   take=(f"Delta is built on a river delta, with much of its low{NH}lying land protected by dikes. As an engineer, that's not a footnote, it's the first thing I look at: flood construction levels, drainage, and how a property sits relative to the dike system matter as much as the finishes inside. Buyers here are often choosing between a heritage home in Ladner Village, a coastal property near Boundary Bay, and a newer build in Tsawwassen Springs, and each comes with its own site considerations. I make sure they go in with eyes open."),
 )
+
+CONFIGS['langley'] = dict(
+  label='Langley', page='langley-listings', hero_word='Homes',
+  nearby=[('/surrey-listings', 'Surrey homes for sale'), ('/langley-presales', 'Langley presales'), ('/langley-sold-listings', 'recently sold Langley homes')],
+  life_h2='Why Langley? History, Growth &amp; Open Space',
+  life_sub=f"Langley pairs one of the region's fastest{NH}growing suburbs with some of its deepest history.",
+  areas=["White Rock", "Surrey", "Burnaby", "Coquitlam", "Delta", "Langley", "Abbotsford"],
+  agent_cities='White Rock, Surrey, Burnaby, Coquitlam, Delta, Langley and Abbotsford',
+  sub=(f"Langley spans both the Township of Langley and the City of Langley, and it's one of the Fraser Valley corridor's major growth areas. Willoughby is one of the region's fastest{NH}growing master{NH}planned communities, the Surrey{NH}Langley SkyTrain extension is under construction and currently scheduled to reach Langley City Centre in late 2029, and Fort Langley, a National Historic Site, is where the mainland Colony of British Columbia was proclaimed in 1858. With hundreds of active listings, prices range widely, from a Willoughby condo to an acreage near Fort Langley. Whether you're after a <strong>new townhome in Willoughby</strong>, a <strong>family home in Walnut Grove</strong>, or a <strong>character property near Fort Langley</strong>, Langley has it."),
+  faq=[
+   ("Is Langley a good place to invest in real estate right now?", f"Langley is in the middle of two long{NH}term changes at once: the Surrey{NH}Langley SkyTrain extension under construction, and the ongoing build{NH}out of Willoughby. Both tend to support demand along their corridors, though timing and location within Langley matter a lot. Talk to Nader for a read on a specific area."),
+   ("What's the property transfer tax on a home in Langley, BC?", f"BC's property transfer tax is 1% on the first $200,000, 2% from $200,000 to $2,000,000, 3% from $2,000,000 to $3,000,000, and a further 2% (5% total) on any residential value above $3,000,000. Some Willoughby condos and townhomes can qualify for the first{NH}time buyer exemption (up to an $835,000 fair market value), while larger acreages can land in the higher tax tiers. Use the <a href=\"/cash-to-close\">Cash to Close calculator</a> for an exact number."),
+   ("How far is Langley from downtown Vancouver?", f"About 45 to 60 minutes by car via Highway 1, depending on traffic and which part of Langley you're in. Transit times are expected to improve once the Surrey{NH}Langley SkyTrain extension opens, which is currently scheduled for late 2029."),
+   ("Is Langley part of Metro Vancouver?", f"Yes. Both the Township of Langley and the City of Langley are member municipalities of the Metro Vancouver Regional District."),
+   ("What's the difference between the Township of Langley and the City of Langley?", f"They're two separate municipalities with their own councils, even though they share a name and are usually searched and marketed together. The City of Langley is the smaller, denser core; the Township surrounds it and includes Willoughby, Walnut Grove, Fort Langley, Brookswood, Murrayville, and Aldergrove."),
+   ("What areas does this Langley search cover?", f"This search covers Langley, including Fort Langley, Willoughby, Walnut Grove, Brookswood, Murrayville, and Aldergrove."),
+  ],
+  neigh=[
+   ("Fort Langley", f"A National Historic Site and the birthplace of the mainland Colony of British Columbia, with a walkable village core of shops, caf&eacute;s, and heritage homes."),
+   ("Willoughby", f"One of Langley's fastest{NH}growing areas, with new townhome and condo construction around Willoughby Town Centre."),
+   ("Walnut Grove", f"An established, family{NH}oriented community near the Fraser River, popular for its schools and parks."),
+   ("Brookswood", f"A leafy, low{NH}density neighbourhood of larger lots that's slowly transitioning to newer construction as the area redevelops."),
+   ("Murrayville", f"A quiet, established pocket around Murrayville's small commercial strip, close to Langley's hospital and recreation centre."),
+   ("Aldergrove", f"Langley's easternmost community, more rural in feel, with larger acreages and easy access to Highway 1."),
+  ],
+  life=[
+   ("🚇", "SkyTrain Is Coming", f"The <strong>Surrey{NH}Langley SkyTrain</strong> extension is under construction and currently scheduled to reach Langley City Centre in late 2029."),
+   ("🏰", "Fort Langley", f"A National Historic Site marking where the mainland Colony of British Columbia was proclaimed in 1858."),
+   ("🎓", "Two Universities", f"<strong>Trinity Western University</strong> and a <strong>Kwantlen Polytechnic University</strong> campus both call Langley home."),
+   ("🏗️", "Still Being Built", f"Willoughby is one of the region's major areas of master{NH}planned new construction."),
+   ("🌳", "Parks &amp; Farmland", f"From Campbell Valley Regional Park to working farms, Langley has plenty of open space."),
+   ("🛍️", "Walking{NH}Village Shopping", f"Fort Langley's village core and Willoughby Town Centre offer two very different retail experiences."),
+   ("📚", "Schools", f"Public schools fall under <strong>School District 35 Langley</strong>."),
+   ("🚗", "Highway 1 Corridor", f"Langley sits directly on the Trans{NH}Canada Highway, midway between Abbotsford and Surrey."),
+  ],
+  take=(f"Langley is a market in two speeds: Willoughby is being built out almost block by block, while Fort Langley changes very little. As an engineer, I like watching how a new SkyTrain extension can reshape value along its corridor, and the question for any buyer is how much of that is already in today's prices. I help my clients figure out whether they're buying the neighbourhood as it is today, or the one it's about to become."),
+)
 def plain(s): return re.sub(r'<[^>]+>', '', s).replace(NH, '-').replace('&amp;', '&')
 def render(key):
     c = CONFIGS[key]; L = c['label']; PAGE = c['page']
