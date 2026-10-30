@@ -15,6 +15,7 @@ The current title ("Homes for Sale in Burnaby, BC | eXp Realty - Nader Bakhoum",
 Same fixes as the White Rock and Abbotsford pages: head tags removed (the platform outputs them), styles scoped so they cannot restyle the platform, FAQ rebuilt with native details/summary, boxes built from divs (not lists) so platform styles cannot add bullets, FAQ schema text identical to the visible FAQ, breadcrumb schema fixed, one shared agent entity, calculator links fixed (/cash-to-close, /mortgage-calculators), links added to /vancouver-listings, /burnaby-presales and /burnaby-sold-listings, and a Market snapshot section with a Page Script feed.
 
 ## Claims I changed (they could not be supported)
+- Nader's Take: removed "Burnaby is where I do most of my work" (not true) and changed "in the country" to "in the region".
 - "more buildings over 100 metres than Vancouver itself": removed. Vancouver very likely has more.
 - "Two Gilmore Place... the tallest building in British Columbia": removed. Living Shangri-La in Vancouver is generally cited as BC's tallest. Now "the Gilmore Place towers".
 - "linking Metrotown, Brentwood, and Lougheed directly to downtown Vancouver": removed "directly" (riders from Brentwood on the Millennium Line may need to transfer). The FAQ now says "a SkyTrain ride on the Expo or Millennium line".
@@ -23,7 +24,6 @@ Same fixes as the White Rock and Abbotsford pages: head tags removed (the platfo
 - "one of Metro Vancouver's largest employment bases outside downtown Vancouver": softened to "a major employment centre".
 
 ## Check yourself before publishing
-- Nader's Take begins "Burnaby is where I do most of my work". I kept it because it is your words, but your listed office is in Surrey and your marketing centres on White Rock and South Surrey. Please confirm it is true, or edit it.
 - "Third-largest city in Metro Vancouver" (Burnaby is generally cited as the third largest by population after Vancouver and Surrey).
 - BC property transfer tax figures and first-time buyer thresholds ($835,000 / $860,000, set in 2024).
 - Neighbourhood descriptions (for example Edmonds near the New Westminster border, Burnaby Heights along Hastings Street).

@@ -523,7 +523,7 @@
         <div class="wr-take-label">Nader's Take</div>
         <figure>
           <blockquote>
-            <p>"Burnaby is where I do most of my work, and as an engineer I appreciate a market built around infrastructure; the SkyTrain runs right through it. Between Metrotown, Brentwood, and Lougheed, this is one of the fastest&#8209;changing skylines in the country, and buyers who understand the difference between a pre&#8209;sale highrise and an established low&#8209;rise strata make much better decisions. I help my clients read the fine print, not just the view."</p>
+            <p>"As an engineer, I appreciate a market built around infrastructure, and in Burnaby the SkyTrain runs right through it. Between Metrotown, Brentwood, and Lougheed, this is one of the fastest&#8209;changing skylines in the region, and buyers who understand the difference between a pre&#8209;sale highrise and an established low&#8209;rise strata make much better decisions. I help my clients read the fine print, not just the view."</p>
           </blockquote>
           <figcaption><cite>Nader Bakhoum, PMP, P.Eng.</cite></figcaption>
         </figure>
