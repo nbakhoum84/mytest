@@ -19,7 +19,7 @@ const TABS = [
 
 export default function App() {
   const [tab, setTab] = useState('home');
-  const { embedded, stickyTop } = useEmbedded(tab);
+  const { embedded } = useEmbedded(tab);
 
   // Android back button: from another tab go back to Home; on Home let Android close the app.
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function App() {
       <SafeAreaView style={styles.root} dataSet={{ embed: 'root' }}>
         <StatusBar style="auto" />
         <View style={{ flex: 1 }} dataSet={{ embed: 'screen' }}><Screen {...props} /></View>
-        <View style={[styles.tabs, embedded && styles.tabsTop, embedded && { transform: [{ translateY: stickyTop }] }]}>
+        <View style={[styles.tabs, embedded && styles.tabsTop]} dataSet={{ embed: 'tabs' }}>
           {TABS.map((t) => (
             <TouchableOpacity key={t.key} style={styles.tab} onPress={() => setTab(t.key)}>
               <Text style={[styles.tabText, tab === t.key && styles.tabOn]}>{t.label}</Text>

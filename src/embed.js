@@ -22,19 +22,30 @@ export function useEmbedded(tab) {
     const style = document.createElement('style');
     style.textContent = CSS;
     document.head.appendChild(style);
+    const el = document.getElementById('root');
     let last = 0;
-    const send = () => {
-      const el = document.getElementById('root');
+    const send = (force) => {
       const h = Math.ceil(el ? el.getBoundingClientRect().height : document.body.scrollHeight);
-      if (h && h !== last) { last = h; window.parent.postMessage({ type: 'hn-app-height', height: h }, '*'); }
+      if (h && (force || h !== last)) { last = h; window.parent.postMessage({ type: 'hn-app-height', height: h }, '*'); }
     };
-    const ro = new ResizeObserver(send);
-    ro.observe(document.getElementById('root'));
-    const mo = new MutationObserver(send);
-    mo.observe(document.getElementById('root'), { childList: true, subtree: true });
-    window.addEventListener('load', send);
-    send();
-    return () => { ro.disconnect(); mo.disconnect(); window.removeEventListener('load', send); style.remove(); root.classList.remove('hn-embedded'); };
+    const ro = new ResizeObserver(() => send(false));
+    ro.observe(el);
+    // The page asks for the height when it loads late; its offset for the tab bar is applied straight to the DOM (no React re-render per scroll).
+    const onMsg = (e) => {
+      if (e.source !== window.parent || !e.data) return;
+      if (e.data.type === 'hn-ping') send(true);
+      if (e.data.type === 'hn-view') {
+        const tabs = document.querySelector('[data-embed="tabs"]');
+        const max = Math.max(0, (el ? el.getBoundingClientRect().height : 0) - 56);
+        const y = Math.min(Math.max(0, Math.round(e.data.top)), max);
+        if (tabs) tabs.style.transform = y ? `translateY(${y}px)` : '';
+      }
+    };
+    window.addEventListener('message', onMsg);
+    window.addEventListener('load', () => send(true));
+    send(true);
+    window.parent.postMessage({ type: 'hn-app-ready' }, '*');
+    return () => { ro.disconnect(); window.removeEventListener('message', onMsg); style.remove(); root.classList.remove('hn-embedded'); };
   }, [embedded]);
 
   // After a tab change, ask the page to scroll back up to the top of the app.
@@ -42,23 +53,5 @@ export function useEmbedded(tab) {
     if (embedded) window.parent.postMessage({ type: 'hn-app-top' }, '*');
   }, [embedded, tab]);
 
-  // The page tells us how far down the app its visible area starts, so the tab bar can stay in view while the page scrolls.
-  const [stickyTop, setStickyTop] = useState(0);
-  useEffect(() => {
-    if (!embedded) return undefined;
-    const onMsg = (e) => {
-      if (e.source !== window.parent || !e.data || e.data.type !== 'hn-view') return;
-      const root = document.getElementById('root');
-      const rh = Math.ceil(root ? root.getBoundingClientRect().height : 0);
-      // Answer every ping with the height too: the page's script may have loaded after our first message.
-      if (rh) window.parent.postMessage({ type: 'hn-app-height', height: rh }, '*');
-      const max = Math.max(0, rh - 56);
-      setStickyTop(Math.min(Math.max(0, Math.round(e.data.top)), max));
-    };
-    window.addEventListener('message', onMsg);
-    window.parent.postMessage({ type: 'hn-app-ready' }, '*');
-    return () => window.removeEventListener('message', onMsg);
-  }, [embedded]);
-
-  return { embedded, stickyTop };
+  return { embedded };
 }
