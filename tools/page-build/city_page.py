@@ -229,6 +229,42 @@ CONFIGS['portmoody'] = dict(
   ],
   take=(f"Port Moody is proof that small can still be desirable. It's the smallest of the Tri{NH}Cities, but the combination of Rocky Point Park, the breweries, and two SkyTrain stations punches above its size. As an engineer, I pay attention to the hillside grading on Heritage Mountain and Glenayre in particular, since slope affects everything from drainage to renovation cost. I help my clients understand what they're taking on before they fall for the view."),
 )
+CONFIGS['richmond'] = dict(
+  label='Richmond', page='richmond-listings', hero_word='Homes',
+  nearby=[('/burnaby-listings', 'Burnaby homes for sale'), ('/richmond-presales', 'Richmond presales'), ('/richmond-sold-listings', 'recently sold Richmond homes')],
+  life_h2='Why Richmond? The Airport, the Delta &amp; Steveston',
+  life_sub=f"Richmond's geography and transit access set it apart from the rest of the region.",
+  areas=["White Rock", "Surrey", "Richmond", "Burnaby", "New Westminster", "Coquitlam", "Port Coquitlam", "Port Moody", "Delta", "Langley", "Abbotsford"],
+  agent_cities='White Rock, Surrey, Richmond, Burnaby, New Westminster, Coquitlam, Port Coquitlam, Port Moody, Delta, Langley and Abbotsford',
+  sub=(f"Richmond is one of the largest cities in Metro Vancouver, built on Lulu Island and Sea Island in the Fraser River delta. Much of the city is low{NH}lying and protected by a network of dykes. It is home to Vancouver International Airport, the historic fishing village of Steveston, and the Canada Line, which connects the airport and central Richmond directly to downtown Vancouver. Richmond sits across the Fraser River from Delta, where the George Massey Tunnel is being replaced with a new crossing. With hundreds of active listings, prices range widely, from a condo near the Canada Line to a waterfront home. Whether you're after a <strong>condo near the Canada Line</strong>, a <strong>family home in Richmond West</strong>, or a <strong>character property in Steveston</strong>, Richmond has it."),
+  faq=[
+   ("Is Richmond a good place to invest in real estate right now?", f"Richmond has direct Canada Line access to both YVR and downtown Vancouver, and a wide mix of condos, townhomes and single{NH}family homes. Talk to Nader for a current{NH}day read on a specific building or area."),
+   ("What's the property transfer tax on a home in Richmond, BC?", f"BC's property transfer tax is 1% on the first $200,000, 2% from $200,000 to $2,000,000, 3% from $2,000,000 to $3,000,000, and a further 2% (5% total) on any residential value above $3,000,000. Richmond's range spans from condos near the Canada Line, some near the first{NH}time buyer exemption threshold (up to an $835,000 fair market value), to larger single{NH}family homes that sit above it. Use the <a href=\"/cash-to-close\">Cash to Close calculator</a> for an exact number."),
+   ("How far is Richmond from downtown Vancouver?", f"By transit, take the Canada Line SkyTrain from a Richmond station directly to downtown Vancouver, so check TransLink for current trip times from your station. By car, travel time depends heavily on the route and traffic."),
+   ("Is Richmond part of Metro Vancouver?", f"Yes. Richmond is a member municipality of the Metro Vancouver Regional District, and one of the few cities in the region built almost entirely on river{NH}delta islands."),
+   ("What school district serves Richmond?", f"Public schools fall under School District 38 Richmond. Kwantlen Polytechnic University also has a campus in the city."),
+   ("What areas does this Richmond search cover?", f"This search covers Richmond, including Steveston, City Centre/Golden Village, Richmond West, Terra Nova, Broadmoor, and Hamilton."),
+  ],
+  neigh=[
+   ("Steveston", f"A historic fishing village anchored by the Gulf of Georgia Cannery National Historic Site and a working fishing fleet, and still one of Richmond's most distinct pockets."),
+   ("City Centre / Golden Village", f"Richmond's dense, transit{NH}connected core along No. 3 Road, home to the Aberdeen Centre."),
+   ("Richmond West", f"An established, family{NH}oriented area of single{NH}family homes near dyke trails."),
+   ("Terra Nova", f"A quiet, park{NH}heavy neighbourhood at the northwest tip of Lulu Island, close to Terra Nova Rural Park."),
+   ("Broadmoor", f"An established single{NH}family neighbourhood in central Richmond."),
+   ("Hamilton", f"A smaller community on Richmond's east side, with a mix of industrial land and newer residential growth."),
+  ],
+  life=[
+   ("✈️", "Home to YVR", f"Vancouver International Airport sits within Richmond's boundaries, a major driver of the city's economy."),
+   ("🚇", "The Canada Line", f"The Canada Line SkyTrain connects Richmond directly to both YVR and downtown Vancouver."),
+   ("🎣", f"Steveston's Fishing Fleet", f"Steveston is still home to a working commercial fishing fleet and the Gulf of Georgia Cannery National Historic Site."),
+   ("🌙", "The Richmond Night Market", f"A seasonal night market runs in Richmond, a major cultural draw."),
+   ("🌊", "Low-Lying and Diked", f"Much of Richmond is low{NH}lying and protected by an extensive network of dykes along the Fraser River."),
+   ("🌉", "A New River Crossing", f"The George Massey Tunnel to Delta is being replaced with a new crossing."),
+   ("📚", "Schools", f"Public schools fall under <strong>School District 38 Richmond</strong>."),
+   ("🛍️", "Golden Village", f"No. 3 Road's Golden Village is a dense stretch of Asian restaurants and shopping."),
+  ],
+  take=(f"Richmond is a market where geography matters more than almost anywhere else in the region. Much of the city is low{NH}lying, and that shapes everything from foundation type to insurance to how a property is built. As an engineer, that's exactly the kind of detail I dig into before a client makes an offer. Between Steveston's older housing stock and the newer highrises around the Canada Line, the due diligence looks completely different depending on where you're looking."),
+)
 def plain(s): return re.sub(r'<[^>]+>', '', s).replace(NH, '-').replace('&amp;', '&')
 def render(key):
     c = CONFIGS[key]; L = c['label']; PAGE = c['page']

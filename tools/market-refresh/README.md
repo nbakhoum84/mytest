@@ -35,3 +35,5 @@ Paste each loader into that page's Edit Page > Page Script (JavaScript only).
 
 - Wording rule: the Market snapshot text says a property type is "the bulk of the market" only when it is at least 55% of the past year's sales; otherwise "the largest group".
 - `tools/page-build/city_page.py` refuses to write a page containing an unrendered `{...}` placeholder (a string missing its f prefix once showed a literal `{NH}` in two card titles).
+
+- Richmond (`richmond`): `node refresh.js richmond`, then `python3 build.py richmond`. Loader: `richmond-market-loader.txt`.
