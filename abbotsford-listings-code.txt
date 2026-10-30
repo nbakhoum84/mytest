@@ -201,8 +201,7 @@
     letter-spacing: .04em;
     color: var(--ink-soft);
   }
-  .wr-crumbs ol { display: flex; flex-wrap: wrap; gap: 6px; }
-  .wr-crumbs li + li::before { content: "/"; margin-right: 6px; }
+  .wr-crumbs { display: flex; flex-wrap: wrap; gap: 6px; }
   .wr-crumbs a { color: inherit; text-decoration: none; }
   .wr-crumbs a:hover { color: var(--brass-deep); }
 
@@ -250,14 +249,14 @@
     background: var(--ink);
     border: 1px solid var(--ink);
   }
-  .wr-neigh li { background: var(--paper); padding: 26px; }
+  .wr-neigh > div { background: var(--paper); padding: 26px; }
   .wr-coord { margin-bottom: 10px; font-family: var(--mono); font-size: 12px; color: var(--survey-green); }
   .wr-neigh h3 { font-size: 16px; font-weight: 600; }
   .wr-neigh p { margin-top: 10px; font-size: 14px; line-height: 1.6; color: var(--ink-soft); }
 
   /* Lifestyle */
   .wr-life { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-  .wr-life li { padding: 28px; background: var(--white); border: 1px solid var(--paper-line); }
+  .wr-life > div { padding: 28px; background: var(--white); border: 1px solid var(--paper-line); }
   .wr-life h3 { margin-bottom: 8px; font-family: var(--serif); font-size: 18px; font-weight: 500; }
   .wr-life p { font-size: 14.5px; line-height: 1.7; color: var(--ink-soft); }
 
@@ -334,7 +333,7 @@
 
   /* Market snapshot (reuses the .wr-neigh grid so it matches the neighbourhood block) */
   .wr-neigh-4 { grid-template-columns: repeat(4, 1fr); }
-  .wr-kpis li { padding: 22px 26px; }
+  .wr-kpis > div { padding: 22px 26px; }
   .wr-kpi-val { font-family: var(--serif); font-size: 26px; font-weight: 500; line-height: 1.2; }
   .wr-types { margin-top: 28px; }
   .wr-facts { margin: 14px 0 0; }
@@ -362,11 +361,10 @@
   <div class="wr-hero-bg">
     <div class="wr-wrap">
       <nav class="wr-crumbs" aria-label="Breadcrumb">
-        <ol>
-          <li><a href="https://home-nader.com/">Home</a></li>
-          <li aria-current="page">Abbotsford</li>
-        </ol>
-      </nav>
+          <a href="https://home-nader.com/">Home</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Abbotsford</span>
+        </nav>
 
       <header class="wr-hero">
         <div class="wr-eyebrow">Abbotsford, BC</div>
@@ -387,15 +385,15 @@
         <p>Active listings as of <span data-wr="asOf">October 30, 2026</span>, and sales over the past 12 complete months (<span data-wr="windowStart">September 2025</span> to <span data-wr="windowEnd">August 2026</span>).</p>
       </div>
 
-      <ul class="wr-neigh wr-neigh-4 wr-kpis">
-        <li><div class="wr-coord">Active listings</div><div class="wr-kpi-val"><span data-wr="active">1083</span></div></li>
-        <li><div class="wr-coord">Median list price</div><div class="wr-kpi-val"><span data-wr="medianList">$769,000</span></div></li>
-        <li><div class="wr-coord">Sold, past 12 months</div><div class="wr-kpi-val"><span data-wr="sold12">1660</span></div></li>
-        <li><div class="wr-coord">Median days to sell</div><div class="wr-kpi-val"><span data-wr="domMedian">26</span></div></li>
-      </ul>
+      <div class="wr-neigh wr-neigh-4 wr-kpis" role="list">
+        <div role="listitem"><div class="wr-coord">Active listings</div><div class="wr-kpi-val"><span data-wr="active">1,083</span></div></div>
+        <div role="listitem"><div class="wr-coord">Median list price</div><div class="wr-kpi-val"><span data-wr="medianList">$769,000</span></div></div>
+        <div role="listitem"><div class="wr-coord">Sold, past 12 months</div><div class="wr-kpi-val"><span data-wr="sold12">1,660</span></div></div>
+        <div role="listitem"><div class="wr-coord">Median days to sell</div><div class="wr-kpi-val"><span data-wr="domMedian">26</span></div></div>
+      </div>
 
-      <ul class="wr-neigh wr-types">
-        <li>
+      <div class="wr-neigh wr-types" role="list">
+        <div role="listitem">
           <div class="wr-coord" aria-hidden="true">01</div>
           <h3>Condos</h3>
           <dl class="wr-facts">
@@ -405,8 +403,8 @@
             <div><dt>Median sold price</dt><dd><span data-wr="condo.medianSold">$390,000</span></dd></div>
             <div><dt>Median days to sell</dt><dd><span data-wr="condo.dom">34</span></dd></div>
           </dl>
-        </li>
-        <li>
+        </div>
+        <div role="listitem">
           <div class="wr-coord" aria-hidden="true">02</div>
           <h3>Townhomes</h3>
           <dl class="wr-facts">
@@ -416,8 +414,8 @@
             <div><dt>Median sold price</dt><dd><span data-wr="townhome.medianSold">$649,900</span></dd></div>
             <div><dt>Median days to sell</dt><dd><span data-wr="townhome.dom">25</span></dd></div>
           </dl>
-        </li>
-        <li>
+        </div>
+        <div role="listitem">
           <div class="wr-coord" aria-hidden="true">03</div>
           <h3>Single&#8209;family homes</h3>
           <dl class="wr-facts">
@@ -427,10 +425,10 @@
             <div><dt>Median sold price</dt><dd><span data-wr="sfh.medianSold">$1,075,000</span></dd></div>
             <div><dt>Median days to sell</dt><dd><span data-wr="sfh.dom">21</span></dd></div>
           </dl>
-        </li>
-      </ul>
+        </div>
+      </div>
 
-      <p class="wr-marketnote">About <span data-wr="perMonth">138</span> homes sold per month over the past year, and half of them sold within <span data-wr="domMedian">26</span> days of listing. Single&#8209;family homes are the bulk of the market: <span data-wr="sfh.sold">646</span> of the <span data-wr="sold12">1660</span> sales and <span data-wr="sfh.active">451</span> of the <span data-wr="active">1083</span> active listings, with a median sold price of <span data-wr="sfh.medianSold">$1,075,000</span> against <span data-wr="condo.medianSold">$390,000</span> for condos. At the past year's sales pace, today's active listings equal roughly <span data-wr="supplyAll">8</span> months of supply overall, about <span data-wr="supplyCondo">7</span> months for condos and about <span data-wr="supplySfh">8</span> for single&#8209;family homes. Supply above about six months generally favours buyers. Want numbers for a specific street or building? <a href="/sell">Ask for a free home valuation</a>, or see the <a href="/latest-market-updates">latest market updates</a> and <a href="/abbotsford-sold-listings">recently sold Abbotsford homes</a>.</p>
+      <p class="wr-marketnote">About <span data-wr="perMonth">138</span> homes sold per month over the past year, and half of them sold within <span data-wr="domMedian">26</span> days of listing. Single&#8209;family homes are the bulk of the market: <span data-wr="sfh.sold">646</span> of the <span data-wr="sold12">1,660</span> sales and <span data-wr="sfh.active">451</span> of the <span data-wr="active">1,083</span> active listings, with a median sold price of <span data-wr="sfh.medianSold">$1,075,000</span> against <span data-wr="condo.medianSold">$390,000</span> for condos. At the past year's sales pace, today's active listings equal roughly <span data-wr="supplyAll">8</span> months of supply overall, about <span data-wr="supplyCondo">7</span> months for condos and about <span data-wr="supplySfh">8</span> for single&#8209;family homes. Supply above about six months generally favours buyers. Want numbers for a specific street or building? <a href="/sell">Ask for a free home valuation</a>, or see the <a href="/latest-market-updates">latest market updates</a> and <a href="/abbotsford-sold-listings">recently sold Abbotsford homes</a>.</p>
       <p class="wr-src">Source: MLS&reg; listing and sold data shown on this site. Active listings were counted on <span data-wr="asOf">October 30, 2026</span>. Sales cover <span data-wr="windowStart">September 2025</span> to <span data-wr="windowEnd">August 2026</span> because sales from the most recent weeks are not yet fully reported. Days to sell is the time from listing date to sale date. The cards leave out <span data-wr="otherActive">107</span> other active listings and <span data-wr="otherSales">54</span> other sales (vacant land, manufactured home and multi&#8209;family).</p>
     </div>
   </section>
@@ -442,38 +440,38 @@
         <h2 id="wr-neigh-title">Neighbourhoods in Abbotsford</h2>
         <p>This search spans the following Abbotsford communities.</p>
       </div>
-      <ul class="wr-neigh">
-        <li>
+      <div class="wr-neigh" role="list">
+        <div role="listitem">
           <div class="wr-coord" aria-hidden="true">01</div>
           <h3>Downtown Abbotsford</h3>
           <p>The city's historic core, home to the Reach Gallery Museum and a growing mix of cafés, breweries, and low&#8209;rise condo developments.</p>
-        </li>
-        <li>
+        </div>
+        <div role="listitem">
           <div class="wr-coord" aria-hidden="true">02</div>
           <h3>West Abbotsford</h3>
           <p>Established, family&#8209;friendly streets near Highway 1 and Abbotsford Senior Secondary, a popular pocket for commuters to Langley and Surrey.</p>
-        </li>
-        <li>
+        </div>
+        <div role="listitem">
           <div class="wr-coord" aria-hidden="true">03</div>
           <h3>East Abbotsford</h3>
           <p>Rolling, well&#8209;established streets with larger lots and mountain views, within easy reach of Mill Lake and the MEI private school campus.</p>
-        </li>
-        <li>
+        </div>
+        <div role="listitem">
           <div class="wr-coord" aria-hidden="true">04</div>
           <h3>Mill Lake</h3>
           <p>Abbotsford's most walkable district, wrapped around the Mill Lake Park trail. Condos and townhomes here often trade at a premium for the setting.</p>
-        </li>
-        <li>
+        </div>
+        <div role="listitem">
           <div class="wr-coord" aria-hidden="true">05</div>
           <h3>Sumas Mountain</h3>
           <p>A semi&#8209;rural pocket of acreages and country properties on the mountain's lower slopes, popular with buyers wanting space and privacy.</p>
-        </li>
-        <li>
+        </div>
+        <div role="listitem">
           <div class="wr-coord" aria-hidden="true">06</div>
           <h3>Clearbrook</h3>
           <p>One of Abbotsford's most established and culturally rich neighbourhoods, centred on South Fraser Way's shops, temples, and restaurants.</p>
-        </li>
-      </ul>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -484,40 +482,40 @@
         <h2 id="wr-life-title">Why Abbotsford? Nature, Affordability &amp; Community</h2>
         <p>Abbotsford offers a blend of urban amenities and natural beauty.</p>
       </div>
-      <ul class="wr-life">
-        <li>
+      <div class="wr-life" role="list">
+        <div role="listitem">
           <h3><span aria-hidden="true">🏔️ </span>Mountain Views</h3>
           <p>Enjoy views of Mount Baker and the Fraser Valley. Outdoor enthusiasts love <strong>Sumas Mountain</strong> and <strong>Mill Lake Park</strong>.</p>
-        </li>
-        <li>
+        </div>
+        <div role="listitem">
           <h3><span aria-hidden="true">💰 </span>More Affordable Than Metro Vancouver</h3>
           <p>Abbotsford is typically more affordable than Metro Vancouver, which makes it popular with first&#8209;time buyers and growing families.</p>
-        </li>
-        <li>
+        </div>
+        <div role="listitem">
           <h3><span aria-hidden="true">🍁 </span>Community Spirit</h3>
           <p>With a vibrant downtown, local festivals, and farmers' markets, Abbotsford has a strong sense of community.</p>
-        </li>
-        <li>
+        </div>
+        <div role="listitem">
           <h3><span aria-hidden="true">📚 </span>Schools</h3>
           <p>Home to schools including <strong>Abbotsford Senior Secondary</strong> and <strong>MEI School</strong>, under School District 34 Abbotsford.</p>
-        </li>
-        <li>
+        </div>
+        <div role="listitem">
           <h3><span aria-hidden="true">🚗 </span>Easy Access</h3>
           <p>About 60 to 75 minutes from downtown Vancouver via Highway 1, with easy access to the U.S. border and the rest of the Fraser Valley.</p>
-        </li>
-        <li>
+        </div>
+        <div role="listitem">
           <h3><span aria-hidden="true">🌳 </span>Parks &amp; Trails</h3>
           <p>Explore the <strong>Discovery Trail</strong>, the <strong>Abbotsford Recreation Centre</strong>, and numerous parks.</p>
-        </li>
-        <li>
+        </div>
+        <div role="listitem">
           <h3><span aria-hidden="true">🎓 </span>A University Town</h3>
           <p>The main campus of the <strong>University of the Fraser Valley</strong> keeps a steady flow of students, faculty, and rental demand moving through the city.</p>
-        </li>
-        <li>
+        </div>
+        <div role="listitem">
           <h3><span aria-hidden="true">✈️ </span>Airshow Heritage</h3>
           <p><strong>Abbotsford International Airport</strong> hosts the long&#8209;running Abbotsford International Airshow, which draws large crowds each summer.</p>
-        </li>
-      </ul>
+        </div>
+      </div>
     </div>
   </section>
 

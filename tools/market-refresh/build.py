@@ -38,6 +38,7 @@ for x in sold:
     rows.append((sd, (sd.date() - ld.date()).days, x['soldPrice'], x['propertyType']))
 win = [r for r in rows if start <= r[0] < end_x]; wd = [r for r in win if r[1] >= 0]
 M = lambda n: '${:,.0f}'.format(n)
+N = lambda n: '{:,}'.format(int(n))
 cnt = collections.Counter(r[0].strftime('%Y-%m') for r in win); med = st.median(cnt.values()) if cnt else 0
 for k, v in sorted(cnt.items()):
     if v < 0.6 * med: print(f'WARNING: {k} has only {v} sales (median month {med}); feed may be lagging', file=sys.stderr)
@@ -72,11 +73,11 @@ asof = f'{today:%B} {today.day}, {today.year}'; monthyr = f'{today:%B %Y}'; w1 =
 c, f = T['condo'], T['sfh']
 
 feed = {'updated': today.strftime('%Y-%m-%d'), 'asOf': asof, 'monthYear': monthyr, 'windowStart': w1, 'windowEnd': w2,
-        'active': str(nA), 'medianList': M(medA), 'sold12': str(nS), 'domMedian': str(domAll),
+        'active': N(nA), 'medianList': M(medA), 'sold12': N(nS), 'domMedian': str(domAll),
         'perMonth': str(round(nS / 12)), 'supplyAll': str(round(sup(nA, nS))), 'supplyCondo': str(round(sup(c['a'], c['s']))), 'supplySfh': str(round(sup(f['a'], f['s']))),
-        'otherActive': str(otherA), 'otherSales': str(otherS)}
+        'otherActive': N(otherA), 'otherSales': N(otherS)}
 for k, _, _ in MAIN:
-    v = T[k]; feed.update({f'{k}.active': str(v['a']), f'{k}.medianList': M(v['ma']), f'{k}.sold': str(v['s']), f'{k}.medianSold': M(v['ms']), f'{k}.dom': str(v['dom'])})
+    v = T[k]; feed.update({f'{k}.active': N(v['a']), f'{k}.medianList': M(v['ma']), f'{k}.sold': N(v['s']), f'{k}.medianSold': M(v['ms']), f'{k}.dom': str(v['dom'])})
 feed['_raw'] = {'active': nA, 'medianList': medA, 'sold12': nS, 'domMedian': domAll}
 LIVE = f'{D}/market.json'; PEND = f'{D}/market.pending.json'
 if os.path.exists(LIVE) and not force:
@@ -91,21 +92,21 @@ json.dump(feed, open(LIVE, 'w'), indent=1)
 if os.path.exists(PEND): os.remove(PEND)
 
 S = lambda key, val: f'<span data-wr="{key}">{val}</span>'
-kpi = lambda label, key, val: f'        <li><div class="wr-coord">{label}</div><div class="wr-kpi-val">{S(key, val)}</div></li>\n'
-kpis = ''.join([kpi('Active listings', 'active', nA), kpi('Median list price', 'medianList', M(medA)), kpi('Sold, past 12 months', 'sold12', nS), kpi('Median days to sell', 'domMedian', domAll)])
+kpi = lambda label, key, val: f'        <div role="listitem"><div class="wr-coord">{label}</div><div class="wr-kpi-val">{S(key, val)}</div></div>\n'
+kpis = ''.join([kpi('Active listings', 'active', N(nA)), kpi('Median list price', 'medianList', M(medA)), kpi('Sold, past 12 months', 'sold12', N(nS)), kpi('Median days to sell', 'domMedian', domAll)])
 def card(i, k, label):
     v = T[k]
-    return f'''        <li>
+    return f'''        <div role="listitem">
           <div class="wr-coord" aria-hidden="true">0{i}</div>
           <h3>{label}</h3>
           <dl class="wr-facts">
-            <div><dt>Active now</dt><dd>{S(k + '.active', v["a"])}</dd></div>
+            <div><dt>Active now</dt><dd>{S(k + '.active', N(v["a"]))}</dd></div>
             <div><dt>Median list price</dt><dd>{S(k + '.medianList', M(v["ma"]))}</dd></div>
-            <div><dt>Sold, past 12 months</dt><dd>{S(k + '.sold', v["s"])}</dd></div>
+            <div><dt>Sold, past 12 months</dt><dd>{S(k + '.sold', N(v["s"]))}</dd></div>
             <div><dt>Median sold price</dt><dd>{S(k + '.medianSold', M(v["ms"]))}</dd></div>
             <div><dt>Median days to sell</dt><dd>{S(k + '.dom', v["dom"])}</dd></div>
           </dl>
-        </li>
+        </div>
 '''
 cards = ''.join(card(i + 1, k, label) for i, (k, label, _) in enumerate(MAIN))
 LOADER_JS = """/* %LABEL% market snapshot: fills the numbers marked data-wr from the monthly data feed.
@@ -142,14 +143,14 @@ section = f'''  <!-- MARKET SNAPSHOT: baseline counted {asof}; sales {w1} to {w2
         <p>Active listings as of {S('asOf', asof)}, and sales over the past 12 complete months ({S('windowStart', w1)} to {S('windowEnd', w2)}).</p>
       </div>
 
-      <ul class="wr-neigh wr-neigh-4 wr-kpis">
-{kpis}      </ul>
+      <div class="wr-neigh wr-neigh-4 wr-kpis" role="list">
+{kpis}      </div>
 
-      <ul class="wr-neigh wr-types">
-{cards}      </ul>
+      <div class="wr-neigh wr-types" role="list">
+{cards}      </div>
 
-      <p class="wr-marketnote">About {S('perMonth', round(nS / 12))} homes sold per month over the past year, and half of them sold within {S('domMedian', domAll)} days of listing. {labels[topk]} are the bulk of the market: {S(topk + '.sold', Ttop["s"])} of the {S('sold12', nS)} sales and {S(topk + '.active', Ttop["a"])} of the {S('active', nA)} active listings, with a median sold price of {S(topk + '.medianSold', M(Ttop["ms"]))} against {S(cmpk + '.medianSold', M(Tc["ms"]))} for {labels[cmpk].lower()}. At the past year's sales pace, today's active listings equal roughly {S('supplyAll', round(sup(nA, nS)))} months of supply overall, about {S('supplyCondo', round(sup(c["a"], c["s"])))} months for condos and about {S('supplySfh', round(sup(f["a"], f["s"])))} for single&#8209;family homes. Supply above about six months generally favours buyers. Want numbers for a specific street or building? <a href="/sell">Ask for a free home valuation</a>, or see the <a href="/latest-market-updates">latest market updates</a> and <a href="/{C['slug']}-sold-listings">recently sold {L} homes</a>.</p>
-      <p class="wr-src">Source: MLS&reg; listing and sold data shown on this site. Active listings were counted on {S('asOf', asof)}. Sales cover {S('windowStart', w1)} to {S('windowEnd', w2)} because sales from the most recent weeks are not yet fully reported. Days to sell is the time from listing date to sale date. The cards leave out {S('otherActive', otherA)} other active listings and {S('otherSales', otherS)} other sales ({other_text}).</p>
+      <p class="wr-marketnote">About {S('perMonth', round(nS / 12))} homes sold per month over the past year, and half of them sold within {S('domMedian', domAll)} days of listing. {labels[topk]} are the bulk of the market: {S(topk + '.sold', N(Ttop["s"]))} of the {S('sold12', N(nS))} sales and {S(topk + '.active', N(Ttop["a"]))} of the {S('active', N(nA))} active listings, with a median sold price of {S(topk + '.medianSold', M(Ttop["ms"]))} against {S(cmpk + '.medianSold', M(Tc["ms"]))} for {labels[cmpk].lower()}. At the past year's sales pace, today's active listings equal roughly {S('supplyAll', round(sup(nA, nS)))} months of supply overall, about {S('supplyCondo', round(sup(c["a"], c["s"])))} months for condos and about {S('supplySfh', round(sup(f["a"], f["s"])))} for single&#8209;family homes. Supply above about six months generally favours buyers. Want numbers for a specific street or building? <a href="/sell">Ask for a free home valuation</a>, or see the <a href="/latest-market-updates">latest market updates</a> and <a href="/{C['slug']}-sold-listings">recently sold {L} homes</a>.</p>
+      <p class="wr-src">Source: MLS&reg; listing and sold data shown on this site. Active listings were counted on {S('asOf', asof)}. Sales cover {S('windowStart', w1)} to {S('windowEnd', w2)} because sales from the most recent weeks are not yet fully reported. Days to sell is the time from listing date to sale date. The cards leave out {S('otherActive', N(otherA))} other active listings and {S('otherSales', N(otherS))} other sales ({other_text}).</p>
     </div>
   </section>
 

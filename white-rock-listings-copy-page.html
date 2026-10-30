@@ -189,8 +189,7 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
     letter-spacing: .04em;
     color: var(--ink-soft);
   }
-  .wr-crumbs ol { display: flex; flex-wrap: wrap; gap: 6px; }
-  .wr-crumbs li + li::before { content: "/"; margin-right: 6px; }
+  .wr-crumbs { display: flex; flex-wrap: wrap; gap: 6px; }
   .wr-crumbs a { color: inherit; text-decoration: none; }
   .wr-crumbs a:hover { color: var(--brass-deep); }
 
@@ -238,14 +237,14 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
     background: var(--ink);
     border: 1px solid var(--ink);
   }
-  .wr-neigh li { background: var(--paper); padding: 26px; }
+  .wr-neigh &gt; div { background: var(--paper); padding: 26px; }
   .wr-coord { margin-bottom: 10px; font-family: var(--mono); font-size: 12px; color: var(--survey-green); }
   .wr-neigh h3 { font-size: 16px; font-weight: 600; }
   .wr-neigh p { margin-top: 10px; font-size: 14px; line-height: 1.6; color: var(--ink-soft); }
 
   /* Lifestyle */
   .wr-life { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-  .wr-life li { padding: 28px; background: var(--white); border: 1px solid var(--paper-line); }
+  .wr-life &gt; div { padding: 28px; background: var(--white); border: 1px solid var(--paper-line); }
   .wr-life h3 { margin-bottom: 8px; font-family: var(--serif); font-size: 18px; font-weight: 500; }
   .wr-life p { font-size: 14.5px; line-height: 1.7; color: var(--ink-soft); }
 
@@ -322,7 +321,7 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
 
   /* Market snapshot (reuses the .wr-neigh grid so it matches the neighbourhood block) */
   .wr-neigh-4 { grid-template-columns: repeat(4, 1fr); }
-  .wr-kpis li { padding: 22px 26px; }
+  .wr-kpis &gt; div { padding: 22px 26px; }
   .wr-kpi-val { font-family: var(--serif); font-size: 26px; font-weight: 500; line-height: 1.2; }
   .wr-types { margin-top: 28px; }
   .wr-facts { margin: 14px 0 0; }
@@ -350,11 +349,10 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
   &lt;div class="wr-hero-bg"&gt;
     &lt;div class="wr-wrap"&gt;
       &lt;nav class="wr-crumbs" aria-label="Breadcrumb"&gt;
-        &lt;ol&gt;
-          &lt;li&gt;&lt;a href="https://home-nader.com/"&gt;Home&lt;/a&gt;&lt;/li&gt;
-          &lt;li aria-current="page"&gt;White Rock&lt;/li&gt;
-        &lt;/ol&gt;
-      &lt;/nav&gt;
+          &lt;a href="https://home-nader.com/"&gt;Home&lt;/a&gt;
+          &lt;span aria-hidden="true"&gt;/&lt;/span&gt;
+          &lt;span aria-current="page"&gt;White Rock&lt;/span&gt;
+        &lt;/nav&gt;
 
       &lt;header class="wr-hero"&gt;
         &lt;div class="wr-eyebrow"&gt;White Rock, BC&lt;/div&gt;
@@ -375,15 +373,15 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
         &lt;p&gt;Active listings as of &lt;span data-wr="asOf"&gt;October 30, 2026&lt;/span&gt;, and sales over the past 12 complete months (&lt;span data-wr="windowStart"&gt;September 2025&lt;/span&gt; to &lt;span data-wr="windowEnd"&gt;August 2026&lt;/span&gt;).&lt;/p&gt;
       &lt;/div&gt;
 
-      &lt;ul class="wr-neigh wr-neigh-4 wr-kpis"&gt;
-        &lt;li&gt;&lt;div class="wr-coord"&gt;Active listings&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;&lt;span data-wr="active"&gt;322&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;div class="wr-coord"&gt;Median list price&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;&lt;span data-wr="medianList"&gt;$1,139,000&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;div class="wr-coord"&gt;Sold, past 12 months&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;&lt;span data-wr="sold12"&gt;369&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;div class="wr-coord"&gt;Median days to sell&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;&lt;span data-wr="domMedian"&gt;31&lt;/span&gt;&lt;/div&gt;&lt;/li&gt;
-      &lt;/ul&gt;
+      &lt;div class="wr-neigh wr-neigh-4 wr-kpis" role="list"&gt;
+        &lt;div role="listitem"&gt;&lt;div class="wr-coord"&gt;Active listings&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;&lt;span data-wr="active"&gt;322&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div role="listitem"&gt;&lt;div class="wr-coord"&gt;Median list price&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;&lt;span data-wr="medianList"&gt;$1,139,000&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div role="listitem"&gt;&lt;div class="wr-coord"&gt;Sold, past 12 months&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;&lt;span data-wr="sold12"&gt;369&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div role="listitem"&gt;&lt;div class="wr-coord"&gt;Median days to sell&lt;/div&gt;&lt;div class="wr-kpi-val"&gt;&lt;span data-wr="domMedian"&gt;31&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
 
-      &lt;ul class="wr-neigh wr-types"&gt;
-        &lt;li&gt;
+      &lt;div class="wr-neigh wr-types" role="list"&gt;
+        &lt;div role="listitem"&gt;
           &lt;div class="wr-coord" aria-hidden="true"&gt;01&lt;/div&gt;
           &lt;h3&gt;Condos&lt;/h3&gt;
           &lt;dl class="wr-facts"&gt;
@@ -393,8 +391,8 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
             &lt;div&gt;&lt;dt&gt;Median sold price&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="condo.medianSold"&gt;$550,000&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
             &lt;div&gt;&lt;dt&gt;Median days to sell&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="condo.dom"&gt;32&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
           &lt;/dl&gt;
-        &lt;/li&gt;
-        &lt;li&gt;
+        &lt;/div&gt;
+        &lt;div role="listitem"&gt;
           &lt;div class="wr-coord" aria-hidden="true"&gt;02&lt;/div&gt;
           &lt;h3&gt;Townhomes&lt;/h3&gt;
           &lt;dl class="wr-facts"&gt;
@@ -404,8 +402,8 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
             &lt;div&gt;&lt;dt&gt;Median sold price&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="townhome.medianSold"&gt;$845,000&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
             &lt;div&gt;&lt;dt&gt;Median days to sell&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="townhome.dom"&gt;25&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
           &lt;/dl&gt;
-        &lt;/li&gt;
-        &lt;li&gt;
+        &lt;/div&gt;
+        &lt;div role="listitem"&gt;
           &lt;div class="wr-coord" aria-hidden="true"&gt;03&lt;/div&gt;
           &lt;h3&gt;Single&amp;#8209;family homes&lt;/h3&gt;
           &lt;dl class="wr-facts"&gt;
@@ -415,8 +413,8 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
             &lt;div&gt;&lt;dt&gt;Median sold price&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="sfh.medianSold"&gt;$1,565,000&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
             &lt;div&gt;&lt;dt&gt;Median days to sell&lt;/dt&gt;&lt;dd&gt;&lt;span data-wr="sfh.dom"&gt;32&lt;/span&gt;&lt;/dd&gt;&lt;/div&gt;
           &lt;/dl&gt;
-        &lt;/li&gt;
-      &lt;/ul&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
 
       &lt;p class="wr-marketnote"&gt;About &lt;span data-wr="perMonth"&gt;31&lt;/span&gt; homes sold per month over the past year, and half of them sold within &lt;span data-wr="domMedian"&gt;31&lt;/span&gt; days of listing. Condos are the bulk of the market: &lt;span data-wr="condo.sold"&gt;235&lt;/span&gt; of the &lt;span data-wr="sold12"&gt;369&lt;/span&gt; sales and &lt;span data-wr="condo.active"&gt;164&lt;/span&gt; of the &lt;span data-wr="active"&gt;322&lt;/span&gt; active listings, with a median sold price of &lt;span data-wr="condo.medianSold"&gt;$550,000&lt;/span&gt; against &lt;span data-wr="sfh.medianSold"&gt;$1,565,000&lt;/span&gt; for single&amp;#8209;family homes. At the past year's sales pace, today's active listings equal roughly &lt;span data-wr="supplyAll"&gt;10&lt;/span&gt; months of supply overall, about &lt;span data-wr="supplyCondo"&gt;8&lt;/span&gt; months for condos and about &lt;span data-wr="supplySfh"&gt;16&lt;/span&gt; for single&amp;#8209;family homes. Supply above about six months generally favours buyers. Want numbers for a specific street or building? &lt;a href="/sell"&gt;Ask for a free home valuation&lt;/a&gt;, or see the &lt;a href="/latest-market-updates"&gt;latest market updates&lt;/a&gt; and &lt;a href="/white-rock-sold-listings"&gt;recently sold White Rock homes&lt;/a&gt;.&lt;/p&gt;
       &lt;p class="wr-src"&gt;Source: MLS&amp;reg; listing and sold data shown on this site. Active listings were counted on &lt;span data-wr="asOf"&gt;October 30, 2026&lt;/span&gt;. Sales cover &lt;span data-wr="windowStart"&gt;September 2025&lt;/span&gt; to &lt;span data-wr="windowEnd"&gt;August 2026&lt;/span&gt; because sales from the most recent weeks are not yet fully reported. Days to sell is the time from listing date to sale date. The cards leave out &lt;span data-wr="otherActive"&gt;8&lt;/span&gt; other active listings and &lt;span data-wr="otherSales"&gt;12&lt;/span&gt; other sales (vacant land, manufactured and multi&amp;#8209;family).&lt;/p&gt;
@@ -430,38 +428,38 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
         &lt;h2 id="wr-neigh-title"&gt;Neighbourhoods in White Rock&lt;/h2&gt;
         &lt;p&gt;This search spans the following White Rock communities.&lt;/p&gt;
       &lt;/div&gt;
-      &lt;ul class="wr-neigh"&gt;
-        &lt;li&gt;
+      &lt;div class="wr-neigh" role="list"&gt;
+        &lt;div role="listitem"&gt;
           &lt;div class="wr-coord" aria-hidden="true"&gt;01&lt;/div&gt;
           &lt;h3&gt;Waterfront / Marine Drive&lt;/h3&gt;
           &lt;p&gt;The promenade and restaurant row along the beach, with condo towers steps from the pier and some of the highest price points in the city.&lt;/p&gt;
-        &lt;/li&gt;
-        &lt;li&gt;
+        &lt;/div&gt;
+        &lt;div role="listitem"&gt;
           &lt;div class="wr-coord" aria-hidden="true"&gt;02&lt;/div&gt;
           &lt;h3&gt;East Beach&lt;/h3&gt;
           &lt;p&gt;A quieter stretch of waterfront east of the pier, with beach access below and older character homes on the bluff above.&lt;/p&gt;
-        &lt;/li&gt;
-        &lt;li&gt;
+        &lt;/div&gt;
+        &lt;div role="listitem"&gt;
           &lt;div class="wr-coord" aria-hidden="true"&gt;03&lt;/div&gt;
           &lt;h3&gt;West Beach&lt;/h3&gt;
           &lt;p&gt;West of the pier, home to some of the city's newer waterfront condo developments.&lt;/p&gt;
-        &lt;/li&gt;
-        &lt;li&gt;
+        &lt;/div&gt;
+        &lt;div role="listitem"&gt;
           &lt;div class="wr-coord" aria-hidden="true"&gt;04&lt;/div&gt;
           &lt;h3&gt;Uptown / The Hill&lt;/h3&gt;
           &lt;p&gt;The higher&amp;#8209;elevation area around the city centre, away from the water, with more single&amp;#8209;family homes and views back down over the bay.&lt;/p&gt;
-        &lt;/li&gt;
-        &lt;li&gt;
+        &lt;/div&gt;
+        &lt;div role="listitem"&gt;
           &lt;div class="wr-coord" aria-hidden="true"&gt;05&lt;/div&gt;
           &lt;h3&gt;Five Corners&lt;/h3&gt;
           &lt;p&gt;The historic commercial intersection near the top of the hill, a walkable hub of shops, cafes, and older homes.&lt;/p&gt;
-        &lt;/li&gt;
-        &lt;li&gt;
+        &lt;/div&gt;
+        &lt;div role="listitem"&gt;
           &lt;div class="wr-coord" aria-hidden="true"&gt;06&lt;/div&gt;
           &lt;h3&gt;Johnston Road Corridor&lt;/h3&gt;
           &lt;p&gt;The main commercial spine running down to the waterfront, increasingly home to newer mid&amp;#8209;rise condo and townhome developments.&lt;/p&gt;
-        &lt;/li&gt;
-      &lt;/ul&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
     &lt;/div&gt;
   &lt;/section&gt;
 
@@ -472,40 +470,40 @@ textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5p
         &lt;h2 id="wr-life-title"&gt;Why White Rock? The Beach, the Pier &amp;amp; an Independent City&lt;/h2&gt;
         &lt;p&gt;White Rock trades size for waterfront, and most residents wouldn't trade back.&lt;/p&gt;
       &lt;/div&gt;
-      &lt;ul class="wr-life"&gt;
-        &lt;li&gt;
+      &lt;div class="wr-life" role="list"&gt;
+        &lt;div role="listitem"&gt;
           &lt;h3&gt;&lt;span aria-hidden="true"&gt;🌉 &lt;/span&gt;The 470&amp;#8209;Metre Pier&lt;/h3&gt;
           &lt;p&gt;White Rock Pier stretches 470 metres into Semiahmoo Bay. Built in 1914, it is billed by the city's own signage as Canada's longest pier.&lt;/p&gt;
-        &lt;/li&gt;
-        &lt;li&gt;
+        &lt;/div&gt;
+        &lt;div role="listitem"&gt;
           &lt;h3&gt;&lt;span aria-hidden="true"&gt;🏖️ &lt;/span&gt;The Waterfront Promenade&lt;/h3&gt;
           &lt;p&gt;A long oceanfront walkway lined with restaurants and cafes on Marine Drive is the social heart of the city, especially at sunset.&lt;/p&gt;
-        &lt;/li&gt;
-        &lt;li&gt;
+        &lt;/div&gt;
+        &lt;div role="listitem"&gt;
           &lt;h3&gt;&lt;span aria-hidden="true"&gt;🏙️ &lt;/span&gt;One of Metro Vancouver's Smallest Cities&lt;/h3&gt;
           &lt;p&gt;At just over 5 square kilometres, White Rock is among the smallest municipalities in the region. You can walk from the hill down to the beach in about 15 minutes.&lt;/p&gt;
-        &lt;/li&gt;
-        &lt;li&gt;
+        &lt;/div&gt;
+        &lt;div role="listitem"&gt;
           &lt;h3&gt;&lt;span aria-hidden="true"&gt;🚫 &lt;/span&gt;No SkyTrain&lt;/h3&gt;
           &lt;p&gt;White Rock has no direct SkyTrain access; residents rely on bus connections and Highway 99, about 45 minutes to downtown Vancouver by car.&lt;/p&gt;
-        &lt;/li&gt;
-        &lt;li&gt;
+        &lt;/div&gt;
+        &lt;div role="listitem"&gt;
           &lt;h3&gt;&lt;span aria-hidden="true"&gt;🏥 &lt;/span&gt;Peace Arch Hospital&lt;/h3&gt;
           &lt;p&gt;The city has its own hospital, serving both White Rock and neighbouring South Surrey.&lt;/p&gt;
-        &lt;/li&gt;
-        &lt;li&gt;
+        &lt;/div&gt;
+        &lt;div role="listitem"&gt;
           &lt;h3&gt;&lt;span aria-hidden="true"&gt;🗳️ &lt;/span&gt;An Independent City Since 1957&lt;/h3&gt;
           &lt;p&gt;White Rock split off from the District of Surrey in 1957 and has governed itself ever since, even though Surrey surrounds it on three sides.&lt;/p&gt;
-        &lt;/li&gt;
-        &lt;li&gt;
+        &lt;/div&gt;
+        &lt;div role="listitem"&gt;
           &lt;h3&gt;&lt;span aria-hidden="true"&gt;📚 &lt;/span&gt;Schools&lt;/h3&gt;
           &lt;p&gt;Public schools fall under &lt;strong&gt;School District 36&lt;/strong&gt;, the same district that covers Surrey.&lt;/p&gt;
-        &lt;/li&gt;
-        &lt;li&gt;
+        &lt;/div&gt;
+        &lt;div role="listitem"&gt;
           &lt;h3&gt;&lt;span aria-hidden="true"&gt;🌅 &lt;/span&gt;Sunsets Over Semiahmoo Bay&lt;/h3&gt;
           &lt;p&gt;The pier and promenade face almost due west, making White Rock one of the best sunset&amp;#8209;watching spots in the Lower Mainland.&lt;/p&gt;
-        &lt;/li&gt;
-      &lt;/ul&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
     &lt;/div&gt;
   &lt;/section&gt;
 
