@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Copy White Rock Page Script</title>
+<style>
+:root{--bg:#fff;--fg:#1b1f24;--muted:#5b6670;--card:#f5f7f9;--border:#d9dfe5;--accent:#0b6bcb}
+@media(prefers-color-scheme:dark){:root{--bg:#14181c;--fg:#e8ecef;--muted:#9aa5af;--card:#1d2329;--border:#323b44;--accent:#6db3ff}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,sans-serif}
+main{max-width:900px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.4rem;margin:0 0 6px}p{color:var(--muted);margin:6px 0 14px}
+button{font:inherit;font-weight:600;background:var(--accent);color:#fff;border:0;border-radius:8px;padding:12px 20px;cursor:pointer}
+@media(prefers-color-scheme:dark){button{color:#0b1620}}
+.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--border)}
+#msg{color:var(--muted)}
+textarea{width:100%;height:60vh;margin-top:14px;box-sizing:border-box;font:12.5px/1.45 ui-monospace,Menlo,Consolas,monospace;background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:8px;padding:12px}
+</style></head><body><main>
+<h1>White Rock page: Page Script to paste</h1>
+<p><strong>Step 1.</strong> Click <strong>Copy all</strong>. <strong>Step 2.</strong> In Lofty open <strong>Edit Page</strong> for White Rock Listings and scroll down to the <strong>Page Script</strong> box. <strong>Step 3.</strong> Click in the box, press Ctrl+A, then Ctrl+V (this replaces the console.log line). <strong>Step 4.</strong> Click Save, then Publish. If the button does nothing, click inside the box below, press Ctrl+A, then Ctrl+C.</p>
+<div class="bar"><button id="b" type="button">Copy all</button><span id="msg"></span></div>
+<textarea id="c" readonly spellcheck="false" style="height:50vh">/* White Rock market snapshot: fills the numbers marked data-wr from the monthly data feed.
+   If the feed or this script is unavailable, the numbers written in the page HTML stay. */
+(function () {
+  var FEED = 'https://raw.githubusercontent.com/nbakhoum84/mytest/claude/practical-wozniak-s89tdk/tools/market-refresh/data/market.json';
+  var ok = /^[A-Za-z0-9$,.\- ]{1,40}$/;
+  function fill(d) {
+    var tries = 0;
+    (function go() {
+      var els = document.querySelectorAll('[data-wr]');
+      if (els.length) {
+        for (var i = 0; i &lt; els.length; i++) {
+          var v = d[els[i].getAttribute('data-wr')];
+          if (v !== undefined &amp;&amp; ok.test(String(v))) els[i].textContent = String(v);
+        }
+      } else if (tries++ &lt; 40) { setTimeout(go, 250); }
+    })();
+  }
+  function run() {
+    if (!window.fetch) return;
+    fetch(FEED).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { if (d) fill(d); }).catch(function () {});
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+})();
+</textarea>
+</main>
+<script>
+var c=document.getElementById('c'),m=document.getElementById('msg');
+document.getElementById('b').onclick=function(){
+  c.focus();c.select();c.setSelectionRange(0,c.value.length);
+  var ok=false;try{ok=document.execCommand('copy')}catch(e){}
+  if(!ok&&navigator.clipboard){navigator.clipboard.writeText(c.value).then(function(){m.textContent='Copied ('+c.value.length+' characters)'},function(){m.textContent='Press Ctrl+C to copy'});return}
+  m.textContent=ok?'Copied ('+c.value.length+' characters)':'Press Ctrl+C to copy';
+};
+c.addEventListener('click',function(){c.select()});
+</script></body></html>
