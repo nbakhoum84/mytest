@@ -525,6 +525,11 @@ calc = null;
 var cs = document.querySelectorAll('[class*=caculator],[class*=calculator]');
 for (var i = 0; i < cs.length && !calc; i++) if (!cs[i].closest('.hn-bcp,.hn-vt-btn') && /Est\.?\s*payment/i.test(cs[i].textContent) && shown(cs[i]) && cs[i].getBoundingClientRect().height < 90) calc = cs[i];
 }
+if (/[?&]hndebug=1/.test(location.search)) {
+var db = document.getElementById('hn-tour-debug') || document.body.appendChild(Object.assign(document.createElement('div'), { id: 'hn-tour-debug' }));
+db.style.cssText = 'position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#ff0;color:#000;font:12px/1.3 monospace;padding:6px;word-break:break-all';
+db.textContent = 'TOUR w=' + innerWidth + ' data=' + !!d + ' calc=' + (calc ? calc.className : 'none') + ' link=' + (d && d.link) + ' pics=' + (d && Array.isArray(d.pictureList) ? d.pictureList.length : 'none') + ' btn=' + !!document.querySelector('.hn-vt-detail');
+}
 if (!d || !calc) return;
 var url = typeof d.link === 'string' && /^https?:\/\//i.test(d.link.trim()) ? d.link.trim() : '';
 var pics = url ? [] : (Array.isArray(d.pictureList) ? d.pictureList : []).filter(function (u) { return typeof u === 'string' && /^https?:/.test(u); });
