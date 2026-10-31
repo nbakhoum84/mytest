@@ -515,6 +515,24 @@ var all = document.querySelectorAll('body *');
 for (var i = 0; i < all.length; i++) {
 for (var c = all[i].__vueParentComponent, n = 0; c && n < 4; c = c.parent, n++) if (c.props && c.props.detailInfo && typeof c.props.detailInfo === 'object') return c.props.detailInfo;
 }
+// Phone layout (Nader's phone, ?hndebug=1: no detailInfo prop): any component prop or state holding the listing's pictureList.
+var seen = new Set();
+function hasPics(o, depth) {
+if (!o || typeof o !== 'object' || seen.has(o) || depth > 2) return null;
+seen.add(o);
+try {
+if (Array.isArray(o.pictureList) && o.pictureList.length) return o;
+for (var k in o) { var v = o[k]; if (v && typeof v === 'object' && !Array.isArray(v) && !(v instanceof Node)) { var r = hasPics(v, depth + 1); if (r) return r; } }
+} catch (e) {}
+return null;
+}
+for (var j = 0; j < all.length; j++) {
+var cc = all[j].__vueParentComponent;
+if (!cc || seen.has(cc)) continue;
+seen.add(cc);
+var r = hasPics(cc.props, 0) || hasPics(cc.setupState, 0) || hasPics(cc.data, 0);
+if (r) return r;
+}
 return null;
 }
 function detailTours() {
