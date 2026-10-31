@@ -513,9 +513,9 @@ if (!/^https?:\/\//i.test(u)) return '';
 // Every tour site counts again, agent-branded ones included (Nader 2026-10-31 changed his choice). Only YouTube and Vimeo pages that
 // aren't a single video (channels, playlists) are left out: those refuse to play inside our window.
 if (/youtube\.com|youtu\.be/i.test(u)) return /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)[\w-]{6,}/i.test(u) ? u : '';
-// Pixilink pages are the listing agent's page with photos (Nader 2026-10-31): the Photo tour shows those photos without the agent's details.
+// Pixilink and Onikon storyboard pages are the listing agent's page with photos (Nader 2026-10-31): the Photo tour shows those photos without the agent's details.
 // Whether a Pixilink page holds a video can't be read from our site, so all Pixilink links get the Photo tour.
-if (/pixilink\.com/i.test(u)) return '';
+if (/pixilink\.com|onikon\.com/i.test(u)) return '';
 if (/vimeo\.com/i.test(u)) return /^https?:\/\/(?:player\.)?vimeo\.com\/(?:video\/)?\d+/i.test(u) ? u : '';
 return u;
 }
