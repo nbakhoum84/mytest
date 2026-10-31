@@ -29,6 +29,14 @@ bp.src = 'https://nbakhoum84.github.io/mytest/chat-bubble-position.js?v=' + Math
 bp.async = true;
 document.head.appendChild(bp);
 }
+// Home page: Lofty's automatic "Find Your Dream Home" registration popup is not shown while browsing (web/hide-register-popup.js).
+if (typeof document !== 'undefined' && !window.hnNoRegPopupLoading) {
+window.hnNoRegPopupLoading = true;
+var rp = document.createElement('script');
+rp.src = 'https://nbakhoum84.github.io/mytest/hide-register-popup.js?v=' + Math.floor(Date.now() / 6e4);
+rp.async = true;
+document.head.appendChild(rp);
+}
 // Phones held upright, home page: the titles and the search bar sit 56px higher, so the chat bubble parked under the search field has room
 // above the bottom of the screen. Done here in CSS (this loader runs first) so the move is already there when the bubble is placed.
 if (typeof document !== 'undefined' && !document.getElementById('hn-hero-up')) {
