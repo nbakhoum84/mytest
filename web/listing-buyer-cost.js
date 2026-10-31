@@ -568,7 +568,9 @@ b.className = 'hn-vt-btn hn-vt-detail';
 b.setAttribute('data-hn-type', kind);
 b.innerHTML = kind === 'vt' ? CUBE + '<span>Virtual Tour</span>' : CAM + '<span>Photo tour</span>';
 }
-if (kind === 'pt') { b.hnPhotos = pics; b.hnFull = 1; b.hnLink = ''; b.hnCredit = 'Listing courtesy of ' + [d.agentName, d.agentOrganizationName].filter(Boolean).join(', '); }
+if (kind === 'pt') { b.hnPhotos = pics; b.hnFull = 1; b.hnLink = ''; var who = [d.agentName, d.agentOrganizationName].filter(Boolean).join(', ');
+if (!who) { var mt = (document.body.innerText || '').match(/(?:Listing (?:courtesy|provided) (?:of|by)|Listed by)\s*:?\s*([^\n]{3,120})/i); who = mt ? mt[1].trim() : ''; }
+b.hnCredit = who ? 'Listing courtesy of ' + who : ''; }
 b.setAttribute('data-hn-vt', url);
 if (b.previousElementSibling !== calc) calc.parentElement.insertBefore(b, calc.nextSibling);
 }
