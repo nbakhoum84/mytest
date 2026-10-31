@@ -507,8 +507,6 @@ return 'Listing courtesy of ' + [agent, by].filter(Boolean).join(', ');
 }
 // Listing detail page on phones (Nader 2026-10-30, his screenshot): the same Virtual Tour / Photo tour button, right of Lofty's own
 // "Est. payment" box. The listing's data (tour link, all photos, listing agent and brokerage) comes from the page's own listing object.
-// Only plain tour players count as a Virtual Tour (Nader 2026-10-31): agent-branded tour sites (e.g. Pixilink) show the listing
-// agent's contact details and a form, so those listings get the Photo tour instead.
 function tourLink(u) {
 u = typeof u === 'string' ? u.trim() : '';
 if (!/^https?:\/\//i.test(u)) return '';
