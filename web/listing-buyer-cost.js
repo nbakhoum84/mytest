@@ -581,9 +581,11 @@ detailTours();
 if (!tours.t) { var n = 0; tours.t = setInterval(function () { if (!DETAIL || ++n > 40 || document.querySelector('.hn-vt-detail')) { clearInterval(tours.t); tours.t = 0; return; } detailTours(); }, 500); }
 return;
 }
-var cards = document.querySelectorAll('li.house-grid-item');
+// Grid cards and list-view cards (Nader 2026-10-31: list view had no tour buttons).
+var cards = document.querySelectorAll('li.house-grid-item, .house-list-item');
 for (var i = 0; i < cards.length; i++) {
-var vc = cards[i].__vueParentComponent, h = vc && vc.props && vc.props.house;
+var h = null;
+for (var vc = cards[i].__vueParentComponent, n = 0; vc && n < 4 && !h; vc = vc.parent, n++) h = vc.props && vc.props.house && typeof vc.props.house === 'object' ? vc.props.house : null;
 var url = h && typeof h.link === 'string' && /^https?:\/\//i.test(h.link.trim()) ? h.link.trim() : '';
 var mtg = cards[i].querySelector('.hn-bcp-mtg');
 var b = cards[i].querySelector('.hn-vt-btn');
