@@ -173,6 +173,17 @@ gt.id = 'hn-no-goto-top';
 gt.textContent = '@media(max-width:768px),(max-height:500px) and (pointer:coarse){#scrollToTopBtn{display:none!important}}';
 (document.head || document.documentElement).appendChild(gt);
 }
+// Sold listing cards (Nader 2026-10-30): "Email Verification Required" reads "Sign In Account Required" (wording only; the
+// site's own verification rule is unchanged).
+if (typeof document !== 'undefined' && !window.hnSoldWording) {
+window.hnSoldWording = true;
+var soldWord = function () {
+var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT), t;
+while ((t = w.nextNode())) if (/Email Verification Required/i.test(t.nodeValue)) t.nodeValue = t.nodeValue.replace(/Email Verification Required/ig, 'Sign In Account Required');
+};
+var soldGo = function () { if (!document.body) return setTimeout(soldGo, 100); soldWord(); new MutationObserver(function () { clearTimeout(soldGo.t); soldGo.t = setTimeout(soldWord, 50); }).observe(document.body, { childList: true, subtree: true, characterData: true }); };
+soldGo();
+}
 // Business profile for search engines and AI search tools (schema.org, Nader 2026-10-25). Same data as
 // site-snippet/business-schema.html. Skipped when the page already carries it (pasted block).
 if (typeof document !== 'undefined' && !document.getElementById('hn-business-schema') && ![].some.call(document.querySelectorAll('script[type="application/ld+json"]'), function (x) { return /home-nader\.com\/#agent/.test(x.textContent); })) {
