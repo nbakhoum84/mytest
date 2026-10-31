@@ -7,7 +7,7 @@
 if (window.hnNoRegPopup) return;
 window.hnNoRegPopup = true;
 
-var lastAsk = 0, queued = false;
+var lastAsk = 0, queued = false, hidOnce = false;
 // Only a click on a Register / Sign In / Log In control (or anything inside one) counts as the visitor asking for the form.
 document.addEventListener('click', function (e) {
 var t = e.target && e.target.closest ? e.target.closest('a,button,[role=button],li,span,div') : null;
@@ -49,26 +49,60 @@ el = el.parentElement;
 return top;
 }
 
-function scan() {
-queued = false;
-if (!isHome()) return;
-var form = findForm();
-if (!form) return;
-// Asked for by the visitor (clicked Register / Sign In): leave it alone while it is open.
-var el = layer(form);
-if (Date.now() - lastAsk < 3000) { el.removeAttribute('data-hn-gone'); form.setAttribute('data-hn-keep', '1'); return; }
-if (form.hasAttribute('data-hn-keep')) { if (el.offsetParent !== null || getComputedStyle(el).display !== 'none') return; form.removeAttribute('data-hn-keep'); }
-if (el.hasAttribute('data-hn-gone') && getComputedStyle(el).display === 'none') return;
-el.setAttribute('data-hn-gone', '1');
-// The popup locks the page's scrolling and may leave a backdrop and a lock class behind.
-document.querySelectorAll('[class*="backdrop" i],[class*="overlay" i],[class*="modal-mask" i]').forEach(function (b) {
-if (getComputedStyle(b).position === 'fixed' && !b.querySelector('input,form,header,nav')) b.style.setProperty('display', 'none', 'important');
+// The dark backdrop is a separate layer: a fixed box (or a pseudo-element of <body>) covering the screen with nothing readable in it.
+// Found by what it covers, whatever Lofty calls it. Checked on every pass, not only when the popup is first hidden.
+function coversScreen(r) { return r.width >= innerWidth * 0.9 && r.height >= innerHeight * 0.9 && r.left <= innerWidth * 0.05 && r.top <= innerHeight * 0.05; }
+function dimsPage(cs) {
+if (cs.position !== 'fixed' && cs.position !== 'absolute') return false;
+var bg = cs.backgroundColor, m = /rgba?\(([^)]+)\)/.exec(bg || '');
+var a = m ? (m[1].split(',')[3] === undefined ? 1 : parseFloat(m[1].split(',')[3])) : 0;
+return (a > 0 && a < 1) || (a === 1 && parseFloat(cs.opacity) < 1) || (cs.backgroundImage && cs.backgroundImage !== 'none' && cs.backgroundImage.indexOf('gradient') > -1);
+}
+function clearBackdrop() {
+var pts = [[innerWidth / 2, 100], [innerWidth / 2, innerHeight / 2], [20, innerHeight - 20]];
+pts.forEach(function (pt) {
+var el = document.elementFromPoint(pt[0], pt[1]);
+while (el && el !== document.documentElement) {
+var cs = getComputedStyle(el);
+if (el !== document.body && !el.hasAttribute('data-hn-gone') && cs.position === 'fixed' && coversScreen(el.getBoundingClientRect()) && !el.textContent.trim() && !el.querySelector('input,img,video,iframe') && dimsPage(cs)) { el.setAttribute('data-hn-gone', '1'); break; }
+el = el.parentElement;
+}
 });
+// Pseudo-element dimming of <body> or <html> (a lock class that paints ::before / ::after over the page).
+[document.body, document.documentElement].forEach(function (n) {
+['::before', '::after'].forEach(function (ps) {
+var cs = getComputedStyle(n, ps);
+if (cs.content !== 'none' && cs.position === 'fixed' && dimsPage(cs) && parseFloat(cs.width) >= innerWidth * 0.9) {
+var id = 'hn-ps-' + ps.slice(2);
+if (!document.getElementById(id)) { var x = document.createElement('style'); x.id = id; x.textContent = (n === document.body ? 'body' : 'html') + ps + '{display:none!important}'; document.head.appendChild(x); }
+}
+});
+});
+}
+
+// The popup locks the page's scrolling: give it back.
+function unlock() {
 [document.body, document.documentElement].forEach(function (n) {
 n.style.setProperty('overflow', 'auto', 'important');
 n.style.removeProperty('position');
 n.classList.remove('modal-open', 'no-scroll', 'overflow-hidden', 'is-locked');
 });
+}
+
+function scan() {
+queued = false;
+if (!isHome()) return;
+var form = findForm();
+if (!form) { if (hidOnce && Date.now() - lastAsk > 3000) { clearBackdrop(); unlock(); } return; }
+// Asked for by the visitor (clicked Register / Sign In): leave it alone while it is open.
+var el = layer(form);
+if (Date.now() - lastAsk < 3000) { el.removeAttribute('data-hn-gone'); form.setAttribute('data-hn-keep', '1'); return; }
+if (form.hasAttribute('data-hn-keep')) { if (el.offsetParent !== null || getComputedStyle(el).display !== 'none') return; form.removeAttribute('data-hn-keep'); }
+if (el.hasAttribute('data-hn-gone') && getComputedStyle(el).display === 'none') { clearBackdrop(); unlock(); return; }
+el.setAttribute('data-hn-gone', '1');
+hidOnce = true;
+clearBackdrop();
+unlock();
 }
 
 function queue() { if (!queued) { queued = true; setTimeout(scan, 50); } }
