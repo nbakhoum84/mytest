@@ -533,7 +533,13 @@ seen.add(cc);
 var r = hasPics(cc.props, 0) || hasPics(cc.setupState, 0) || hasPics(cc.data, 0);
 if (r) return r;
 }
-return null;
+// Last resort: the listing photos drawn on the page (img.chime.me), when the page has no listing object we can read.
+var ims = document.querySelectorAll('img'), pics = [];
+for (var m = 0; m < ims.length; m++) {
+var u = ims[m].currentSrc || ims[m].src || ims[m].getAttribute('data-src') || '';
+if (/img\.chime\.me/i.test(u) && !ims[m].closest('.house-grid-item,.house-list-item,header,footer') && pics.indexOf(u) < 0) pics.push(u);
+}
+return pics.length > 1 ? { pictureList: pics } : null;
 }
 function detailTours() {
 var d = detailInfo(), calc = document.querySelector('.detail-info-header .mobile .top .left > .caculator-container');
