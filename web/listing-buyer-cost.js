@@ -1485,3 +1485,59 @@ a.setAttribute('aria-label', label || 'Open guide');
 name();
 var n = 0, t = setInterval(function () { name(); if (++n > 20) clearInterval(t); }, 1000);
 })();
+
+// More accessibility fixes from the PageSpeed report (Nader 2026-10-30, "do all the 4"):
+// 1) Let phone visitors pinch-zoom (Lofty's viewport tag blocks it). 2) Darken or lighten text that is too faint on its background (gold
+// headings, header "Search", "Pick a time", footer links) just enough to be readable (WCAG 4.5:1). City cards are never touched.
+// 3) The top menu items sit in a plain div: mark it as a list. 4) Headings that skip a level are announced one level lower than the last.
+(function () {
+function zoom() {
+var v = document.querySelector('meta[name="viewport"]');
+if (v && /user-scalable\s*=\s*(no|0)|maximum-scale/i.test(v.content)) v.setAttribute('content', 'width=device-width, initial-scale=1');
+}
+function rgb(s) { var m = s && s.match(/rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?/); return m ? [+m[1], +m[2], +m[3], m[4] === undefined ? 1 : +m[4]] : null; }
+function lum(c) { return [0, 1, 2].reduce(function (s, i, k) { var v = c[i] / 255; v = v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); return s + v * [0.2126, 0.7152, 0.0722][k]; }, 0); }
+function ratio(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+function bgOf(el) {
+for (var e = el; e && e.nodeType === 1; e = e.parentElement) {
+var cs = getComputedStyle(e);
+if (cs.backgroundImage && cs.backgroundImage !== 'none') return null;
+var c = rgb(cs.backgroundColor); if (c && c[3] > 0.9) return c;
+}
+return [255, 255, 255, 1];
+}
+function contrast() {
+var scope = document.querySelectorAll('.md-header, .md-featured-area, .md-guide, .md-footer, footer');
+var els = [];
+[].forEach.call(scope, function (s) { [].push.apply(els, s.querySelectorAll('*')); });
+[].forEach.call(document.querySelectorAll('a, button, span, p, div'), function (e) { if (e.children.length === 0 && /^\s*pick a time\s*$/i.test(e.textContent)) els.push(e); });
+els.forEach(function (el) {
+if (el.hnContrast || el.closest('.cities-container, .city-block, #featured-area-layout14 .img-box')) return;
+var own = [].some.call(el.childNodes, function (n) { return n.nodeType === 3 && n.textContent.trim(); });
+if (!own || !el.offsetWidth) return;
+var cs = getComputedStyle(el), fg = rgb(cs.color), bg = bgOf(el);
+if (!fg || !bg) return;
+var big = parseFloat(cs.fontSize) >= 24 || (parseFloat(cs.fontSize) >= 18.66 && +cs.fontWeight >= 700), need = big ? 3 : 4.5;
+if (ratio(fg, bg) >= need) return;
+var dark = lum(bg) > 0.5, c = fg.slice(0, 3);
+for (var i = 0; i < 40 && ratio(c, bg) < need; i++) c = c.map(function (v) { return dark ? Math.round(v * 0.93) : Math.round(v + (255 - v) * 0.1); });
+el.style.setProperty('color', 'rgb(' + c.join(',') + ')', 'important');
+el.hnContrast = 1;
+});
+}
+function menu() {
+[].forEach.call(document.querySelectorAll('li.menu-item'), function (li) { var p = li.parentElement; if (p && !/^(UL|OL|MENU)$/.test(p.tagName) && !p.getAttribute('role')) p.setAttribute('role', 'list'); });
+}
+function headings() {
+var last = 0;
+[].forEach.call(document.querySelectorAll('h1, h2, h3, h4, h5, h6'), function (h) {
+if (!h.offsetWidth && !h.offsetHeight) return;
+var lv = +(h.getAttribute('aria-level') || h.tagName[1]);
+if (last && lv > last + 1) { lv = last + 1; h.setAttribute('aria-level', lv); }
+last = lv;
+});
+}
+function all() { try { zoom(); menu(); headings(); contrast(); } catch (e) {} }
+all();
+var n = 0, t = setInterval(function () { all(); if (++n > 20) clearInterval(t); }, 1000);
+})();
