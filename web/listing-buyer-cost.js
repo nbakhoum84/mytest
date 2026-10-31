@@ -505,8 +505,31 @@ var by = '', agent = '';
 try { for (var k in h) if (/^(list|listing)_?agent_?(full_?)?name$/i.test(k) && typeof h[k] === 'string') agent = h[k].trim(); } catch (e) {}
 return 'Listing courtesy of ' + [agent, by].filter(Boolean).join(', ');
 }
+// Listing detail page on phones (Nader 2026-10-30, his screenshot): the same Virtual Tour / Photo tour button, right of Lofty's own
+// "Est. payment" box. The listing's data (tour link, all photos, listing agent and brokerage) comes from the page's own listing object.
+function detailTours() {
+var bc = document.querySelector('div.breadcrumb-container.broker'), vc = bc && bc.__vueParentComponent, d = vc && vc.props && vc.props.detailInfo;
+var calc = document.querySelector('.detail-info-header .mobile .top .left > .caculator-container');
+if (!d || !calc) return;
+var url = typeof d.link === 'string' && /^https?:\/\//i.test(d.link.trim()) ? d.link.trim() : '';
+var pics = url ? [] : (Array.isArray(d.pictureList) ? d.pictureList : []).filter(function (u) { return typeof u === 'string' && /^https?:/.test(u); });
+var kind = url ? 'vt' : pics.length > 1 ? 'pt' : '';
+var b = calc.parentElement.querySelector('.hn-vt-btn');
+if (b && (!kind || b.getAttribute('data-hn-type') !== kind)) { b.remove(); b = null; }
+if (!kind) return;
+if (!b) {
+b = document.createElement('button');
+b.type = 'button';
+b.className = 'hn-vt-btn hn-vt-detail';
+b.setAttribute('data-hn-type', kind);
+b.innerHTML = kind === 'vt' ? CUBE + '<span>Virtual Tour</span>' : CAM + '<span>Photo tour</span>';
+}
+if (kind === 'pt') { b.hnPhotos = pics; b.hnFull = 1; b.hnLink = ''; b.hnCredit = 'Listing courtesy of ' + [d.agentName, d.agentOrganizationName].filter(Boolean).join(', '); }
+b.setAttribute('data-hn-vt', url);
+if (b.previousElementSibling !== calc) calc.parentElement.insertBefore(b, calc.nextSibling);
+}
 function tours() {
-if (DETAIL) return;
+if (DETAIL) { detailTours(); return; }
 var cards = document.querySelectorAll('li.house-grid-item');
 for (var i = 0; i < cards.length; i++) {
 var vc = cards[i].__vueParentComponent, h = vc && vc.props && vc.props.house;
@@ -1135,6 +1158,8 @@ style.textContent =
 '.hn-vt-pair{display:flex!important;align-items:stretch!important;gap:8px!important}' +
 'button.hn-vt-btn{display:flex!important;align-items:center!important;gap:6px!important;width:max-content!important;margin:0!important;padding:6px 12px!important;border:0!important;border-radius:8px!important;background:#eef3fd!important;color:#3a6fd8!important;font-family:inherit!important;font-weight:600!important;font-size:14px!important;line-height:1.2!important;white-space:nowrap!important;cursor:pointer!important;text-transform:none!important;box-shadow:none!important}' +
 'button.hn-vt-btn:hover{background:#dfe9fb!important}' +
+'.detail-info-header .mobile .top .left > .caculator-container{display:inline-flex!important;vertical-align:middle!important}' +
+'button.hn-vt-btn.hn-vt-detail{display:inline-flex!important;vertical-align:middle!important;margin:10px 0 0 10px!important;padding:9px 12px!important}' +
 '#hn-vt-modal{display:none;position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:16px}' +
 '#hn-vt-modal.hn-vt-on{display:flex}' +
 '#hn-vt-modal .hn-vt-box{width:1000px;max-width:100%;height:min(700px,100%);background:#fff;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.35)}' +
