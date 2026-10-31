@@ -1348,8 +1348,14 @@ window.hnBuyerCostLoaded = true;
 if (!window.hnSiteClicks) {
 window.hnSiteClicks = true;
 window.hnTrack = track;
+// Landing page (Nader 2026-10-31): every conversion event also says which page it happened on, so GA4 can credit the landing page.
+function landingPage() {
+var p = location.pathname.replace(/\/+$/, '').toLowerCase() || '/';
+var kind = p === '/' ? 'home' : /sold/.test(p) ? 'sold' : /pre-?sale|new-?(home|build|construction|development)/.test(p) ? 'presales' : /commercial/.test(p) ? 'commercial' : /listing-detail/.test(p) ? 'listing' : /listings/.test(p) ? 'residential' : 'other';
+return { landing_page: p, landing_type: kind };
+}
 function siteTags(medium, campaign, content) {
-return { utm_source: 'home-nader.com', utm_medium: medium, utm_campaign: campaign, utm_content: content || '' };
+return Object.assign({ utm_source: 'home-nader.com', utm_medium: medium, utm_campaign: campaign, utm_content: content || '' }, landingPage());
 }
 function placeOf(el) {
 return el.closest('header, .md-header') ? 'header' : el.closest('footer, .md-footer') ? 'footer' : 'page';
@@ -1361,6 +1367,13 @@ var t = e.target, a = t.closest('a, button, [role="button"]');
 var href = a ? (a.getAttribute('href') || '').trim() : '';
 var text = (a || t).textContent.replace(/\s+/g, ' ').trim().slice(0, 60);
 var where = placeOf(t);
+// Featured areas (city cards / image boxes on the home and landing pages): hn_featured_area_click, named by the area.
+var fa = a && /^(https?:\/\/|\/)/i.test(href) && t.closest('.md-featured-area, #featured-area-layout14, .cities-container, .city-block');
+if (fa) {
+var area = (a.getAttribute('aria-label') || a.getAttribute('title') || text || href.replace(/[?#].*$/, '').split('/').filter(Boolean).pop() || '').replace(/\s+/g, ' ').trim().slice(0, 60);
+track('hn_featured_area_click', Object.assign({ area: area, link_url: href.slice(0, 200), link_location: where, button_text: text }, siteTags('featured_area', area.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''), where)));
+return;
+}
 var kind = /^tel:/i.test(href) ? 'call' : /^sms:/i.test(href) ? 'text' : /^mailto:/i.test(href) ? 'email' : /wa\.me|whatsapp/i.test(href) ? 'whatsapp' : '';
 if (kind) { track('hn_contact_click', Object.assign({ contact_type: kind, link_location: where, button_text: text || (a && (a.getAttribute('aria-label') || a.getAttribute('title'))) || kind }, siteTags('contact_link', kind, where))); return; }
 if (/calendly\.com/i.test(href)) { track('hn_booking_click', Object.assign({ link_location: where, button_text: text }, siteTags('booking_link', 'calendly', where))); return; }
