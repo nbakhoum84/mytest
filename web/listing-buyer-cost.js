@@ -515,7 +515,31 @@ var all = document.querySelectorAll('body *');
 for (var i = 0; i < all.length; i++) {
 for (var c = all[i].__vueParentComponent, n = 0; c && n < 4; c = c.parent, n++) if (c.props && c.props.detailInfo && typeof c.props.detailInfo === 'object') return c.props.detailInfo;
 }
+// Phone layout (Nader's phone, ?hndebug=1: no detailInfo prop): any component prop or state holding the listing's pictureList.
+var seen = new Set();
+function hasPics(o, depth) {
+if (!o || typeof o !== 'object' || seen.has(o) || depth > 2) return null;
+seen.add(o);
+try {
+if (Array.isArray(o.pictureList) && o.pictureList.length) return o;
+for (var k in o) { var v = o[k]; if (v && typeof v === 'object' && !Array.isArray(v) && !(v instanceof Node)) { var r = hasPics(v, depth + 1); if (r) return r; } }
+} catch (e) {}
 return null;
+}
+for (var j = 0; j < all.length; j++) {
+var cc = all[j].__vueParentComponent;
+if (!cc || seen.has(cc)) continue;
+seen.add(cc);
+var r = hasPics(cc.props, 0) || hasPics(cc.setupState, 0) || hasPics(cc.data, 0);
+if (r) return r;
+}
+// Last resort: the listing photos drawn on the page (img.chime.me), when the page has no listing object we can read.
+var ims = document.querySelectorAll('img'), pics = [];
+for (var m = 0; m < ims.length; m++) {
+var u = ims[m].currentSrc || ims[m].src || ims[m].getAttribute('data-src') || '';
+if (/img\.chime\.me/i.test(u) && !ims[m].closest('.house-grid-item,.house-list-item,header,footer') && pics.indexOf(u) < 0) pics.push(u);
+}
+return pics.length > 1 ? { pictureList: pics } : null;
 }
 function detailTours() {
 var d = detailInfo(), calc = document.querySelector('.detail-info-header .mobile .top .left > .caculator-container');
@@ -544,7 +568,9 @@ b.className = 'hn-vt-btn hn-vt-detail';
 b.setAttribute('data-hn-type', kind);
 b.innerHTML = kind === 'vt' ? CUBE + '<span>Virtual Tour</span>' : CAM + '<span>Photo tour</span>';
 }
-if (kind === 'pt') { b.hnPhotos = pics; b.hnFull = 1; b.hnLink = ''; b.hnCredit = 'Listing courtesy of ' + [d.agentName, d.agentOrganizationName].filter(Boolean).join(', '); }
+if (kind === 'pt') { b.hnPhotos = pics; b.hnFull = 1; b.hnLink = ''; var who = [d.agentName, d.agentOrganizationName].filter(Boolean).join(', ');
+if (!who) { var mt = (document.body.innerText || '').match(/(?:Listing (?:courtesy|provided) (?:of|by)|Listed by)\s*:?\s*([^\n]{3,120})/i); who = mt ? mt[1].trim() : ''; }
+b.hnCredit = who ? 'Listing courtesy of ' + who : ''; }
 b.setAttribute('data-hn-vt', url);
 if (b.previousElementSibling !== calc) calc.parentElement.insertBefore(b, calc.nextSibling);
 }
