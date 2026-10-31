@@ -1214,7 +1214,7 @@ style.textContent =
 '.hn-bcp{cursor:pointer!important}' +
 '.hn-bcp-row{display:flex!important;flex-wrap:wrap;gap:8px;margin:8px 0 6px!important}' +
 // Virtual Tour button: same look as the listing page's Virtual Tour button (cube icon, blue on light blue), same height as the green buttons.
-'.house-list-item .hn-bcp,.house-list-item .hn-bcp *{color:#dbae77!important}' +
+'.hn-bcp,.hn-bcp *{color:#58c24c!important}' +
 '.hn-vt-pair{display:flex!important;align-items:stretch!important;gap:8px!important}' +
 'button.hn-vt-btn{display:flex!important;align-items:center!important;gap:6px!important;width:max-content!important;margin:0!important;padding:6px 12px!important;border:0!important;border-radius:8px!important;background:#eef3fd!important;color:#3a6fd8!important;font-family:inherit!important;font-weight:600!important;font-size:14px!important;line-height:1.2!important;white-space:nowrap!important;cursor:pointer!important;text-transform:none!important;box-shadow:none!important}' +
 'button.hn-vt-btn:hover{background:#dfe9fb!important}' +
