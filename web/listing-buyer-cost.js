@@ -1392,6 +1392,47 @@ if (label.length > 40) break;
 if (VALUATION.test(label)) { track('hn_valuation_click', Object.assign({ link_location: where, button_text: label }, siteTags('valuation_button', 'home_valuation', where))); return; }
 }
 }, true);
+// Landing pages (the city buyer guides /buyer-guide-<city> and /landing-pages) and featured area pages (/neighborhood/<id>/<area>),
+// Nader 2026-10-31: a view event when the page opens, every button/link click and every form sent, all with UTM tags. A visitor who
+// arrived from a tagged link (e.g. an ad with ?utm_source=facebook) keeps those tags for the rest of the visit; otherwise the tags say
+// which page it was. Clicks on the home page's Featured Areas cards count too (hn_featured_area_click).
+var LP = /^\/(buyer-guide-[\w-]+|landing-pages)\/?$/i.test(location.pathname) ? 'landing_page' : /^\/neighborhood\//i.test(location.pathname) ? 'featured_area' : '';
+var lpName = location.pathname.split('/').filter(Boolean).pop() || '';
+var lpTags = function () {
+var q = {}, saved = null;
+location.search.replace(/[?&](utm_(?:source|medium|campaign|content|term))=([^&]*)/gi, function (m, k, v) { q[k.toLowerCase()] = decodeURIComponent(v.replace(/\+/g, ' ')); });
+try {
+if (q.utm_source) sessionStorage.setItem('hnUtm', JSON.stringify(q));
+saved = JSON.parse(sessionStorage.getItem('hnUtm') || 'null');
+} catch (err) {}
+return saved && saved.utm_source ? saved : siteTags(LP, lpName, '');
+};
+if (LP) {
+var lpData = function (extra) { return Object.assign({ page_type: LP, page_name: lpName }, extra, lpTags()); };
+track('hn_' + LP + '_view', lpData({}));
+document.addEventListener('click', function (e) {
+var a = e.isTrusted && e.target && e.target.closest && e.target.closest('a, button, [role="button"], input[type="submit"]');
+if (!a || a.closest('header, .md-header, footer, .md-footer')) return;
+var label = (a.textContent || a.value || a.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim().slice(0, 60);
+track('hn_' + LP + '_click', lpData({ button_text: label, link_url: a.href || '' }));
+var fm = a.closest('form');
+if (fm && !fm.hnLpSent && /submit|send|get|request|sign ?up|register|download|book|contact/i.test(label)) fm.hnLpSent = true, track('hn_' + LP + '_lead', lpData({ button_text: label }));
+}, true);
+document.addEventListener('submit', function (e) {
+var f = e.target;
+if (!f || f.hnLpSent) return;
+f.hnLpSent = true;
+track('hn_' + LP + '_lead', lpData({ button_text: 'form submit' }));
+}, true);
+}
+document.addEventListener('click', function (e) {
+var a = e.isTrusted && e.target && e.target.closest && e.target.closest('#featured-area-layout14 a, .md-featured-area a, .cities-container a');
+if (!a) return;
+var w = a.textContent.replace(/\s+/g, ' ').trim().split(' '), half = w.length / 2;
+// Cards repeat the name ("Abbotsford Abbotsford"): keep one copy.
+var area = (half % 1 === 0 && w.slice(0, half).join(' ') === w.slice(half).join(' ') ? w.slice(0, half) : w).join(' ').slice(0, 40);
+track('hn_featured_area_click', Object.assign({ area: area, link_url: a.href }, siteTags('featured_areas', 'featured_area', area)));
+}, true);
 var CALCS = { 'mh-app': 'cash_to_close', 'sc-app': 'seller_cost', 'mc-app': 'mortgage', 'fh-app': 'first_home_savings', 'pd-app': 'presale_deposits' };
 var calcUsed = {};
 var calcUse = function (name) {
