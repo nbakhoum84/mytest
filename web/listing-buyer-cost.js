@@ -507,16 +507,14 @@ return 'Listing courtesy of ' + [agent, by].filter(Boolean).join(', ');
 }
 // Listing detail page on phones (Nader 2026-10-30, his screenshot): the same Virtual Tour / Photo tour button, right of Lofty's own
 // "Est. payment" box. The listing's data (tour link, all photos, listing agent and brokerage) comes from the page's own listing object.
-// Only plain tour players count as a Virtual Tour (Nader 2026-10-31): agent-branded tour sites (e.g. Pixilink) show the listing
-// agent's contact details and a form, so those listings get the Photo tour instead.
 function tourLink(u) {
 u = typeof u === 'string' ? u.trim() : '';
-// Only links that can play inside our window: a YouTube or Vimeo video, a Matterport showcase, a Kuula tour. Anything else
-// (channel pages, playlists, pages that refuse to be shown in a window) gets the Photo tour instead.
-return (/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)[\w-]{6,}/i.test(u) ||
-/^https?:\/\/(?:player\.)?vimeo\.com\/(?:video\/)?\d+/i.test(u) ||
-/^https?:\/\/([^\/]+\.)?matterport\.com\/show\/?\?/i.test(u) ||
-/^https?:\/\/([^\/]+\.)?kuula\.co\/(share|post)\//i.test(u)) ? u : '';
+if (!/^https?:\/\//i.test(u)) return '';
+// Every tour site counts again, agent-branded ones included (Nader 2026-10-31 changed his choice). Only YouTube and Vimeo pages that
+// aren't a single video (channels, playlists) are left out: those refuse to play inside our window.
+if (/youtube\.com|youtu\.be/i.test(u)) return /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)[\w-]{6,}/i.test(u) ? u : '';
+if (/vimeo\.com/i.test(u)) return /^https?:\/\/(?:player\.)?vimeo\.com\/(?:video\/)?\d+/i.test(u) ? u : '';
+return u;
 }
 // The listing object: on the breadcrumb first, else any page component holding detailInfo (layouts differ, e.g. links from Lofty emails).
 function detailInfo() {
