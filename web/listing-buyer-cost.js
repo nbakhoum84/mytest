@@ -511,7 +511,12 @@ return 'Listing courtesy of ' + [agent, by].filter(Boolean).join(', ');
 // agent's contact details and a form, so those listings get the Photo tour instead.
 function tourLink(u) {
 u = typeof u === 'string' ? u.trim() : '';
-return /^https?:\/\/([^\/]+\.)?(matterport\.com|youtube\.com|youtu\.be|vimeo\.com|kuula\.co)(\/|$)/i.test(u) ? u : '';
+// Only links that can play inside our window: a YouTube or Vimeo video, a Matterport showcase, a Kuula tour. Anything else
+// (channel pages, playlists, pages that refuse to be shown in a window) gets the Photo tour instead.
+return (/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)[\w-]{6,}/i.test(u) ||
+/^https?:\/\/(?:player\.)?vimeo\.com\/(?:video\/)?\d+/i.test(u) ||
+/^https?:\/\/([^\/]+\.)?matterport\.com\/show\/?\?/i.test(u) ||
+/^https?:\/\/([^\/]+\.)?kuula\.co\/(share|post)\//i.test(u)) ? u : '';
 }
 // The listing object: on the breadcrumb first, else any page component holding detailInfo (layouts differ, e.g. links from Lofty emails).
 function detailInfo() {
@@ -619,7 +624,9 @@ b.setAttribute('data-hn-vt', url);
 // The tour plays in a window on the page, not a new tab (Nader 2026-10-28). YouTube links are switched to their embeddable form.
 function tourSrc(u) {
 var m = u.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{6,})/i);
-return m ? 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1&rel=0' : u;
+if (m) return 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1&rel=0';
+var v = u.match(/^https?:\/\/(?:player\.)?vimeo\.com\/(?:video\/)?(\d+)/i);
+return v ? 'https://player.vimeo.com/video/' + v[1] + '?autoplay=1' : u;
 }
 function openTour(url) {
 var m = document.getElementById('hn-vt-modal');
