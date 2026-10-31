@@ -507,9 +507,24 @@ return 'Listing courtesy of ' + [agent, by].filter(Boolean).join(', ');
 }
 // Listing detail page on phones (Nader 2026-10-30, his screenshot): the same Virtual Tour / Photo tour button, right of Lofty's own
 // "Est. payment" box. The listing's data (tour link, all photos, listing agent and brokerage) comes from the page's own listing object.
-function detailTours() {
+// The listing object: on the breadcrumb first, else any page component holding detailInfo (layouts differ, e.g. links from Lofty emails).
+function detailInfo() {
 var bc = document.querySelector('div.breadcrumb-container.broker'), vc = bc && bc.__vueParentComponent, d = vc && vc.props && vc.props.detailInfo;
-var calc = document.querySelector('.detail-info-header .mobile .top .left > .caculator-container');
+if (d) return d;
+var all = document.querySelectorAll('body *');
+for (var i = 0; i < all.length; i++) {
+for (var c = all[i].__vueParentComponent, n = 0; c && n < 4; c = c.parent, n++) if (c.props && c.props.detailInfo && typeof c.props.detailInfo === 'object') return c.props.detailInfo;
+}
+return null;
+}
+function detailTours() {
+var d = detailInfo(), calc = document.querySelector('.detail-info-header .mobile .top .left > .caculator-container');
+// Fallback: the "Est. payment" box on screen, wherever the page puts it.
+if (!calc || !shown(calc)) {
+calc = null;
+var cs = document.querySelectorAll('[class*=caculator],[class*=calculator]');
+for (var i = 0; i < cs.length && !calc; i++) if (!cs[i].closest('.hn-bcp,.hn-vt-btn') && /Est\.?\s*payment/i.test(cs[i].textContent) && shown(cs[i]) && cs[i].getBoundingClientRect().height < 90) calc = cs[i];
+}
 if (!d || !calc) return;
 var url = typeof d.link === 'string' && /^https?:\/\//i.test(d.link.trim()) ? d.link.trim() : '';
 var pics = url ? [] : (Array.isArray(d.pictureList) ? d.pictureList : []).filter(function (u) { return typeof u === 'string' && /^https?:/.test(u); });
@@ -529,7 +544,12 @@ b.setAttribute('data-hn-vt', url);
 if (b.previousElementSibling !== calc) calc.parentElement.insertBefore(b, calc.nextSibling);
 }
 function tours() {
-if (DETAIL) { detailTours(); return; }
+if (DETAIL) {
+detailTours();
+// The listing data and Lofty's Est. payment box can arrive after our scan; keep trying for 20s.
+if (!tours.t) { var n = 0; tours.t = setInterval(function () { if (!DETAIL || ++n > 40 || document.querySelector('.hn-vt-detail')) { clearInterval(tours.t); tours.t = 0; return; } detailTours(); }, 500); }
+return;
+}
 var cards = document.querySelectorAll('li.house-grid-item');
 for (var i = 0; i < cards.length; i++) {
 var vc = cards[i].__vueParentComponent, h = vc && vc.props && vc.props.house;
