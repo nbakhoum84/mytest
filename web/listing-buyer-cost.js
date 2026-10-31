@@ -507,6 +507,12 @@ return 'Listing courtesy of ' + [agent, by].filter(Boolean).join(', ');
 }
 // Listing detail page on phones (Nader 2026-10-30, his screenshot): the same Virtual Tour / Photo tour button, right of Lofty's own
 // "Est. payment" box. The listing's data (tour link, all photos, listing agent and brokerage) comes from the page's own listing object.
+// Only plain tour players count as a Virtual Tour (Nader 2026-10-31): agent-branded tour sites (e.g. Pixilink) show the listing
+// agent's contact details and a form, so those listings get the Photo tour instead.
+function tourLink(u) {
+u = typeof u === 'string' ? u.trim() : '';
+return /^https?:\/\/([^\/]+\.)?(matterport\.com|youtube\.com|youtu\.be|vimeo\.com|kuula\.co)(\/|$)/i.test(u) ? u : '';
+}
 // The listing object: on the breadcrumb first, else any page component holding detailInfo (layouts differ, e.g. links from Lofty emails).
 function detailInfo() {
 var bc = document.querySelector('div.breadcrumb-container.broker'), vc = bc && bc.__vueParentComponent, d = vc && vc.props && vc.props.detailInfo;
@@ -555,7 +561,7 @@ db.style.cssText = 'position:fixed;left:0;right:0;top:0;z-index:2147483647;backg
 db.textContent = 'TOUR w=' + innerWidth + ' data=' + !!d + ' calc=' + (calc ? calc.className : 'none') + ' link=' + (d && d.link) + ' pics=' + (d && Array.isArray(d.pictureList) ? d.pictureList.length : 'none') + ' btn=' + !!document.querySelector('.hn-vt-detail');
 }
 if (!d || !calc) return;
-var url = typeof d.link === 'string' && /^https?:\/\//i.test(d.link.trim()) ? d.link.trim() : '';
+var url = tourLink(d.link);
 var pics = url ? [] : (Array.isArray(d.pictureList) ? d.pictureList : []).filter(function (u) { return typeof u === 'string' && /^https?:/.test(u); });
 var kind = url ? 'vt' : pics.length > 1 ? 'pt' : '';
 var b = calc.parentElement.querySelector('.hn-vt-btn');
@@ -586,7 +592,7 @@ var cards = document.querySelectorAll('li.house-grid-item, .house-list-item');
 for (var i = 0; i < cards.length; i++) {
 var h = null;
 for (var vc = cards[i].__vueParentComponent, n = 0; vc && n < 4 && !h; vc = vc.parent, n++) h = vc.props && vc.props.house && typeof vc.props.house === 'object' ? vc.props.house : null;
-var url = h && typeof h.link === 'string' && /^https?:\/\//i.test(h.link.trim()) ? h.link.trim() : '';
+var url = h ? tourLink(h.link) : '';
 var mtg = cards[i].querySelector('.hn-bcp-mtg');
 var b = cards[i].querySelector('.hn-vt-btn');
 // No tour: a "Photo tour" of the listing's own photos, shown unchanged with the listing brokerage credited (Nader 2026-10-30, option 3:
