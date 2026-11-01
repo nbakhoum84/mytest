@@ -836,6 +836,8 @@ return localStorage.getItem('hnLead') === '1';
 // preferring a real link or button, then one that says Register, then a visible one.
 var REG = /^(register|sign\s*in|log\s*in|sign\s*up)(\s*(\/|\||or|&)\s*(register|sign\s*in|log\s*in|sign\s*up))?$/i;
 function registerLink() {
+// Never on the home page (Nader 2026-10-31): visitors browse it without our registration form; calculators and tours just open.
+if (/^\/?$/.test(location.pathname)) return null;
 var els = document.querySelectorAll('a, button, [role="button"], li, span, div');
 var best = null, bestScore = -1;
 for (var i = els.length - 1; i >= 0; i--) {
