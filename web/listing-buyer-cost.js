@@ -1695,7 +1695,7 @@ s.textContent = '@media (hover:none) and (pointer:coarse){.cities-container .cit
 // cannot beat, so on phones it is set inline: white with a soft dark shadow.
 if (!matchMedia('(hover:none) and (pointer:coarse)').matches) return;
 var fa = function () {
-[].forEach.call(document.querySelectorAll('#featured-area-layout14 .img-box *, .md-featured-area .img-box *'), function (el) {
+[].forEach.call(document.querySelectorAll('.featured-area-item.mobile .featured-area-item-sub-title'), function (el) {
 if (el.hnFa || !el.textContent.trim()) return;
 el.hnFa = 1;
 el.style.setProperty('color', '#fff', 'important');
