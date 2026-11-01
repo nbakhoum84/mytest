@@ -43,8 +43,48 @@ document.head.appendChild(bp);
 if (typeof document !== 'undefined' && !document.getElementById('hn-hero-up')) {
 var hu = document.createElement('style');
 hu.id = 'hn-hero-up';
-hu.textContent = '@media(max-width:700px) and (orientation:portrait){body.home .md-hero .media-content-search-group{position:relative!important;top:-126px!important}}';
+hu.textContent = '@media(max-width:700px) and (orientation:portrait){body.home .md-hero .media-content-search-group{position:relative!important;top:-56px!important}}';
 (document.head || document.documentElement).appendChild(hu);
+}
+// Phones held upright, home page (Nader 2026-11-01): Lofty's chat bubble and language selector ("EN") sit below the search bar, not on it.
+// Light on purpose (the observer-based position scripts froze iPhone Safari): CSS does the moving; a few one-off measurements at load
+// set the spot (search bar's bottom edge at the top of the page + 14px) and tag the EN box. No observers, no per-frame work.
+if (typeof document !== 'undefined' && !window.hnBelowSearch) {
+window.hnBelowSearch = true;
+var bs = document.createElement('style');
+bs.textContent = '@media(max-width:700px) and (orientation:portrait){body.home.hn-bs #chat-app{top:var(--hn-bt)!important;bottom:auto!important}' +
+'body.home.hn-bs [data-hn-lang]{top:var(--hn-sb)!important;bottom:auto!important;left:var(--hn-sl)!important}}';
+(document.head || document.documentElement).appendChild(bs);
+var bsFit = function () {
+try {
+var inp = document.querySelector('input[placeholder*="Subdivision"]');
+if (!inp || !inp.offsetParent || !document.body) return;
+var r = inp.getBoundingClientRect(), y = window.pageYOffset || 0, top = Math.round(r.bottom + y + 14);
+var l = document.querySelector('#chat-app .launcher'), lh = (l && l.offsetHeight) || 60;
+var st = document.documentElement.style;
+st.setProperty('--hn-sb', top + 'px');
+st.setProperty('--hn-bt', (top + lh) + 'px');
+st.setProperty('--hn-sl', Math.round(Math.max(0, r.left - 4)) + 'px');
+if (!document.querySelector('[data-hn-lang]')) {
+var all = document.body.querySelectorAll('img,svg');
+for (var i = 0; i < all.length; i++) {
+var hold = null;
+for (var u = all[i].parentElement, d = 0; u && u !== document.body && d < 4; u = u.parentElement, d++) {
+if (/^[A-Z]{2}$/.test((u.textContent || '').replace(/\s+/g, ' ').trim())) { hold = u; break; }
+}
+if (!hold) continue;
+for (var b = hold; b && b !== document.body; b = b.parentElement) {
+if (getComputedStyle(b).position === 'fixed') { var br = b.getBoundingClientRect(); if (br.left < 30 && br.width < 280 && br.width > 40) b.setAttribute('data-hn-lang', '1'); break; }
+}
+if (document.querySelector('[data-hn-lang]')) break;
+}
+}
+document.body.classList.add('hn-bs');
+} catch (e) {}
+};
+[500, 1500, 3000, 6000, 10000].forEach(function (t) { setTimeout(bsFit, t); });
+window.addEventListener('load', bsFit);
+window.addEventListener('orientationchange', function () { setTimeout(bsFit, 400); });
 }
 // Laptops and other wide screens, home page: move the titles and the search bar up just enough that the whole search bar is on screen
 // when the site opens, the titles above it moving with it (Nader 2026-10-24), never up under the site's header. Re-fitted on resize and clicks.
