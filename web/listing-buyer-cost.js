@@ -1381,6 +1381,15 @@ window.hnBuyerCostLoaded = true;
 // call / text / e-mail / WhatsApp links (hn_contact_click), "What's My Home Worth?" and Valuation (hn_valuation_click), Calendly
 // booking links (hn_booking_click), the "Get the ... app" cards (hn_app_card_click) and the first use of each pasted-in calculator
 // (hn_calculator_use). The chat greeting buttons are counted by chat-welcome.js through window.hnTrack (hn_chat_button_click).
+// Phones (Nader 2026-11-01): Lofty turns a finger tap into a synthetic click (isTrusted false), so an isTrusted check dropped every
+// phone tap. Synthetic clicks count too; a click on the same element within 700 ms is counted once (the tap and its copy).
+var hnLastClick = { el: null, t: 0 };
+function hnNewClick(e) {
+var now = Date.now(), el = e.target;
+if (el && el === hnLastClick.el && now - hnLastClick.t < 700) return false;
+hnLastClick = { el: el, t: now };
+return true;
+}
 if (!window.hnSiteClicks) {
 window.hnSiteClicks = true;
 window.hnTrack = track;
@@ -1392,7 +1401,7 @@ return el.closest('header, .md-header') ? 'header' : el.closest('footer, .md-foo
 }
 var VALUATION = /^(what'?s my home worth\??|home valuation|valuation|value my home|free home (evaluation|valuation))$/i;
 document.addEventListener('click', function (e) {
-if (!e.isTrusted || !e.target || !e.target.closest) return;
+if (!e.target || !e.target.closest || !hnNewClick(e)) return;
 var t = e.target, a = t.closest('a, button, [role="button"]');
 var href = a ? (a.getAttribute('href') || '').trim() : '';
 var text = (a || t).textContent.replace(/\s+/g, ' ').trim().slice(0, 60);
@@ -1447,7 +1456,7 @@ if (LP) {
 var lpData = function (extra) { return Object.assign({ page_type: LP, page_name: lpName }, extra, lpTags()); };
 track('hn_' + LP + '_view', lpData({}));
 document.addEventListener('click', function (e) {
-var a = e.isTrusted && e.target && e.target.closest && e.target.closest('a, button, [role="button"], input[type="submit"]');
+var a = e.target && e.target.closest && e.target.closest('a, button, [role="button"], input[type="submit"]');
 if (!a || a.closest('header, .md-header, footer, .md-footer')) return;
 var label = (a.textContent || a.value || a.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim().slice(0, 60);
 track('hn_' + LP + '_click', lpData({ button_text: label, link_url: a.href || '' }));
@@ -1462,7 +1471,7 @@ track('hn_' + LP + '_lead', lpData({ button_text: 'form submit' }));
 }, true);
 }
 document.addEventListener('click', function (e) {
-var a = e.isTrusted && e.target && e.target.closest && e.target.closest('#featured-area-layout14 a, .md-featured-area a, .cities-container a');
+var a = e.target && e.target.closest && e.target.closest('#featured-area-layout14 a, .md-featured-area a, .cities-container a');
 if (!a) return;
 var w = a.textContent.replace(/\s+/g, ' ').trim().split(' '), half = w.length / 2;
 // Cards repeat the name ("Abbotsford Abbotsford"): keep one copy.
