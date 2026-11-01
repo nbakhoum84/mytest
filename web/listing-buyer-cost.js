@@ -1278,7 +1278,7 @@ style.textContent =
 // Virtual Tour button: same look as the listing page's Virtual Tour button (cube icon, blue on light blue), same height as the green buttons.
 '.hn-bcp,.hn-bcp *,.hn-bcp::before,.hn-bcp::after,.hn-bcp *::before,.hn-bcp *::after,.detail-info-header [class*=price],.detail-info-header [class*=price] *,.detail-info-header [class*=price]::before,.detail-info-header [class*=price] *::before{color:#dbae77!important}' +
 // Listing prices gold #dbae77 (Nader 2026-11-01, was green #58c24c from #195/#200). Also beats the green price rules in Lofty's Custom Style box.
-'html body .house-price-container,html body .house-price-container *,html body .price-fav p:not([class]),html body .detail-info-header .price-number,html body .detail-info-header .price-number::before,html body .price-address .price-number,html body .price-address .price-number::before{color:#dbae77!important}' +
+
 '.hn-vt-pair{display:flex!important;align-items:stretch!important;gap:8px!important}' +
 'button.hn-vt-btn{display:flex!important;align-items:center!important;gap:6px!important;width:max-content!important;margin:0!important;padding:6px 12px!important;border:0!important;border-radius:8px!important;background:#eef3fd!important;color:#3a6fd8!important;font-family:inherit!important;font-weight:600!important;font-size:14px!important;line-height:1.2!important;white-space:nowrap!important;cursor:pointer!important;text-transform:none!important;box-shadow:none!important}' +
 'button.hn-vt-btn:hover{background:#dfe9fb!important}' +
@@ -1755,4 +1755,23 @@ s.id = 'hn-count-gold';
 s.textContent = '.detail-info-header .count-logo,.detail-info-header .count-logo *,.detail-info-header .count-logo::before,.detail-info-header .count-logo *::before{color:#b08d57!important}' +
 '.detail-info-header .count-logo svg [stroke]:not([stroke=none]){stroke:#b08d57!important}.detail-info-header .count-logo svg [fill]:not([fill=none]){fill:#b08d57!important}';
 (document.head || document.documentElement).appendChild(s);
+})();
+
+// Listing prices gold (Nader 2026-11-01). Lofty's Custom Style box paints prices green with !important, so the price text itself gets the
+// colour inline (inline !important wins). Only elements whose own text is a price ($ and digits); badges such as "New" are never touched.
+(function () {
+if (typeof document === 'undefined' || window.hnPriceGold) return;
+window.hnPriceGold = 1;
+var PRICE = /^\$?\s*\d[\d,.]*\s*[KM]?$|^\$$/i;
+var paint = function () {
+[].forEach.call(document.querySelectorAll('.hn-bcp, .hn-bcp *, .detail-info-header .price-number, .detail-info-header .price-number *, .price-address .price-number, .price-address .price-number *'), function (el) {
+var own = '';
+for (var c = el.firstChild; c; c = c.nextSibling) if (c.nodeType === 3) own += c.nodeValue;
+own = own.replace(/\s+/g, ' ').trim();
+if (!own || !PRICE.test(own)) return;
+if (el.style.getPropertyValue('color') === 'rgb(219, 174, 119)') return;
+el.style.setProperty('color', '#dbae77', 'important');
+});
+};
+paint(); setInterval(paint, 1500);
 })();
