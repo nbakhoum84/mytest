@@ -1689,8 +1689,8 @@ var n = 0, t = setInterval(function () { all(); if (++n > 20) clearInterval(t); 
 if (typeof document === 'undefined' || window.hnFaText) return;
 window.hnFaText = 1;
 var fa = function () {
-[].forEach.call(document.querySelectorAll('.featured-area-item .featured-area-item-sub-title'), function (el) {
-if (el.style.getPropertyValue('color') === 'rgb(255, 255, 255)' || el.style.getPropertyValue('color') === '#fff') return;
+[].forEach.call(document.querySelectorAll('.featured-area-item [class*="sub-title"], .featured-area-item [class*="area-name"], .featured-area-item .site-title'), function (el) {
+if (el.hnFaW && el.style.getPropertyValue('color')) return; el.hnFaW = 1;
 el.style.setProperty('color', '#fff', 'important');
 el.style.setProperty('text-shadow', '0 1px 3px rgba(0,0,0,.85)', 'important');
 });
