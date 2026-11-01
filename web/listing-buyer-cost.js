@@ -809,6 +809,23 @@ return { utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaig
 // (dataLayer, gtag) and the Meta pixel (fbq), so they can be counted as conversions for ad campaigns.
 // Nader's live GA4 property (Nader-exp). The site loads it on its own data layer (gtag/js?id=G-N9D71PSLL6&l=customSiteDataLayer),
 // which the page's gtag() does not feed, so our events go onto that layer (gtag needs a real arguments object).
+// Cookie consent (Nader 2026-11-01): Lofty's banner has only "Accept All Cookies" (no reject), and until it is clicked every Google tag
+// runs with analytics_storage denied, so GA4 never reports those visitors' clicks. Analytics (only, never ads) is switched on for every
+// visitor; ads storage still waits for Accept. Accept also never reached Nader-exp's own layer (customSiteDataLayer), so it is passed on.
+(function () {
+if (window.hnConsentSet) return;
+window.hnConsentSet = true;
+function both(state) {
+try { var l = window.customSiteDataLayer; if (l && typeof l.push === 'function') (function () { l.push(arguments); })('consent', 'update', state); } catch (e) {}
+try { if (typeof window.gtag === 'function') window.gtag('consent', 'update', state); } catch (e) {}
+}
+var ALL = { analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted', functionality_storage: 'granted', personalization_storage: 'granted' };
+var accepted = /cookie_status_settings=[^;]*(%22targeting%22%3Atrue|"targeting":true)/.test(document.cookie);
+both(accepted ? ALL : { analytics_storage: 'granted', functionality_storage: 'granted' });
+document.addEventListener('click', function (e) {
+if (e.target && e.target.closest && e.target.closest('.cookie-btn.accept')) setTimeout(function () { both(ALL); }, 0);
+}, true);
+})();
 function naderExp() {
 var l = window.customSiteDataLayer;
 if (l && typeof l.push === 'function') { l.push(arguments); return true; }
