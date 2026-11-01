@@ -5,6 +5,8 @@
 // Served from GitHub Pages, loaded by listing-buyer-cost.js.
 (function () {
 if (window.hnNoRegPopup) return;
+// Off on phones (Nader 2026-11-01): iPhone Safari stopped refreshing the home page while this ran. Laptops keep it.
+if (window.matchMedia && matchMedia('(hover: none) and (pointer: coarse)').matches) return;
 window.hnNoRegPopup = true;
 
 var lastAsk = 0, queued = false, hidOnce = false;
