@@ -3,6 +3,8 @@
 // when not hovered, by setting it on the element itself. Text on coloured buttons (links with their own background) is left alone,
 // so their hover look still works. Loaded on every page by listing-buyer-cost.js.
 (function () {
+  // Phones/tablets have no hover; re-pinning ~320 elements on every scroll froze iPhone Safari on refresh (2026-11-01).
+  if (matchMedia('(hover: none)').matches || matchMedia('(pointer: coarse)').matches) return;
 if (window.hnHoverLock) return;
 window.hnHoverLock = true;
 // Every element that shows its own text (links, menu items, and labels such as the listing cards' Townhouse / Condo tags).
