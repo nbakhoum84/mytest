@@ -1711,5 +1711,5 @@ if (/bed|bath|sq\s*ft|sqft/i.test(t) || !/^\$?\s*[\d,.]+\s*[KM]?$/i.test(t)) ret
 el.classList.add('hn-pg');
 });
 };
-tag(); var n = 0, t = setInterval(function () { tag(); if (++n > 30) clearInterval(t); }, 1000);
+tag(); setInterval(tag, 1500);
 })();
