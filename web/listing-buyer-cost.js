@@ -13,6 +13,8 @@ if (off) sessionStorage.setItem('hnOff', off[1]);
 // ?hnon=1 (or ?hnoff=2 for the helper-scripts-off test). ?hnon=0 clears the opt-in.
 var on = /[?&]hnon=([01])/.exec(location.search);
 if (on) sessionStorage.setItem('hnOn', on[1]);
+// ?hnoff=1 only counts while it is in the address (2026-11-01: a remembered test switch hid all buttons in Nader's tab).
+if (sessionStorage.getItem('hnOff') === '1' && !(off && off[1] === '1')) sessionStorage.removeItem('hnOff');
 if (sessionStorage.getItem('hnOff') === '1') { console.log('home-nader scripts are off (?hnoff=0 turns them on)'); return; }
 } catch (e) {}
 // ?hnoff=2 (test, 2026-11-01): main code on, but the four helper scripts below (language selector, chat bubble, chat greeting, hover lock) off.
