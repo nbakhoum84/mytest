@@ -32,6 +32,8 @@ for (var i = 0; i < ins.length; i++) {
 var box = ins[i];
 for (var d = 0; box && d < 12; d++, box = box.parentElement) {
 if (!box.querySelector('input[placeholder*="Phone" i], input[type=tel], input[name*="phone" i]')) continue;
+// A popup is never taller than the screen: stop before reaching a page section (never hide page content).
+if (box.getBoundingClientRect().height > innerHeight * 1.1) break;
 if (/find your dream home/i.test(box.textContent)) return box;
 }
 }
