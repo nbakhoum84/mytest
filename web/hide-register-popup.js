@@ -89,6 +89,9 @@ if (!document.getElementById(id)) { var x = document.createElement('style'); x.i
 
 // The popup locks the page's scrolling: give it back.
 function unlock() {
+// Only when the page is actually locked; touching <body> on every pass fought Safari's own scroll restore on reload.
+var b = document.body.style, h = document.documentElement.style;
+if (b.overflow !== 'hidden' && h.overflow !== 'hidden' && b.position !== 'fixed' && !/modal-open|no-scroll|overflow-hidden|is-locked/.test(document.body.className + ' ' + document.documentElement.className)) return;
 [document.body, document.documentElement].forEach(function (n) {
 // Only undo the popup's lock. Forcing overflow:auto on <html> and <body> made iPhone Safari leave the page below the fold blank
 // (gray) after a reload (Nader 2026-11-01).
