@@ -1705,6 +1705,7 @@ fa(); var n = 0, t = setInterval(function () { fa(); if (++n > 20) clearInterval
 if (typeof document === 'undefined' || document.getElementById('hn-count-gold')) return;
 var s = document.createElement('style');
 s.id = 'hn-count-gold';
-s.textContent = '.detail-info-header .count-logo,.detail-info-header .count-logo::before{color:#b08d57!important}';
+s.textContent = '.detail-info-header .count-logo,.detail-info-header .count-logo *,.detail-info-header .count-logo::before,.detail-info-header .count-logo *::before{color:#b08d57!important}' +
+'.detail-info-header .count-logo svg [stroke]:not([stroke=none]){stroke:#b08d57!important}.detail-info-header .count-logo svg [fill]:not([fill=none]){fill:#b08d57!important}';
 (document.head || document.documentElement).appendChild(s);
 })();
