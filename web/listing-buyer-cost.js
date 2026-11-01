@@ -7,22 +7,24 @@
 // Test switch: home-nader.com/?hnoff=1 loads the page with none of our code (buttons, chat greeting, hover lock, ...), to check whether
 // something on the site is Lofty's own. ?hnoff=0 turns it back on. Remembered for the browser tab only.
 try {
-var off = /[?&]hnoff=([01])/.exec(location.search);
+var off = /[?&]hnoff=([012])/.exec(location.search);
 if (off) sessionStorage.setItem('hnOff', off[1]);
 if (sessionStorage.getItem('hnOff') === '1') { console.log('home-nader scripts are off (?hnoff=0 turns them on)'); return; }
 } catch (e) {}
+// ?hnoff=2 (test, 2026-11-01): main code on, but the four helper scripts below (language selector, chat bubble, chat greeting, hover lock) off.
+var hnLite = false; try { hnLite = sessionStorage.getItem('hnOff') === '2'; } catch (e) {}
 // The virtual assistant chat's greeting line (web/chat-welcome.js) rides along on every page.
 // Phones held upright: the language selector and the AI chat bubble are moved below the home page's search field
 // (web/lang-selector-position.js, web/chat-bubble-position.js; leaves the rest of the chat alone). Both scripts load at any width and decide
 // for themselves from the current size, so turning the phone sideways (or back) switches them off (or on) without reloading the page.
-if (typeof document !== 'undefined' && !window.hnLangPosLoading) {
+if (typeof document !== 'undefined' && !window.hnLangPosLoading && !hnLite) {
 window.hnLangPosLoading = true;
 var lp = document.createElement('script');
 lp.src = 'https://nbakhoum84.github.io/mytest/lang-selector-position.js?v=' + Math.floor(Date.now() / 6e4);
 lp.async = true;
 document.head.appendChild(lp);
 }
-if (typeof document !== 'undefined' && !window.hnBubblePosLoading) {
+if (typeof document !== 'undefined' && !window.hnBubblePosLoading && !hnLite) {
 window.hnBubblePosLoading = true;
 var bp = document.createElement('script');
 bp.src = 'https://nbakhoum84.github.io/mytest/chat-bubble-position.js?v=' + Math.floor(Date.now() / 6e4);
@@ -183,7 +185,7 @@ ld.textContent = JSON.stringify({"@context":"https://schema.org","@graph":[{"@ty
 (document.head || document.documentElement).appendChild(ld);
 }
 // On every screen, phones included: the chat window opens with the same greeting and answer buttons.
-if (typeof document !== 'undefined' && !window.hnChatWelcomeLoading) {
+if (typeof document !== 'undefined' && !window.hnChatWelcomeLoading && !hnLite) {
 window.hnChatWelcomeLoading = true;
 var cw = document.createElement('script');
 cw.src = 'https://nbakhoum84.github.io/mytest/chat-welcome.js?v=' + Math.floor(Date.now() / 6e4);
@@ -191,7 +193,7 @@ cw.async = true;
 document.head.appendChild(cw);
 }
 // Every page: dark text keeps its colour on hover (web/hover-color-lock.js; Nader, 2026-10-24).
-if (typeof document !== 'undefined' && !window.hnHoverLockLoading) {
+if (typeof document !== 'undefined' && !window.hnHoverLockLoading && !hnLite) {
 window.hnHoverLockLoading = true;
 var hl = document.createElement('script');
 hl.src = 'https://nbakhoum84.github.io/mytest/hover-color-lock.js?v=' + Math.floor(Date.now() / 6e4);
