@@ -1683,12 +1683,12 @@ all();
 var n = 0, t = setInterval(function () { all(); if (++n > 20) clearInterval(t); }, 1000);
 })();
 
-// Phones (Nader 2026-11-01, screenshot of the "Delta" card): city / featured-area names on the photo cards were faint grey on a dark photo.
-// Text colour only: white with a soft dark shadow. Nothing else on the cards changes.
+// Phones (Nader 2026-11-01, screenshot of the "Delta" card): city / featured-area names (on the white strip under each photo) were faint grey.
+// Text colour only: solid navy #1f2a44, no shadow (white+shadow in PR #219 was unreadable). Nothing else on the cards changes.
 (function () {
 if (typeof document === 'undefined' || document.getElementById('hn-city-text')) return;
 var s = document.createElement('style');
 s.id = 'hn-city-text';
-s.textContent = '@media (hover:none) and (pointer:coarse){.cities-container .city-block *,#featured-area-layout14 .img-box *{color:#fff!important;-webkit-text-fill-color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 8px rgba(0,0,0,.5)!important}}';
+s.textContent = '@media (hover:none) and (pointer:coarse){.cities-container .city-block *,#featured-area-layout14 .img-box *{color:#1f2a44!important;-webkit-text-fill-color:#1f2a44!important;text-shadow:none!important}}';
 (document.head || document.documentElement).appendChild(s);
 })();
