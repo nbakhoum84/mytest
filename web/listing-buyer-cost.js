@@ -821,6 +821,13 @@ function both(state) {
 try { var l = window.customSiteDataLayer; if (l && typeof l.push === 'function') (function () { l.push(arguments); })('consent', 'update', state); } catch (e) {}
 try { if (typeof window.gtag === 'function') window.gtag('consent', 'update', state); } catch (e) {}
 }
+// Until Accept is clicked, Lofty's cookie layer (div.cookie-authority.ca.active) covers the whole screen and swallows every click
+// (phone, e-mail, menu). Let clicks pass through it; only its own buttons and links stay clickable.
+try {
+var cs = document.createElement('style');
+cs.textContent = '.cookie-authority.ca.active{pointer-events:none!important}.cookie-authority.ca.active :is(button,a,.cookie-btn){pointer-events:auto!important}';
+(document.head || document.documentElement).appendChild(cs);
+} catch (e) {}
 var ALL = { analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted', functionality_storage: 'granted', personalization_storage: 'granted' };
 var accepted = /cookie_status_settings=[^;]*(%22targeting%22%3Atrue|"targeting":true)/.test(document.cookie);
 both(accepted ? ALL : { analytics_storage: 'granted', functionality_storage: 'granted' });
