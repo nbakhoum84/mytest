@@ -13,11 +13,11 @@ if (off) sessionStorage.setItem('hnOff', off[1]);
 // ?hnon=1 (or ?hnoff=2 for the helper-scripts-off test). ?hnon=0 clears the opt-in.
 var on = /[?&]hnon=([01])/.exec(location.search);
 if (on) sessionStorage.setItem('hnOn', on[1]);
-if (matchMedia('(hover: none) and (pointer: coarse)').matches && sessionStorage.getItem('hnOn') !== '1' && sessionStorage.getItem('hnOff') !== '2') return;
 if (sessionStorage.getItem('hnOff') === '1') { console.log('home-nader scripts are off (?hnoff=0 turns them on)'); return; }
 } catch (e) {}
 // ?hnoff=2 (test, 2026-11-01): main code on, but the four helper scripts below (language selector, chat bubble, chat greeting, hover lock) off.
-var hnLite = false; try { hnLite = sessionStorage.getItem('hnOff') === '2'; } catch (e) {}
+// Phones/tablets (2026-11-01): the helper scripts froze iPhone Safari (main code alone tested fine), so touch screens skip them unless ?hnon=1.
+var hnLite = false; try { hnLite = sessionStorage.getItem('hnOff') === '2' || (matchMedia('(hover: none) and (pointer: coarse)').matches && sessionStorage.getItem('hnOn') !== '1'); } catch (e) {}
 // The virtual assistant chat's greeting line (web/chat-welcome.js) rides along on every page.
 // Phones held upright: the language selector and the AI chat bubble are moved below the home page's search field
 // (web/lang-selector-position.js, web/chat-bubble-position.js; leaves the rest of the chat alone). Both scripts load at any width and decide
