@@ -1699,3 +1699,12 @@ el.style.setProperty('text-shadow', '0 1px 3px rgba(0,0,0,.85)', 'important');
 };
 fa(); var n = 0, t = setInterval(function () { fa(); if (++n > 20) clearInterval(t); }, 1000);
 })();
+
+// Listing page Bed / Baths / SqFt icons: same gold as the listing cards' icons (#b08d57; Nader 2026-11-01 "gold"). Icons only, not the numbers.
+(function () {
+if (typeof document === 'undefined' || document.getElementById('hn-count-gold')) return;
+var s = document.createElement('style');
+s.id = 'hn-count-gold';
+s.textContent = '.detail-info-header .count-logo,.detail-info-header .count-logo::before{color:#b08d57!important}';
+(document.head || document.documentElement).appendChild(s);
+})();
