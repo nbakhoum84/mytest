@@ -646,7 +646,7 @@ return;
 // looked up by the card's MLS number only when the button is clicked (never in bulk: the site blocks fast repeated page loads).
 var fcs = document.querySelectorAll('.fc-item');
 for (var f = 0; f < fcs.length; f++) {
-var fm = /MLS\S*\s*([A-Z]\d{6,8})\b/.exec(fcs[f].textContent || ''), fmtg = fcs[f].querySelector('.hn-bcp-mtg');
+var fm = /MLS\S*\s*([A-Z]\d{6,8})(?!\d)/.exec(fcs[f].textContent || ''), fmtg = fcs[f].querySelector('.hn-bcp-mtg');
 if (!fm || !fmtg || fcs[f].querySelector('.hn-vt-btn')) continue;
 var fb = document.createElement('button');
 fb.type = 'button'; fb.className = 'hn-vt-btn'; fb.setAttribute('data-hn-type', 'pt'); fb.setAttribute('data-hn-vt', '');
