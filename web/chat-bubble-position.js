@@ -83,6 +83,9 @@ function turned() { later(); setTimeout(later, 350); }
 addEventListener('resize', turned);
 addEventListener('orientationchange', turned);
 addEventListener('load', later);
+// The header and hero finish growing after the spot is first set (the phone header bar, fonts, images), which pushed the search field
+// down onto the parked buttons: re-measure whenever the page layout changes size.
+if (window.ResizeObserver && document.body) { var ro = new ResizeObserver(later); ro.observe(document.body); var hd = document.querySelector('header'); if (hd) ro.observe(hd); }
 // Lofty can switch pages without reloading: look again when the page type (the body's class) changes.
 if (document.body) new MutationObserver(later).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 })();
