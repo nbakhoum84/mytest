@@ -46,6 +46,31 @@ hu.id = 'hn-hero-up';
 hu.textContent = '@media(max-width:700px) and (orientation:portrait){body.home .md-hero .media-content-search-group{position:relative!important;top:-56px!important}}';
 (document.head || document.documentElement).appendChild(hu);
 }
+// Area landing pages (/area-<city>, Nader 2026-11-01): no sold listings. Hide the locked cards (Lofty's "Free Account Required" mask,
+// used for sold listings) and the whole "Recently Sold" section. CSS plus a few one-off checks at load, no observers.
+if (typeof document !== 'undefined' && /^\/area-/i.test(location.pathname)) {
+var ns = document.createElement('style');
+ns.textContent = 'li.house-grid-item:has(.md-house__mask),li.house-grid-item:has(.hide-price.title-mask),.hn-no-sold{display:none!important}';
+(document.head || document.documentElement).appendChild(ns);
+var noSold = function () {
+try {
+var hs = document.querySelectorAll('h1,h2,h3,h4,.title,[class*="title"]');
+for (var i = 0; i < hs.length; i++) {
+if (!/^\s*recently sold\s*$/i.test(hs[i].textContent || '')) continue;
+for (var el = hs[i], d = 0; el && el !== document.body && d < 8; el = el.parentElement, d++) {
+if (el.querySelector('a[href*="/listing-detail/"]')) {
+// Never hide a box that also holds the active Listings section.
+var other = [].some.call(el.querySelectorAll('h1,h2,h3,h4'), function (h) { return h !== hs[i] && /^\s*listings\s*$/i.test(h.textContent || ''); });
+if (!other) el.classList.add('hn-no-sold');
+break;
+}
+}
+}
+} catch (e) {}
+};
+[300, 1500, 4000, 8000].forEach(function (t) { setTimeout(noSold, t); });
+window.addEventListener('load', noSold);
+}
 // Phones held upright, home page (Nader 2026-11-01): Lofty's chat bubble and language selector ("EN") sit below the search bar, not on it.
 // Light on purpose (the observer-based position scripts froze iPhone Safari): CSS does the moving; a few one-off measurements at load
 // set the spot (search bar's bottom edge at the top of the page + 14px) and tag the EN box. No observers, no per-frame work.
@@ -1154,6 +1179,8 @@ var slug = decodeURIComponent(path.replace(/\/$/, '').split('/').pop() || '').re
 for (var c = 0; c < CITIES.length; c++) if (new RegExp('-' + CITIES[c].toLowerCase().replace(/ /g, '-') + '$').test(slug)) return CITIES[c];
 return '';
 }
+var ar = /^\/area-([a-z-]+?)\/?$/.exec(path);
+if (ar) return ar[1].split('-').map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
 var m = /^\/(?:presales?-)?([a-z-]+?)(?:-(?:sold-)?listings?|-presales?)?\/?$/.exec(path);
 if (!m || /^(new|foreclosures?|commercial|residential|listings?$)/.test(m[1])) return '';
 return m[1].split('-').map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
@@ -1586,7 +1613,8 @@ DETAIL = /^\/listing-detail\//.test(path);
 COMMERCIAL = window.hnBuyerCostMode === 'commercial' || /commercial/.test(path);
 APP = 'https://nbakhoum84.github.io/mytest/' + (COMMERCIAL ? 'commercial-cost/' : 'my-home-cost/');
 if (/sold/.test(path) || (/detail/.test(path) && !DETAIL)) return false;
-LISTING_PAGE = DETAIL || COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)/.test(path);
+// Area landing pages (/area-<city>, e.g. /area-south-surrey) have a Listings section of cards: same buttons (Nader 2026-11-01).
+LISTING_PAGE = DETAIL || COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)|^\/area-/.test(path);
 return true;
 }
 if (route()) {
