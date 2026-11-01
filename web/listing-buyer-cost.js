@@ -1768,13 +1768,16 @@ var own = '';
 for (var c = el.firstChild; c; c = c.nextSibling) if (c.nodeType === 3) own += c.nodeValue;
 own = own.replace(/\s+/g, ' ').trim();
 if (!own || !PRICE.test(own)) return;
-if (el.style.getPropertyValue('color') === 'rgb(219, 174, 119)') return;
+if (el.style.getPropertyValue('-webkit-text-fill-color') === 'rgb(219, 174, 119)') return;
+el.setAttribute('data-hn-hc', 'rgb(219, 174, 119)'); // hover-color-lock.js keeps this colour
 el.style.setProperty('color', '#dbae77', 'important');
+el.style.setProperty('-webkit-text-fill-color', '#dbae77', 'important');
 });
 };
 paint(); setInterval(paint, 1500);
 // The listing page draws its "$" with ::before (no element to colour inline), so that one gets a stronger stylesheet rule.
 var st = document.createElement('style');
-st.textContent = 'html body .detail-info-header .price-number::before,html body .price-address .price-number::before,html body .detail-info-header .hn-bcp::before{color:#dbae77!important}';
+st.textContent = 'html body .house-price-container .house-price,html body .house-price-container .house-price *,html body .detail-info-header .price-number,html body .price-address .price-number{color:#dbae77!important;-webkit-text-fill-color:#dbae77!important}' +
+'html body .detail-info-header .price-number::before,html body .price-address .price-number::before,html body .detail-info-header .hn-bcp::before{color:#dbae77!important}';
 (document.head || document.documentElement).appendChild(st);
 })();
