@@ -1566,10 +1566,14 @@ var pics = String(h.listingPictures || '').split('|').filter(Boolean);
 if (pics.length < 2) pics = photosOf(h, card);
 var spot = card.querySelector('.house-footer .property');
 if (pics.length < 2 || !spot) return;
+// Our stylesheet and click handling (scan() stays off on sold pages, so no price buttons are added).
+if (!started) start();
 b = document.createElement('button');
 b.type = 'button'; b.className = 'hn-vt-btn hn-vt-sold'; b.setAttribute('data-hn-type', 'pt'); b.setAttribute('data-hn-vt', '');
 b.innerHTML = CAM + '<span>Photo tour</span>';
 b.hnPhotos = pics; b.hnFull = 1; b.hnLink = ''; b.hnCredit = creditOf(h, card);
+var org = h.agentOrganizationName || h.listOfficeName || h.officeName || '';
+if (org && /courtesy of\s*$/.test(b.hnCredit)) b.hnCredit += org;
 spot.insertBefore(b, spot.querySelector('.placeholder') || spot.querySelector('.fav-icon'));
 });
 }, 1500);
