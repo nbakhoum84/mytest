@@ -593,6 +593,8 @@ if (!who) { var mt = (document.body.innerText || '').match(/(?:Listing (?:courte
 b.hnCredit = who ? 'Listing courtesy of ' + who : ''; }
 b.setAttribute('data-hn-vt', url);
 if (b.previousElementSibling !== calc) calc.parentElement.insertBefore(b, calc.nextSibling);
+// Shareable tour link (Nader 2026-11-01, for social posts): /listing-detail/...?hntour=1 opens the listing's tour by itself, once.
+if (/[?&]hntour=1/.test(location.search) && !detailTours.auto) { detailTours.auto = true; setTimeout(function () { b.click(); }, 800); }
 }
 function tours() {
 if (DETAIL) {
@@ -853,6 +855,8 @@ return localStorage.getItem('hnLead') === '1';
 // preferring a real link or button, then one that says Register, then a visible one.
 var REG = /^(register|sign\s*in|log\s*in|sign\s*up)(\s*(\/|\||or|&)\s*(register|sign\s*in|log\s*in|sign\s*up))?$/i;
 function registerLink() {
+// Never on the home page (Nader 2026-10-31): visitors browse it without our registration form; calculators and tours just open.
+if (/^\/?$/.test(location.pathname)) return null;
 var els = document.querySelectorAll('a, button, [role="button"], li, span, div');
 var best = null, bestScore = -1;
 for (var i = els.length - 1; i >= 0; i--) {
