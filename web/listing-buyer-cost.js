@@ -9,6 +9,11 @@
 try {
 var off = /[?&]hnoff=([012])/.exec(location.search);
 if (off) sessionStorage.setItem('hnOff', off[1]);
+// Phones/tablets (2026-11-01): iPhone Safari froze with our code on, so touch screens get none of it unless the tab opted in with
+// ?hnon=1 (or ?hnoff=2 for the helper-scripts-off test). ?hnon=0 clears the opt-in.
+var on = /[?&]hnon=([01])/.exec(location.search);
+if (on) sessionStorage.setItem('hnOn', on[1]);
+if (matchMedia('(hover: none) and (pointer: coarse)').matches && sessionStorage.getItem('hnOn') !== '1' && sessionStorage.getItem('hnOff') !== '2') return;
 if (sessionStorage.getItem('hnOff') === '1') { console.log('home-nader scripts are off (?hnoff=0 turns them on)'); return; }
 } catch (e) {}
 // ?hnoff=2 (test, 2026-11-01): main code on, but the four helper scripts below (language selector, chat bubble, chat greeting, hover lock) off.
