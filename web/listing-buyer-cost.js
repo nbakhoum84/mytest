@@ -29,14 +29,6 @@ bp.src = 'https://nbakhoum84.github.io/mytest/chat-bubble-position.js?v=' + Math
 bp.async = true;
 document.head.appendChild(bp);
 }
-// Every page except a listing's own page: Lofty's automatic "Find Your Dream Home" registration popup is not shown while browsing (web/hide-register-popup.js).
-if (typeof document !== 'undefined' && !window.hnNoRegPopupLoading) {
-window.hnNoRegPopupLoading = true;
-var rp = document.createElement('script');
-rp.src = 'https://nbakhoum84.github.io/mytest/hide-register-popup.js?v=' + Math.floor(Date.now() / 6e4);
-rp.async = true;
-document.head.appendChild(rp);
-}
 // Phones held upright, home page: the titles and the search bar sit 56px higher, so the chat bubble parked under the search field has room
 // above the bottom of the screen. Done here in CSS (this loader runs first) so the move is already there when the bubble is placed.
 if (typeof document !== 'undefined' && !document.getElementById('hn-hero-up')) {
@@ -593,8 +585,6 @@ if (!who) { var mt = (document.body.innerText || '').match(/(?:Listing (?:courte
 b.hnCredit = who ? 'Listing courtesy of ' + who : ''; }
 b.setAttribute('data-hn-vt', url);
 if (b.previousElementSibling !== calc) calc.parentElement.insertBefore(b, calc.nextSibling);
-// Shareable tour link (Nader 2026-11-01, for social posts): /listing-detail/...?hntour=1 opens the listing's tour by itself, once.
-if (/[?&]hntour=1/.test(location.search) && !detailTours.auto) { detailTours.auto = true; setTimeout(function () { b.click(); }, 800); }
 }
 function tours() {
 if (DETAIL) {
@@ -811,30 +801,6 @@ return { utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaig
 // (dataLayer, gtag) and the Meta pixel (fbq), so they can be counted as conversions for ad campaigns.
 // Nader's live GA4 property (Nader-exp). The site loads it on its own data layer (gtag/js?id=G-N9D71PSLL6&l=customSiteDataLayer),
 // which the page's gtag() does not feed, so our events go onto that layer (gtag needs a real arguments object).
-// Cookie consent (Nader 2026-11-01): Lofty's banner has only "Accept All Cookies" (no reject), and until it is clicked every Google tag
-// runs with analytics_storage denied, so GA4 never reports those visitors' clicks. Analytics (only, never ads) is switched on for every
-// visitor; ads storage still waits for Accept. Accept also never reached Nader-exp's own layer (customSiteDataLayer), so it is passed on.
-(function () {
-if (window.hnConsentSet) return;
-window.hnConsentSet = true;
-function both(state) {
-try { var l = window.customSiteDataLayer; if (l && typeof l.push === 'function') (function () { l.push(arguments); })('consent', 'update', state); } catch (e) {}
-try { if (typeof window.gtag === 'function') window.gtag('consent', 'update', state); } catch (e) {}
-}
-// Until Accept is clicked, Lofty's cookie layer (div.cookie-authority.ca.active) covers the whole screen and swallows every click
-// (phone, e-mail, menu). Let clicks pass through it; only its own buttons and links stay clickable.
-try {
-var cs = document.createElement('style');
-cs.textContent = '.cookie-authority.ca.active{pointer-events:none!important}.cookie-authority.ca.active :is(button,a,.cookie-btn){pointer-events:auto!important}';
-(document.head || document.documentElement).appendChild(cs);
-} catch (e) {}
-var ALL = { analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted', functionality_storage: 'granted', personalization_storage: 'granted' };
-var accepted = /cookie_status_settings=[^;]*(%22targeting%22%3Atrue|"targeting":true)/.test(document.cookie);
-both(accepted ? ALL : { analytics_storage: 'granted', functionality_storage: 'granted' });
-document.addEventListener('click', function (e) {
-if (e.target && e.target.closest && e.target.closest('.cookie-btn.accept')) setTimeout(function () { both(ALL); }, 0);
-}, true);
-})();
 function naderExp() {
 var l = window.customSiteDataLayer;
 if (l && typeof l.push === 'function') { l.push(arguments); return true; }
@@ -862,8 +828,6 @@ return localStorage.getItem('hnLead') === '1';
 // preferring a real link or button, then one that says Register, then a visible one.
 var REG = /^(register|sign\s*in|log\s*in|sign\s*up)(\s*(\/|\||or|&)\s*(register|sign\s*in|log\s*in|sign\s*up))?$/i;
 function registerLink() {
-// Never on the home page (Nader 2026-10-31): visitors browse it without our registration form; calculators and tours just open.
-if (/^\/?$/.test(location.pathname)) return null;
 var els = document.querySelectorAll('a, button, [role="button"], li, span, div');
 var best = null, bestScore = -1;
 for (var i = els.length - 1; i >= 0; i--) {
@@ -1381,15 +1345,6 @@ window.hnBuyerCostLoaded = true;
 // call / text / e-mail / WhatsApp links (hn_contact_click), "What's My Home Worth?" and Valuation (hn_valuation_click), Calendly
 // booking links (hn_booking_click), the "Get the ... app" cards (hn_app_card_click) and the first use of each pasted-in calculator
 // (hn_calculator_use). The chat greeting buttons are counted by chat-welcome.js through window.hnTrack (hn_chat_button_click).
-// Phones (Nader 2026-11-01): Lofty turns a finger tap into a synthetic click (isTrusted false), so an isTrusted check dropped every
-// phone tap. Synthetic clicks count too; a click on the same element within 700 ms is counted once (the tap and its copy).
-var hnLastClick = { el: null, t: 0 };
-function hnNewClick(e) {
-var now = Date.now(), el = e.target;
-if (el && el === hnLastClick.el && now - hnLastClick.t < 700) return false;
-hnLastClick = { el: el, t: now };
-return true;
-}
 if (!window.hnSiteClicks) {
 window.hnSiteClicks = true;
 window.hnTrack = track;
@@ -1401,7 +1356,7 @@ return el.closest('header, .md-header') ? 'header' : el.closest('footer, .md-foo
 }
 var VALUATION = /^(what'?s my home worth\??|home valuation|valuation|value my home|free home (evaluation|valuation))$/i;
 document.addEventListener('click', function (e) {
-if (!e.target || !e.target.closest || !hnNewClick(e)) return;
+if (!e.isTrusted || !e.target || !e.target.closest) return;
 var t = e.target, a = t.closest('a, button, [role="button"]');
 var href = a ? (a.getAttribute('href') || '').trim() : '';
 var text = (a || t).textContent.replace(/\s+/g, ' ').trim().slice(0, 60);
@@ -1456,7 +1411,7 @@ if (LP) {
 var lpData = function (extra) { return Object.assign({ page_type: LP, page_name: lpName }, extra, lpTags()); };
 track('hn_' + LP + '_view', lpData({}));
 document.addEventListener('click', function (e) {
-var a = e.target && e.target.closest && e.target.closest('a, button, [role="button"], input[type="submit"]');
+var a = e.isTrusted && e.target && e.target.closest && e.target.closest('a, button, [role="button"], input[type="submit"]');
 if (!a || a.closest('header, .md-header, footer, .md-footer')) return;
 var label = (a.textContent || a.value || a.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim().slice(0, 60);
 track('hn_' + LP + '_click', lpData({ button_text: label, link_url: a.href || '' }));
@@ -1471,7 +1426,7 @@ track('hn_' + LP + '_lead', lpData({ button_text: 'form submit' }));
 }, true);
 }
 document.addEventListener('click', function (e) {
-var a = e.target && e.target.closest && e.target.closest('#featured-area-layout14 a, .md-featured-area a, .cities-container a');
+var a = e.isTrusted && e.target && e.target.closest && e.target.closest('#featured-area-layout14 a, .md-featured-area a, .cities-container a');
 if (!a) return;
 var w = a.textContent.replace(/\s+/g, ' ').trim().split(' '), half = w.length / 2;
 // Cards repeat the name ("Abbotsford Abbotsford"): keep one copy.
