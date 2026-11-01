@@ -46,11 +46,11 @@ hu.id = 'hn-hero-up';
 hu.textContent = '@media(max-width:700px) and (orientation:portrait){body.home .md-hero .media-content-search-group{position:relative!important;top:-56px!important}}';
 (document.head || document.documentElement).appendChild(hu);
 }
-// Area landing pages (/area-<city>, Nader 2026-11-01): no sold listings. Hide the locked cards (Lofty's "Free Account Required" mask,
-// used for sold listings) and the whole "Recently Sold" section. CSS plus a few one-off checks at load, no observers.
+// Area landing pages (/area-<city>, Nader 2026-11-01): no sold listings, so the whole "Recently Sold" section is hidden. The locked
+// "Free Account Required" cards in Listings are ACTIVE listings Lofty gates behind sign-in (one MLS feed), not sold ones: keep them. CSS plus a few one-off checks at load, no observers.
 if (typeof document !== 'undefined' && /^\/area-/i.test(location.pathname)) {
 var ns = document.createElement('style');
-ns.textContent = 'li.house-grid-item:has(.md-house__mask),li.house-grid-item:has(.hide-price.title-mask),.hn-no-sold{display:none!important}';
+ns.textContent = '.hn-no-sold{display:none!important}';
 (document.head || document.documentElement).appendChild(ns);
 var noSold = function () {
 try {
