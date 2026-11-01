@@ -19,21 +19,19 @@ if (sessionStorage.getItem('hnOff') === '1') { console.log('home-nader scripts a
 } catch (e) {}
 // ?hnoff=2 (test, 2026-11-01): main code on, but the four helper scripts below (language selector, chat bubble, chat greeting, hover lock) off.
 // Phones/tablets (2026-11-01): the helper scripts froze iPhone Safari (main code alone tested fine), so touch screens skip them unless ?hnon=1.
-// Touch screens still get the two light position scripts (chat bubble + EN below the search field; Nader 2026-11-01), only ?hnoff=2 skips them.
-var hnTouch = false; try { hnTouch = sessionStorage.getItem('hnOff') !== '2' && matchMedia('(hover: none) and (pointer: coarse)').matches; } catch (e) {}
 var hnLite = false; try { hnLite = sessionStorage.getItem('hnOff') === '2' || (matchMedia('(hover: none) and (pointer: coarse)').matches && sessionStorage.getItem('hnOn') !== '1'); } catch (e) {}
 // The virtual assistant chat's greeting line (web/chat-welcome.js) rides along on every page.
 // Phones held upright: the language selector and the AI chat bubble are moved below the home page's search field
 // (web/lang-selector-position.js, web/chat-bubble-position.js; leaves the rest of the chat alone). Both scripts load at any width and decide
 // for themselves from the current size, so turning the phone sideways (or back) switches them off (or on) without reloading the page.
-if (typeof document !== 'undefined' && !window.hnLangPosLoading && !(hnLite && !hnTouch)) {
+if (typeof document !== 'undefined' && !window.hnLangPosLoading && !hnLite) {
 window.hnLangPosLoading = true;
 var lp = document.createElement('script');
 lp.src = 'https://nbakhoum84.github.io/mytest/lang-selector-position.js?v=' + Math.floor(Date.now() / 6e4);
 lp.async = true;
 document.head.appendChild(lp);
 }
-if (typeof document !== 'undefined' && !window.hnBubblePosLoading && !(hnLite && !hnTouch)) {
+if (typeof document !== 'undefined' && !window.hnBubblePosLoading && !hnLite) {
 window.hnBubblePosLoading = true;
 var bp = document.createElement('script');
 bp.src = 'https://nbakhoum84.github.io/mytest/chat-bubble-position.js?v=' + Math.floor(Date.now() / 6e4);
