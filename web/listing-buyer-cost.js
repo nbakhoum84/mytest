@@ -1549,6 +1549,30 @@ for (var i = 0; i < RATEHUB.length; i++) if (RATEHUB[i][0].test(id)) { name = RA
 calcUse(name);
 }, 1000);
 }
+// Sold listing cards (Nader 2026-11-01): a Photo tour button ONLY on cards Lofty shows unlocked (visitor registered and email verified).
+// Locked cards (blurred photo, "Email Verification Required") are never touched and their photos are never read: the board's VOW rules
+// allow sold photos only for verified visitors.
+setInterval(function () {
+if (!/sold/.test(location.pathname.toLowerCase())) return;
+[].forEach.call(document.querySelectorAll('li.house-grid-item, .house-list-item'), function (card) {
+var locked = card.querySelector('.md-house__mask .mask-box, .title-mask, .icon-lock1');
+var b = card.querySelector('.hn-vt-btn');
+if (locked) { if (b) b.remove(); return; }
+if (b) return;
+var h = null;
+for (var vc = card.__vueParentComponent, n = 0; vc && n < 4 && !h; vc = vc.parent, n++) h = vc.props && vc.props.house && typeof vc.props.house === 'object' ? vc.props.house : null;
+if (!h) return;
+var pics = String(h.listingPictures || '').split('|').filter(Boolean);
+if (pics.length < 2) pics = photosOf(h, card);
+var spot = card.querySelector('.house-footer .property');
+if (pics.length < 2 || !spot) return;
+b = document.createElement('button');
+b.type = 'button'; b.className = 'hn-vt-btn hn-vt-sold'; b.setAttribute('data-hn-type', 'pt'); b.setAttribute('data-hn-vt', '');
+b.innerHTML = CAM + '<span>Photo tour</span>';
+b.hnPhotos = pics; b.hnFull = 1; b.hnLink = ''; b.hnCredit = creditOf(h, card);
+spot.insertBefore(b, spot.querySelector('.placeholder') || spot.querySelector('.fav-icon'));
+});
+}, 1500);
 var LISTING_PAGE = false, active = false;
 function route() {
 active = false;
