@@ -816,17 +816,9 @@ var list = [], hit = null;
 (function walk(o, d) { if (!o || typeof o !== 'object' || d > 6) return; if (Array.isArray(o)) { o.forEach(function (x) { walk(x, d + 1); }); return; } if (o.mlsListingId) list.push(o); else for (var k in o) walk(o[k], d + 1); })(j, 0);
 for (var i = 0; i < list.length && !hit; i++) if (String(list[i].mlsListingId).toUpperCase() === mls) hit = list[i];
 if (!hit) throw 0;
-var first = [].concat(hit.previewPicture || [], hit.listingPictures || []).filter(function (u) { return typeof u === 'string'; });
-btn.hnPhotos = first;
-var url = hit.detailUrl || '';
-if (!url) throw 0;
-return fetch(url, { credentials: 'include' }).then(function (r) { return r.text(); }).then(function (html) {
-var all = [], seen = {}, re = /<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi, m;
-while ((m = re.exec(html))) { try { (function walk(o) { if (!o || typeof o !== 'object') return; if (Array.isArray(o)) { o.forEach(walk); return; }
-if (o.image) [].concat(o.image).forEach(function (u) { u = typeof u === 'string' ? u : u && u.url; if (u && u.indexOf(mls) >= 0 && !seen[u]) { seen[u] = 1; all.push(u); } });
-for (var k in o) if (k !== 'image') walk(o[k]); })(JSON.parse(m[1])); } catch (e) {} }
-if (all.length) btn.hnPhotos = all;
-});
+var pics = String(hit.listingPictures || '').split('|').filter(Boolean);
+if (!pics.length && hit.previewPicture) pics = [hit.previewPicture];
+btn.hnPhotos = pics;
 }).catch(function () {}).then(function () { if (btn.hnPhotos.length) done(); else alert('Photos for this listing are not available right now.'); });
 }
 // Every listing photo address on the listing page, in order: same photo server as the card's photos, no repeats, no tiny thumbnails twice.
