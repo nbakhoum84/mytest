@@ -26,14 +26,13 @@ function isHome() { return !!document.body; }
 
 // The popup is the form whose heading says "Find Your Dream Home" and which asks for a name, an e-mail and a phone number.
 function findForm() {
-var heads = document.querySelectorAll('h1,h2,h3,h4,h5,div,span,p,strong,b');
-for (var i = 0; i < heads.length; i++) {
-var h = heads[i];
-if (!/^find your dream home$/i.test(h.textContent.trim().replace(/\s+/g, ' '))) continue;
-// The hero of the home page may carry the same words: only a box with the three fields is the popup.
-var box = h;
+// Cheap on phones (Nader 2026-11-01: the old scan of every div/span froze iPhone Safari): start from the few e-mail inputs on the page.
+var ins = document.querySelectorAll('input[type=email], input[placeholder*="Email" i], input[name*="email" i]');
+for (var i = 0; i < ins.length; i++) {
+var box = ins[i];
 for (var d = 0; box && d < 12; d++, box = box.parentElement) {
-if (box.querySelector('input[type=email], input[placeholder*="Email" i], input[name*="email" i]') && box.querySelector('input[placeholder*="Phone" i], input[type=tel], input[name*="phone" i]')) return box;
+if (!box.querySelector('input[placeholder*="Phone" i], input[type=tel], input[name*="phone" i]')) continue;
+if (/find your dream home/i.test(box.textContent)) return box;
 }
 }
 return null;
@@ -121,14 +120,14 @@ clearBackdrop();
 unlock();
 }
 
-function queue() { if (!queued) { queued = true; setTimeout(scan, 50); } }
+function queue() { if (!queued) { queued = true; setTimeout(scan, 300); } }
 
 function start() {
 if (!document.body) { setTimeout(start, 100); return; }
 scan();
-new MutationObserver(queue).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class', 'hidden', 'aria-hidden'] });
+new MutationObserver(queue).observe(document.body, { childList: true, subtree: true });
 window.addEventListener('scroll', queue, { passive: true });
-setInterval(scan, 700);
+setInterval(scan, 1500);
 }
 start();
 })();
