@@ -642,6 +642,22 @@ detailTours();
 if (!tours.t) { var n = 0; tours.t = setInterval(function () { if (!DETAIL || ++n > 40 || document.querySelector('.hn-vt-detail')) { clearInterval(tours.t); tours.t = 0; return; } detailTours(); }, 500); }
 return;
 }
+// Foreclosures page cards (Nader's own block, .fc-item, Nader 2026-11-01): a Photo tour of the listing's photos from his own IDX feed,
+// looked up by the card's MLS number only when the button is clicked (never in bulk: the site blocks fast repeated page loads).
+var fcs = document.querySelectorAll('.fc-item');
+for (var f = 0; f < fcs.length; f++) {
+var fm = /MLS\S*\s*([A-Z]\d{6,8})\b/.exec(fcs[f].textContent || ''), fmtg = fcs[f].querySelector('.hn-bcp-mtg');
+if (!fm || !fmtg || fcs[f].querySelector('.hn-vt-btn')) continue;
+var fb = document.createElement('button');
+fb.type = 'button'; fb.className = 'hn-vt-btn'; fb.setAttribute('data-hn-type', 'pt'); fb.setAttribute('data-hn-vt', '');
+fb.innerHTML = CAM + '<span>Photo tour</span>';
+fb.hnMls = fm[1]; fb.hnPhotos = []; fb.hnFull = 1; fb.hnLink = '';
+var lb = /Listed by\s+([^\n]+?)\s*(?:\n|\$|$)/.exec(fcs[f].innerText || '');
+fb.hnCredit = lb ? 'Listing courtesy of ' + lb[1].trim() : '';
+var fp = fmtg.parentElement;
+if (!fp.classList.contains('hn-vt-pair')) { fp = document.createElement('div'); fp.className = 'hn-vt-pair'; fmtg.parentElement.insertBefore(fp, fmtg); fp.appendChild(fmtg); }
+fp.appendChild(fb);
+}
 // Grid cards and list-view cards (Nader 2026-10-31: list view had no tour buttons).
 var cards = document.querySelectorAll('li.house-grid-item, .house-list-item');
 for (var i = 0; i < cards.length; i++) {
@@ -790,6 +806,28 @@ btn.hnFull = 1;
 if (all.length > pics.length) { var now = pics[i]; btn.hnPhotos = pics = all; i = Math.max(0, all.indexOf(now)); sh.querySelector('.hn-pt-count').textContent = (i + 1) + ' / ' + pics.length; }
 }).catch(function () {});
 }
+}
+// Foreclosures card: find the listing in the site's own IDX search by its MLS number, then read that one listing page's photo list.
+function fcPhotos(btn, done) {
+var mls = btn.hnMls, q = '/api-site/search/realTimeListings?listingSort=RELEVANCE&page=1&pageSize=24&isSearching=true&siteId=135866&listingSource=&condition=' +
+encodeURIComponent(JSON.stringify({ location: { none: [mls] } })) + '&uiConfig=%7B%7D&timezone=GMT-0800';
+fetch(q, { credentials: 'include' }).then(function (r) { return r.json(); }).then(function (j) {
+var list = [], hit = null;
+(function walk(o, d) { if (!o || typeof o !== 'object' || d > 6) return; if (Array.isArray(o)) { o.forEach(function (x) { walk(x, d + 1); }); return; } if (o.mlsListingId) list.push(o); else for (var k in o) walk(o[k], d + 1); })(j, 0);
+for (var i = 0; i < list.length && !hit; i++) if (String(list[i].mlsListingId).toUpperCase() === mls) hit = list[i];
+if (!hit) throw 0;
+var first = [].concat(hit.previewPicture || [], hit.listingPictures || []).filter(function (u) { return typeof u === 'string'; });
+btn.hnPhotos = first;
+var url = hit.detailUrl || '';
+if (!url) throw 0;
+return fetch(url, { credentials: 'include' }).then(function (r) { return r.text(); }).then(function (html) {
+var all = [], seen = {}, re = /<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi, m;
+while ((m = re.exec(html))) { try { (function walk(o) { if (!o || typeof o !== 'object') return; if (Array.isArray(o)) { o.forEach(walk); return; }
+if (o.image) [].concat(o.image).forEach(function (u) { u = typeof u === 'string' ? u : u && u.url; if (u && u.indexOf(mls) >= 0 && !seen[u]) { seen[u] = 1; all.push(u); } });
+for (var k in o) if (k !== 'image') walk(o[k]); })(JSON.parse(m[1])); } catch (e) {} }
+if (all.length) btn.hnPhotos = all;
+});
+}).catch(function () {}).then(function () { if (btn.hnPhotos.length) done(); else alert('Photos for this listing are not available right now.'); });
 }
 // Every listing photo address on the listing page, in order: same photo server as the card's photos, no repeats, no tiny thumbnails twice.
 function fullPhotos(html, known) {
@@ -1193,7 +1231,7 @@ utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaign: 'virtu
 if (vt.getAttribute('data-hn-type') === 'pt') {
 var ptData = { button_text: 'Photo tour', photos: (vt.hnPhotos || []).length, listing_url: vtData.listing_url, utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaign: 'photo_tour', utm_content: 'residential' };
 track('hn_photo_tour_click', ptData);
-tourAfterSignup('', ptData, function () { openPhotos(vt); }, 'hn_photo_tour');
+tourAfterSignup('', ptData, function () { if (vt.hnMls && !vt.hnPhotos.length) fcPhotos(vt, function () { openPhotos(vt); }); else openPhotos(vt); }, 'hn_photo_tour');
 return;
 }
 track('hn_virtual_tour_click', vtData);
