@@ -21,7 +21,8 @@ var st = document.createElement('style');
 st.textContent = '[data-hn-gone]{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}';
 (document.head || document.documentElement).appendChild(st);
 
-function isHome() { return !!document.body && document.body.classList.contains('home'); }
+// Any page: listing lists pop the same form up. The popup is recognised by its heading and its name / e-mail / phone fields.
+function isHome() { return !!document.body; }
 
 // The popup is the form whose heading says "Find Your Dream Home" and which asks for a name, an e-mail and a phone number.
 function findForm() {
@@ -89,9 +90,22 @@ n.classList.remove('modal-open', 'no-scroll', 'overflow-hidden', 'is-locked');
 });
 }
 
+// The one place the form is wanted (Nader 2026-11-01): when a visitor clicks a listing to see its details (/listing-detail/...).
+// Everywhere else, the home page and the listing lists included, it stays hidden. The site may open a listing without reloading the
+// page, so the address is checked on every pass; arriving on a listing page puts back anything hidden before.
+function onListingPage() { return /\/listing-detail\//i.test(location.pathname); }
+function release() {
+if (!hidOnce) return;
+hidOnce = false;
+document.querySelectorAll('[data-hn-gone]').forEach(function (n) { n.removeAttribute('data-hn-gone'); });
+['hn-ps-before', 'hn-ps-after'].forEach(function (id) { var x = document.getElementById(id); if (x) x.remove(); });
+[document.body, document.documentElement].forEach(function (n) { n.style.removeProperty('overflow'); });
+}
+
 function scan() {
 queued = false;
 if (!isHome()) return;
+if (onListingPage()) { release(); return; }
 var form = findForm();
 if (!form) { if (hidOnce && Date.now() - lastAsk > 3000) { clearBackdrop(); unlock(); } return; }
 // Asked for by the visitor (clicked Register / Sign In): leave it alone while it is open.

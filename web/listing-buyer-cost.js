@@ -29,7 +29,7 @@ bp.src = 'https://nbakhoum84.github.io/mytest/chat-bubble-position.js?v=' + Math
 bp.async = true;
 document.head.appendChild(bp);
 }
-// Home page: Lofty's automatic "Find Your Dream Home" registration popup is not shown while browsing (web/hide-register-popup.js).
+// Every page except a listing's own page: Lofty's automatic "Find Your Dream Home" registration popup is not shown while browsing (web/hide-register-popup.js).
 if (typeof document !== 'undefined' && !window.hnNoRegPopupLoading) {
 window.hnNoRegPopupLoading = true;
 var rp = document.createElement('script');
