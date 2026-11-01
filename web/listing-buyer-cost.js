@@ -1154,8 +1154,6 @@ var slug = decodeURIComponent(path.replace(/\/$/, '').split('/').pop() || '').re
 for (var c = 0; c < CITIES.length; c++) if (new RegExp('-' + CITIES[c].toLowerCase().replace(/ /g, '-') + '$').test(slug)) return CITIES[c];
 return '';
 }
-var bg = /^\/buyer-guide-([a-z-]+?)\/?$/.exec(path);
-if (bg) return bg[1].split('-').map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
 var m = /^\/(?:presales?-)?([a-z-]+?)(?:-(?:sold-)?listings?|-presales?)?\/?$/.exec(path);
 if (!m || /^(new|foreclosures?|commercial|residential|listings?$)/.test(m[1])) return '';
 return m[1].split('-').map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
@@ -1588,8 +1586,7 @@ DETAIL = /^\/listing-detail\//.test(path);
 COMMERCIAL = window.hnBuyerCostMode === 'commercial' || /commercial/.test(path);
 APP = 'https://nbakhoum84.github.io/mytest/' + (COMMERCIAL ? 'commercial-cost/' : 'my-home-cost/');
 if (/sold/.test(path) || (/detail/.test(path) && !DETAIL)) return false;
-// Landing pages (/buyer-guide-<city>, /landing-pages) show listing cards too: same buttons (Nader 2026-11-01).
-LISTING_PAGE = DETAIL || COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)|^\/buyer-guide-|^\/landing-pages\/?$/.test(path);
+LISTING_PAGE = DETAIL || COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)/.test(path);
 return true;
 }
 if (route()) {
