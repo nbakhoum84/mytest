@@ -43,7 +43,7 @@ document.head.appendChild(bp);
 if (typeof document !== 'undefined' && !document.getElementById('hn-hero-up')) {
 var hu = document.createElement('style');
 hu.id = 'hn-hero-up';
-hu.textContent = '@media(max-width:700px) and (orientation:portrait){body.home .md-hero .media-content-search-group{position:relative!important;top:-56px!important}}';
+hu.textContent = '@media(max-width:700px) and (orientation:portrait){body.home .md-hero .media-content-search-group{position:relative!important;top:-126px!important}}';
 (document.head || document.documentElement).appendChild(hu);
 }
 // Laptops and other wide screens, home page: move the titles and the search bar up just enough that the whole search bar is on screen
