@@ -1177,7 +1177,12 @@ var isMortgage = el.getAttribute('data-hn-kind') === 'mortgage';
 var listingType = COMMERCIAL ? 'commercial' : isNew(el) ? 'new_build' : 'residential';
 track(isMortgage ? 'hn_mortgage_click' : 'hn_buyer_cost_click', Object.assign({ listing_price: price, listing_type: listingType, button_text: el.classList.contains('hn-bcp-btn') ? el.textContent : el.classList.contains('hn-bcp-hint') ? 'hint line' : 'price' }, utm(isMortgage, listingType)));
 dbg('tap on ' + (isMortgage ? 'Mortgage' : 'Buyer cost') + ' button, price=' + price);
-try { openCalc(price, isNew(el), isMortgage, prices.length ? prices : [price]); } catch (err) { dbg('ERROR opening the calculator: ' + err.message); throw err; }
+// Signed-out visitors get the registration form first; the calculator opens once they have registered (Nader 2026-11-01).
+var nw = isNew(el), all = prices.length ? prices : [price];
+tourAfterSignup('', { calculator: isMortgage ? 'mortgage' : 'buyer_cost', listing_price: price }, function () {
+try { openCalc(price, nw, isMortgage, all); } catch (err) { dbg('ERROR opening the calculator: ' + err.message); }
+}, 'hn_calculator');
+return;
 var mm = document.getElementById('hn-bcp-modal');
 dbg('calculator open: ' + !!(mm && mm.classList.contains('hn-bcp-on')) + ', box ' + (mm ? Math.round(mm.getBoundingClientRect().width) + 'x' + Math.round(mm.getBoundingClientRect().height) : 'missing') + ', iframe ' + (mm ? mm.querySelector('iframe').src.slice(0, 70) : ''));
 }
