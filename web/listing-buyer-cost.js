@@ -1682,3 +1682,18 @@ function all() { try { zoom(); menu(); headings(); contrast(); } catch (e) {} }
 all();
 var n = 0, t = setInterval(function () { all(); if (++n > 20) clearInterval(t); }, 1000);
 })();
+
+// Featured Areas names on the photos (Abbotsford, Burnaby, Delta...): Lofty writes them inline in grey #737373 !important, hard to read
+// on the photo (Nader 2026-11-01, laptop + phone). Only that text's colour changes: white with a soft shadow. Nothing else on the cards.
+(function () {
+if (typeof document === 'undefined' || window.hnFaText) return;
+window.hnFaText = 1;
+var fa = function () {
+[].forEach.call(document.querySelectorAll('.featured-area-item .featured-area-item-sub-title'), function (el) {
+if (el.style.getPropertyValue('color') === 'rgb(255, 255, 255)' || el.style.getPropertyValue('color') === '#fff') return;
+el.style.setProperty('color', '#fff', 'important');
+el.style.setProperty('text-shadow', '0 1px 3px rgba(0,0,0,.85)', 'important');
+});
+};
+fa(); var n = 0, t = setInterval(function () { fa(); if (++n > 20) clearInterval(t); }, 1000);
+})();
