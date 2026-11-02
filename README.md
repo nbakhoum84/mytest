@@ -69,3 +69,6 @@ the Quick tab or "Open on the website" still works.
 ## Notes
 - Listings come from the site's Lofty/IDX pages (no public API), so listing pages open in the in-app browser rather than rebuilt natively.
 - City URL patterns are confirmed for Burnaby only; check the other cities in `src/config.js`.
+
+## Web calculators (PWA pages in `web/`)
+`web/hn-extras.js` adds a **Save result / Share / Saved** bar under the results of the six standalone calculators (My Home Cost, Seller Cost, Commercial, First Home Savings, Presale Deposits, Mortgage Calculator). It reads the numbers already on the page, so no per-page code is needed: add `<script src="../hn-extras.js"></script>` to a page. Saved results stay in the visitor's browser (localStorage); Share opens the phone's share sheet (or copies the text on desktop). To reuse for another agent, set `window.HN_AGENT` (name, brokerage, phone, site) before loading it. The Lofty paste-in snippets in `site-snippet/` do not include it. Reminders, Face ID lock, camera and location are native-app only.
