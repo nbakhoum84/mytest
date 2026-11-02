@@ -329,7 +329,7 @@ function BuyerCostCalc({ openWeb, url, checks, onChecks }) {
       <Toggle label="First-time buyer exemption" value={first} onChange={setFirst} />
       <Toggle label="Newly built home exemption" value={newBuild} onChange={setNewBuild} />
       <Toggle label="New build: add 5% GST" value={gst} onChange={setGst} />
-      <Result title="Total cost (price + closing costs)" value={money(r.total)} lines={[`Closing costs: ${money(r.subtotal + r.gst)}`]} />
+      <Result title="Total cost (price + closing costs)" value={money(r.total)} lines={[`Closing costs: ${money(r.subtotal + r.gst)}`, `Cash needed to close (20% down): ${money(r.price * 0.2 + r.subtotal + r.gst)}`]} />
       <Breakdown rows={[
         ['House price', money(r.price)],
         ['Property transfer tax', money(r.transferTax)],
@@ -339,10 +339,13 @@ function BuyerCostCalc({ openWeb, url, checks, onChecks }) {
         ['Closing costs subtotal', money(r.subtotal), true],
         ...(gst ? [['GST on new build (5%, before rebate)', money(r.gst)]] : []),
         ['Total cost (price + closing costs)', money(r.total), true],
+        // 20% down, the same as the Mortgage calculator and the website's Cash to Close form (Nader 2026-11-02).
+        ['Down payment (20%)', money(r.price * 0.2)],
+        ['Cash needed to close (down payment + closing costs)', money(r.price * 0.2 + r.subtotal + r.gst), true],
       ]} />
       {r.exemption > 0 && <Note>Exemption applied: {money(r.exemption)} off the transfer tax.</Note>}
       <Note>
-        Estimate only. First-time buyer exemption: up to ${BUYER.firstTimeMaxOff.toLocaleString('en-CA')} off for homes up to ${BC_PTT.firstTimeFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.firstTimePartialTo.toLocaleString('en-CA')}. Newly built home exemption: whole tax waived up to ${BC_PTT.newBuildFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.newBuildPartialTo.toLocaleString('en-CA')} (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Excludes adjustments.
+        Estimate only. First-time buyer exemption: up to ${BUYER.firstTimeMaxOff.toLocaleString('en-CA')} off for homes up to ${BC_PTT.firstTimeFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.firstTimePartialTo.toLocaleString('en-CA')}. Newly built home exemption: whole tax waived up to ${BC_PTT.newBuildFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.newBuildPartialTo.toLocaleString('en-CA')} (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Cash needed to close assumes 20% down, the same as the Mortgage calculator. Excludes adjustments.
       </Note>
       {url ? (
         <TouchableOpacity style={styles.linkBtn} onPress={() => openWeb(url, 'Cash to Close')}>
