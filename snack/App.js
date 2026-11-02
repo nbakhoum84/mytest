@@ -1024,6 +1024,7 @@ function CmhcCalc() {
           ['Down payment', money(d)],
           ['Mortgage before premium', money(r.loan)],
           ['Insurance premium', money(r.premium)],
+          ['7% PST on CMHC insurance (paid in cash at closing)', money(r.premium * 0.07)],
           ['Total mortgage', money(r.total), true],
         ]} />
       )}
@@ -1112,7 +1113,7 @@ function BuyerCostCalc({ openWeb, url, checks, onChecks }) {
         ['Total cost (price + closing costs)', money(r.total), true],
         // 20% down, the same as the Mortgage calculator and the website's Cash to Close form (Nader 2026-11-02).
         ['Down payment (20%)', money(r.price * 0.2)],
-        ['Cash needed to close (down payment + closing costs)', money(r.price * 0.2 + r.subtotal + r.gst), true],
+        ['Cash Needed to Close (Down Payment + Closing Costs)', money(r.price * 0.2 + r.subtotal + r.gst), true],
       ]} />
       {r.exemption > 0 && <Note>Exemption applied: {money(r.exemption)} off the transfer tax.</Note>}
       <Note>
