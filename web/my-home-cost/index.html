@@ -48,7 +48,7 @@
     <div class="row"><span id="dl">Down payment</span><span id="dv"></span></div>
     <div class="row" id="pr" hidden><span>PST on CMHC insurance (7%, paid at closing)</span><span id="pv"></span></div>
     <div class="row total"><span>Cash needed to close (down payment + closing costs)</span><span id="cash"></span></div>
-    <p class="note">Estimate only. First-time buyer exemption: up to $8,000 off for homes up to $835,000, phasing out to $860,000. Newly built home exemption: whole tax waived up to $1,100,000, phasing out to $1,150,000 (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Home inspection is for resale homes only (none when New build GST or the newly built home exemption is ticked). Home insurance is a typical first-year premium for a house (condos usually cost less); lenders require it before closing. Excludes adjustments. In BC, closing costs are paid in cash on or before completion and cannot be added to your mortgage (only the CMHC mortgage insurance premium can be, and the 7% PST on that premium is paid at closing). Plan your down payment plus these closing costs as cash on hand. Cash needed to close assumes 10% down (20% at $1,500,000 or more, the minimum there); under 20% down, CMHC insurance is added to the mortgage and its 7% PST is paid in cash.</p>
+    <p class="note">Estimate only. First-time buyer exemption: up to $8,000 off for homes up to $835,000, phasing out to $860,000. Newly built home exemption: whole tax waived up to $1,100,000, phasing out to $1,150,000 (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Home inspection is for resale homes only (none when New build GST or the newly built home exemption is ticked). Home insurance is a typical first-year premium for a house (condos usually cost less); lenders require it before closing. Excludes adjustments. In BC, closing costs are paid in cash on or before completion and cannot be added to your mortgage (only the CMHC mortgage insurance premium can be, and the 7% PST on that premium is paid at closing). Plan your down payment plus these closing costs as cash on hand. Cash needed to close assumes 20% down, the same as the Mortgage Estimator (no CMHC insurance at 20% down).</p>
   </section>
   <section id="list" hidden>
     <h1>Buyer checklist (<span id="count">0</span>/10)</h1>
@@ -78,8 +78,8 @@ function calc(){
   const g=$('gst').checked?p*.05:0;
   $('gr').hidden=!$('gst').checked;$('gv').textContent=money(g);
   $('hp').textContent=money(p);$('sub').textContent=money(cc);$('total').textContent=money(p+cc+g);
-  // Cash to close: 10% down (20% at $1.5M+), plus closing costs, GST and the PST on the CMHC premium.
-  const dp=p>=15e5?20:10,dn=p*dp/100,pst=dp<20?(p-dn)*.031*.07:0;
+  // Cash to close: 20% down (same as the Mortgage Estimator, Nader 2026-11-02), plus closing costs, GST and the PST on the CMHC premium.
+  const dp=20,dn=p*dp/100,pst=dp<20?(p-dn)*.031*.07:0;
   $('dl').textContent=`Down payment (${dp}%)`;$('dv').textContent=money(dn);$('pr').hidden=!pst;$('pv').textContent=money(pst);$('cash').textContent=money(dn+cc+g+pst);
   // Inside a listing popup: tell the page the latest Total cost so its Mortgage button starts from it.
   if(parent!==window)try{parent.postMessage({hnBuyerCost:true,price:p,total:Math.round(p+cc+g)},'*')}catch(e){}

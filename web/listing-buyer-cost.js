@@ -363,7 +363,7 @@ el.setAttribute('data-hn-price', price);
 addButton(el, price);
 }
 
-// Rough numbers shown on the buttons, with the same defaults the popups open with. Cash to close: 10% down (20% at $1.5M or more),
+// Rough numbers shown on the buttons, with the same defaults the popups open with. Cash to close: 20% down (same as Est./mo),
 // CMHC premium under 20% down (its 7% PST is paid in cash at closing), and the Buyer Cost app's default closing costs (BC property
 // transfer tax, legal $1,800, inspection $500 on resale, appraisal $400, insurance $1,500, 5% GST on new builds).
 // Est./mo: the same settings as the site's own (Lofty) mortgage calculator: 20% down, 4%, 30 years, compounded monthly (Nader, 2026-10-24).
@@ -373,7 +373,7 @@ var band = function (from, to, rate) { return Math.max(0, Math.min(p, to) - from
 return band(0, 2e5, 0.01) + band(2e5, 2e6, 0.02) + band(2e6, Infinity, 0.03) + band(3e6, Infinity, 0.02);
 }
 function estimate(price, isNewBuild) {
-var downPct = price >= 1.5e6 ? 20 : 10;
+var downPct = EST.downPct; // same 20% as the Mortgage Estimator (Nader 2026-11-02)
 var down = price * downPct / 100, loan = price - down;
 var premium = downPct < 20 ? loan * 0.031 : 0;
 var closing = ptt(price) + 1800 + (isNewBuild ? 0 : 500) + 400 + 1500 + (isNewBuild ? price * 0.05 : 0);
