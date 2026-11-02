@@ -1,9 +1,12 @@
 /* Save / Share / Saved results for the calculator pages. One shared file, no per-page code:
    it reads the numbers already on the page (inputs and result rows) and adds a button bar under them.
-   Results are kept in this browser only (localStorage). Add to a page with: <script src="../hn-extras.js"></script>
+   Results are kept in this browser only (localStorage). Add to a page with a script tag whose src is ../hn-extras.js
    To reuse for another agent, set window.HN_AGENT before loading this file. */
 (function () {
   var AGENT = window.HN_AGENT || { name: 'Nader Bakhoum', brokerage: 'eXp Realty', phone: '+1 (604) 612-7228', site: 'home-nader.com' };
+  // Selectors default to the standalone pages. The Lofty paste-in blocks set window.HN_EXTRAS_CFG (prefixed classes).
+  var CFG = window.HN_EXTRAS_CFG || {};
+  var SEC = CFG.sections || 'main > section', ROW = CFG.row || '.row', TOTAL = CFG.total || '.total', HEAD = CFG.head || 'h1';
   var KEY = 'hn-saved', MAX = 50;
 
   function load() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } }
@@ -13,20 +16,20 @@
 
   // What the visitor currently sees in a section: inputs (label + value) and result rows.
   function snapshot(section) {
-    var title = clean((section.querySelector('h1') || {}).textContent) || clean(document.title);
+    var title = clean((section.querySelector(HEAD) || {}).textContent) || clean(document.title);
     var inputs = [], rows = [], value = '', head = '';
     section.querySelectorAll('input[type=text]').forEach(function (el) {
       var lab = el.id && section.querySelector('label[for="' + el.id + '"]');
       if (lab && el.value) inputs.push([clean(lab.textContent), el.value]);
     });
-    section.querySelectorAll('.row').forEach(function (r) {
+    section.querySelectorAll(ROW).forEach(function (r) {
       if (r.hidden || r.closest('[hidden]') || r.querySelector('input')) return;
       var spans = r.querySelectorAll(':scope > span');
       if (spans.length < 2) return;
       var k = clean(spans[0].textContent), v = clean(spans[spans.length - 1].textContent);
       if (!k || !v) return;
       rows.push([k, v]);
-      if (!value && r.classList.contains('total')) { head = k; value = v; }
+      if (!value && r.classList.contains(TOTAL.slice(1))) { head = k; value = v; }
     });
     if (!value && rows.length) { head = rows[0][0]; value = rows[0][1]; }
     return { title: title, head: head, value: value, inputs: inputs, rows: rows, at: Date.now() };
@@ -36,7 +39,7 @@
     var out = [s.title + (s.value ? ': ' + s.head + ' ' + s.value : '')];
     if (s.inputs.length) out.push('', 'Inputs'), s.inputs.forEach(function (i) { out.push(i[0] + ': ' + i[1]); });
     if (s.rows.length) out.push('', 'Results'), s.rows.forEach(function (r) { out.push(r[0] + ': ' + r[1]); });
-    out.push('', 'Estimate only, not financial advice. Prepared with ' + AGENT.name + ', ' + AGENT.brokerage, AGENT.phone + ' · ' + AGENT.site);
+    out.push('', 'Estimate only, not financial advice. Prepared with ' + AGENT.name + ', ' + AGENT.brokerage, AGENT.phone + ' \u00b7 ' + AGENT.site);
     return out.join('\n');
   }
 
@@ -59,13 +62,13 @@
     var list = load();
     var el = document.createElement('div');
     el.id = 'hnx-panel'; el.className = 'hnx-panel';
-    el.innerHTML = '<div class="hnx-sheet"><div class="hnx-top"><strong>Saved results</strong><button class="hnx-x" aria-label="Close">×</button></div>' +
+    el.innerHTML = '<div class="hnx-sheet"><div class="hnx-top"><strong>Saved results</strong><button class="hnx-x" aria-label="Close">\u00d7</button></div>' +
       (list.length ? list.map(function (s, i) {
         return '<div class="hnx-item" data-i="' + i + '"><div class="hnx-t">' + esc(s.title) + '</div><div class="hnx-v">' + esc(s.head) + ': ' + esc(s.value) + '</div>' +
           '<div class="hnx-d">' + new Date(s.at).toLocaleDateString('en-CA') + '</div>' +
           '<div class="hnx-det" hidden>' + s.rows.map(function (r) { return '<div><span>' + esc(r[0]) + '</span><span>' + esc(r[1]) + '</span></div>'; }).join('') + '</div>' +
           '<div class="hnx-a"><button data-a="open">Details</button><button data-a="share">Share</button><button data-a="del">Delete</button></div></div>';
-      }).join('') : '<p class="hnx-empty">Nothing saved yet. Tap “Save result” under any calculator.</p>') + '</div>';
+      }).join('') : '<p class="hnx-empty">Nothing saved yet. Tap \u201cSave result\u201d under any calculator.</p>') + '</div>';
     el.onclick = function (e) {
       if (e.target === el || e.target.classList.contains('hnx-x')) { el.remove(); return; }
       var b = e.target.closest('button[data-a]'); if (!b) return;
@@ -93,7 +96,7 @@
       if (b.dataset.a === 'share') { share(s); return; }
       var list = load(); list.unshift(s);
       if (store(list)) {
-        b.textContent = 'Saved ✓'; refreshCount();
+        b.textContent = 'Saved \u2713'; refreshCount();
         if (navigator.vibrate) try { navigator.vibrate(15); } catch (x) {}
         setTimeout(function () { b.textContent = 'Save result'; }, 2000);
       } else toast('Could not save in this browser');
@@ -102,9 +105,9 @@
   }
 
   function install() {
-    document.querySelectorAll('main > section').forEach(function (section) {
-      if (section.querySelector('.hnx-bar') || !section.querySelector('.row.total')) return;
-      var rows = section.querySelectorAll('.row'), last = rows[rows.length - 1], anchor = last;
+    document.querySelectorAll(SEC).forEach(function (section) {
+      if (section.querySelector('.hnx-bar') || !section.querySelector(ROW + TOTAL)) return;
+      var rows = section.querySelectorAll(ROW), last = rows[rows.length - 1], anchor = last;
       while (anchor.parentElement && anchor.parentElement !== section) anchor = anchor.parentElement;
       anchor.after(makeBar(section));
     });
@@ -114,7 +117,7 @@
   var css = document.createElement('style');
   css.textContent =
     '.hnx-bar{display:flex;gap:8px;margin:14px 0}' +
-    '.hnx-bar button{flex:1;padding:12px 8px;border-radius:10px;border:1px solid var(--border,#e5e7eb);background:var(--card,#f3f4f6);color:var(--text,#111827);font:600 14px system-ui,sans-serif;cursor:pointer}' +
+    '.hnx-bar button{flex:1;padding:12px 8px;border-radius:10px;border:1px solid var(--border,#e5e7eb);background:var(--card,#f3f4f6);color:var(--text,#111827);font:600 14px system-ui,sans-serif;font-family:inherit;cursor:pointer}' +
     '.hnx-bar button:first-child{background:var(--primary,#0f4c81);border-color:var(--primary,#0f4c81);color:#fff}' +
     '.hnx-panel{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:flex-end;justify-content:center}' +
     '.hnx-sheet{background:var(--bg,#fff);color:var(--text,#111827);width:100%;max-width:560px;max-height:80vh;overflow:auto;border-radius:16px 16px 0 0;padding:16px;font:15px/1.4 system-ui,sans-serif}' +
