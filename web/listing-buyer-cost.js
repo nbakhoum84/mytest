@@ -1211,6 +1211,12 @@ var city = mortgage ? cityOf() : '';
 var total = mortgage && lastTotal && lastTotal.price === price ? lastTotal.total : 0;
 var u = utm(mortgage, COMMERCIAL ? 'commercial' : isNewBuild ? 'new_build' : 'residential');
 var url = (mortgage ? MORTGAGE_APP : APP) + '?utm_source=' + u.utm_source + '&utm_medium=' + u.utm_medium + '&utm_campaign=' + u.utm_campaign + '&utm_content=' + u.utm_content + '&price=' + price + (isNewBuild ? '&new=1' : '') + (mortgage ? '&down=' + EST.downPct : '') + (total ? '&total=' + total : '') + (city ? '&city=' + encodeURIComponent(city) : '') + (mortgage && COMMERCIAL ? '&commercial=1' : '') + (mortgage && lastAddr ? '&addr=' + encodeURIComponent(lastAddr) : '') + '&v=' + Math.floor(Date.now() / 6e4);
+// Phones (Nader, 2026-11-02): no popup frame. The calculator opens as its own page, so it scrolls with the page instead of inside a box;
+// the page's "Back to listings" bar (web/hn-extras.js) returns to this listing page.
+if (window.matchMedia && matchMedia('(max-width:640px)').matches) {
+location.href = url + '&back=' + encodeURIComponent(location.href);
+return;
+}
 var m = modal();
 m.querySelector('.hn-bcp-title').textContent = mortgage ? 'Mortgage for $' + price.toLocaleString('en-CA') + (city ? ' in ' + city : '') :
 (COMMERCIAL ? 'Commercial Buyer Cost for $' : 'Buyer Cost for $') + price.toLocaleString('en-CA');

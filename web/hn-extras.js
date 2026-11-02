@@ -131,6 +131,20 @@
     '.hnx-toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 16px;border-radius:20px;font:14px system-ui,sans-serif;z-index:10000}';
   document.head.appendChild(css);
 
+  // Opened from a listing's Cash to Close / Est./mo button on a phone: a bar at the top returns to that listing page.
+  // Only links back to home-nader.com addresses; not shown inside a frame or in the Lofty paste-in blocks.
+  function backBar() {
+    if (window.HN_EXTRAS_CFG || window.parent !== window) return;
+    var raw = new URLSearchParams(location.search).get('back'), u;
+    try { u = new URL(raw); } catch (e) { return; }
+    if (u.protocol !== 'https:' || !/(^|\.)home-nader\.com$/.test(u.hostname)) return;
+    var a = document.createElement('a');
+    a.className = 'hnx-back'; a.href = u.href; a.textContent = '\u2039 Back to listings';
+    document.body.insertBefore(a, document.body.firstChild);
+  }
+  css.textContent += '.hnx-back{display:block;position:sticky;top:0;z-index:9998;padding:12px 16px;background:#dbae77;color:#111;font:700 15px system-ui,sans-serif;text-decoration:none}';
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', backBar); else backBar();
+
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
   // Pages draw some sections only after a tab opens; look again shortly after load and after taps.
   setTimeout(install, 400);
