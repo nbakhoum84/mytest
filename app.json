@@ -26,7 +26,32 @@
       "backgroundColor": "#ffffff"
     },
     "plugins": [
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "color": "#14213d"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Used only to find listings in the city nearest you."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Take a photo of a property to keep with a saved calculation.",
+          "photosPermission": false
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Use Face ID to unlock the app."
+        }
+      ]
     ],
     "owner": "homenader",
     "extra": {

@@ -5,6 +5,8 @@ Native Expo (React Native) app for https://home-nader.com/ (Nader Bakhoum, eXp R
 - **Home**: hero plus quick actions (call, WhatsApp, book a consultation)
 - **Browse**: pick Residential / Commercial / Presales / Sold, then a city. The site page opens in the in-app browser (Safari View Controller on iPhone) with a Done button
 - **Calculators**: the website's five Ratehub.ca widgets (payment, rate comparison table, affordability, CMHC, land transfer tax), loaded in a WebView with the same loader and keys as the site (`RATEHUB` in `src/config.js`). Each has a **Quick** tab with a built-in version (`src/calc.js`) as a backup
+- **Saved**: favorite areas (star a city in Browse) and saved calculation results. Each saved result can be shared as text, get a camera photo attached, or get a local reminder (tomorrow / a week / a month)
+- **Phone features** (all on-device, no server): Share sheet, haptics, local reminder notifications, "Listings near me" (nearest city from your location, asked only while the app is open), camera photo on a saved result, optional Face ID / fingerprint app lock and a profile that pre-fills the contact form (More > Privacy & security). Data stays on the phone (`src/storage.js`, `src/device.js`). Not included: accounts that sync across devices and remote push to all users (both need a server). On the web/PWA build, reminders and the lock are not available
 - **More**: guides, FAQ, blog, PDFs and a contact form (opens your mail app)
 
 Site data (contact info, cities, URL patterns, colours) lives in `src/config.js`. Insurance and tax rules (CMHC tiers, BC transfer-tax thresholds, lender ratios) are constants in `src/calc.js`; update them when the rules change.

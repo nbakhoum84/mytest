@@ -18,6 +18,17 @@ export const CITIES = [
   'Vancouver', 'White Rock',
 ];
 
+// City centres (lat/lon) for "listings near me".
+export const CITY_COORDS = {
+  Abbotsford: { lat: 49.0504, lon: -122.3045 }, Burnaby: { lat: 49.2488, lon: -122.9805 },
+  Coquitlam: { lat: 49.2838, lon: -122.7932 }, Delta: { lat: 49.0847, lon: -123.0586 },
+  Langley: { lat: 49.1044, lon: -122.6608 }, 'New Westminster': { lat: 49.2057, lon: -122.911 },
+  'Port Coquitlam': { lat: 49.2625, lon: -122.7811 }, 'Port Moody': { lat: 49.2849, lon: -122.8678 },
+  Richmond: { lat: 49.1666, lon: -123.1336 }, 'South Surrey': { lat: 49.0463, lon: -122.8451 },
+  Surrey: { lat: 49.1913, lon: -122.849 }, Vancouver: { lat: 49.2827, lon: -123.1207 },
+  'White Rock': { lat: 49.0253, lon: -122.8026 },
+};
+
 const slug = (city) => city.toLowerCase().replace(/\s+/g, '-');
 
 // URL patterns taken from the site's navigation menu. Residential, commercial and presales

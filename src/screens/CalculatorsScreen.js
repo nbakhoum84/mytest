@@ -4,6 +4,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { CALCULATORS_PAGE, CHECKLISTS, COLORS, COST_PAGES, RATEHUB } from '../config';
 import RatehubWidget from '../components/RatehubWidget';
 import { AFFORD, BC_PTT, BUYER, SELLER, affordability, balanceAfter, bcTransferTax, buyerCost, cmhcInsurance, downInDollars, num, pmt, sellerCost, yearlySchedule } from '../calc';
+import SaveShare from '../components/SaveShare';
 import { Breakdown, Chips, DownField, Field, Note, Pick, Result, Toggle, money } from '../components/Inputs';
 
 const TERMS = [10, 15, 20, 25, 30, 40];
@@ -130,6 +131,10 @@ function PaymentCalc() {
         ['Total per month', money(total), true],
         [`Total over ${years} years`, money(total * years * 12), true],
       ]} />
+      <SaveShare calc="payment" title="Mortgage payment (per month)" value={money(total)} rows={[
+        ['Home price', money(p)], ['Down payment', money(d)], ['Mortgage', money(loan)], [`Rate / term`, `${num(rate)}% / ${years} yrs`],
+        ['Principal & interest', money(pi)], ['Property tax', money(taxMonthly)], ['Home insurance', money(num(ins) / 12)], ['Condo / HOA fees', money(num(hoa))],
+      ]} />
       <TouchableOpacity style={styles.linkBtn} onPress={() => setShowSched(!showSched)}>
         <Text style={styles.linkText}>{showSched ? 'Hide payment schedule' : 'Show payment schedule'}</Text>
       </TouchableOpacity>
@@ -184,6 +189,9 @@ function AffordCalc({ goTo }) {
           ['Debt ratio (TDS)', `${r.tdsPct.toFixed(0)}%`],
         ]} />
       )}
+      {ok && <SaveShare calc="afford" title="Maximum home price" value={money(r.price)} rows={[
+        ['Annual income', money(num(income))], ['Down payment', money(num(down))], ['Mortgage', money(r.loan)], ['Total per month', money(r.total)],
+      ]} />}
       {ok && downPct < 20 && <Note>Under 20% down, mortgage insurance applies and adds to the mortgage. Use the CMHC calculator to estimate it.</Note>}
       {ok && <TouchableOpacity style={styles.linkBtn} onPress={() => goTo('browse')}><Text style={styles.linkText}>View affordable properties</Text></TouchableOpacity>}
       <Note>
@@ -256,6 +264,9 @@ function CmhcCalc() {
           ['Total mortgage', money(r.total), true],
         ]} />
       )}
+      {!blocked && <SaveShare calc="cmhc" title="CMHC insurance premium" value={money(r.premium)} rows={[
+        ['Home price', money(p)], ['Down payment', money(d)], ['Mortgage before premium', money(r.loan)], ['Total mortgage', money(r.total)],
+      ]} />}
       <Note>Premium is normally added to the mortgage. Uses CMHC tiers: 4.00% (5–9.99% down), 3.10% (10–14.99%), 2.80% (15–19.99%), plus 0.20% when amortization is over 25 years. Homes of $1.5M+ need 20% down. Confirm with your lender.</Note>
     </View>
   );
@@ -277,6 +288,9 @@ function TransferTaxCalc() {
         ['Purchase price', money(num(price))],
         ['Tax before exemptions', money(r.full)],
         ['Tax payable', money(r.payable), true],
+      ]} />
+      <SaveShare calc="ptt" title="BC property transfer tax" value={money(r.payable)} rows={[
+        ['Purchase price', money(num(price))], ['Tax before exemptions', money(r.full)], ['Tax payable', money(r.payable)],
       ]} />
       <Note>
         BC rates: 1% on the first $200,000, 2% up to $2M, 3% above $2M, plus 2% on residential value above $3M. First-time buyer exemption: up to ${BUYER.firstTimeMaxOff.toLocaleString('en-CA')} off up to ${BC_PTT.firstTimeFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.firstTimePartialTo.toLocaleString('en-CA')}. New-home exemption: full up to ${BC_PTT.newBuildFull.toLocaleString('en-CA')}, partial to ${BC_PTT.newBuildPartialTo.toLocaleString('en-CA')}. Eligibility rules apply, and thresholds change, so verify with the BC government.
@@ -341,6 +355,10 @@ function BuyerCostCalc({ openWeb, url, checks, onChecks }) {
         ...(gst ? [['GST on new build (5%, before rebate)', money(r.gst)]] : []),
         ['Total cost (price + closing costs)', money(r.total), true],
       ]} />
+      <SaveShare calc="buyer" title="Buyer cost (price + closing costs)" value={money(r.total)} rows={[
+        ['House price', money(r.price)], ['Property transfer tax', money(r.transferTax)], ['Legal fees & disbursements', money(r.legal)],
+        ['Closing costs subtotal', money(r.subtotal + (gst ? r.gst : 0))],
+      ]} />
       {r.exemption > 0 && <Note>Exemption applied: {money(r.exemption)} off the transfer tax.</Note>}
       <Note>
         Estimate only. First-time buyer exemption: up to ${BUYER.firstTimeMaxOff.toLocaleString('en-CA')} off for homes up to ${BC_PTT.firstTimeFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.firstTimePartialTo.toLocaleString('en-CA')}. Newly built home exemption: whole tax waived up to ${BC_PTT.newBuildFull.toLocaleString('en-CA')}, phasing out to ${BC_PTT.newBuildPartialTo.toLocaleString('en-CA')} (only one exemption can be claimed). Confirm eligibility with your lawyer. GST, if ticked, is 5% of the price before any new housing rebate. Home insurance is a typical first-year premium for a house (condos usually cost less); lenders require it before closing. Excludes adjustments.
@@ -395,6 +413,9 @@ function SellerCostCalc({ openWeb, url, checks, onChecks }) {
         ['Total selling costs', money(r.totalCosts), true],
         ['Mortgage payout', neg(r.payout)],
         ['Estimated net proceeds', money(r.net), true],
+      ]} />
+      <SaveShare calc="seller" title="Seller net proceeds" value={money(r.net)} rows={[
+        ['Sale price', money(r.price)], ['Total selling costs', money(r.totalCosts)], ['Mortgage payout', money(r.payout)],
       ]} />
       <Note>
         Estimate only. Commission is negotiable; defaults are a typical BC structure (7% of the first $100,000, 3% of the balance) plus 5% GST. Excludes property tax and strata adjustments, moving costs and any tax owing on the sale (a principal residence is normally exempt from capital gains tax). Confirm figures with your realtor and lawyer.
