@@ -753,6 +753,28 @@ for (var vc = card.__vueParentComponent, n = 0; vc && n < 4 && !h; vc = vc.paren
 var la = card.querySelector('a[href*="/listing-detail/"]');
 return { hnPhotos: photosOf(h || {}, card), hnFull: 0, hnLink: la ? la.href : '', hnCredit: creditOf(h || {}, card) };
 }
+// The YouTube video's title line names the listing agent: a black bar covers it, and the "Open it here" link (agent's tour page) is hidden (Nader 2026-11-03).
+function ytHide(m, on) {
+var c = m.querySelector('.hn-yt-cover');
+if (!c) { c = document.createElement('div'); c.className = 'hn-yt-cover'; var f = m.querySelector('iframe'); f.parentNode.insertBefore(c, f); }
+c.style.display = on ? 'block' : 'none';
+m.querySelector('.hn-vt-new').style.visibility = on ? 'hidden' : '';
+}
+// Lofty's photo gallery has its own Virtual Tour tab (the agent's tour page in a frame): it plays only the YouTube video too.
+function galleryTours() {
+[].forEach.call(document.querySelectorAll('.video-content iframe'), function (f) {
+var u = f.getAttribute('src') || '';
+if (f.hnYt || !/^https?:/i.test(u) || /youtube|vimeo|about:blank/i.test(u)) return;
+f.hnYt = 1;
+ytOf(u, function (id) {
+if (!id) return;
+f.src = 'https://www.youtube.com/embed/' + id + '?rel=0';
+var w = f.parentElement; w.classList.add('hn-yt-wrap');
+if (!w.querySelector('.hn-yt-cover')) { var c = document.createElement('div'); c.className = 'hn-yt-cover'; c.style.display = 'block'; w.insertBefore(c, f); }
+});
+});
+}
+document.addEventListener('click', function () { if (!DETAIL) return; for (var i = 1; i <= 6; i++) setTimeout(galleryTours, i * 500); }, true);
 function openTour(url, pt) {
 var m = document.getElementById('hn-vt-modal');
 if (!m) {
@@ -779,11 +801,12 @@ if (src === url && /^https?:/i.test(url)) {
 fr.src = 'about:blank'; m.hnWant = url;
 ytOf(url, function (id) {
 if (m.hnWant !== url || !m.classList.contains('hn-vt-on')) return;
-if (id) fr.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
+if (id) { fr.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0'; ytHide(m, true); }
 else if (pt && pt.hnPhotos && pt.hnPhotos.length > 1) { m.hnWant = ''; openPhotos(pt); }
 else fr.src = url;
 });
 } else fr.src = src;
+ytHide(m, /youtube\.com\/embed\//.test(fr.src));
 m.classList.add('hn-vt-on');
 document.documentElement.style.overflow = 'hidden';
 }
@@ -1392,6 +1415,10 @@ style.textContent =
 '#hn-vt-modal .hn-vt-bar{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 18px;border-bottom:1px solid #e6e2d9;background:#f4f2ee;color:#111;font-family:inherit;font-size:15px}' +
 '#hn-vt-modal .hn-vt-new{flex:1;text-align:right;color:#555;font-size:13px;text-decoration:underline}' +
 '#hn-vt-modal .hn-vt-x{border:0;background:none;font-size:28px;line-height:1;padding:0 6px;cursor:pointer;color:#111}' +
+'.hn-yt-wrap>.hn-yt-cover{position:absolute;left:0;right:0;top:0;height:64px;background:#000;z-index:2;pointer-events:none}' +
+'#hn-vt-modal .hn-yt-cover{display:none;position:relative;height:0;flex:0 0 0;z-index:2;pointer-events:none}' +
+'#hn-vt-modal .hn-yt-cover::before{content:"";position:absolute;left:0;right:0;top:0;height:64px;background:#000}' +
+'.hn-yt-wrap{position:relative!important}' +
 '#hn-vt-modal iframe{flex:1 1 auto;min-height:0;width:100%;border:0;background:#000}' +
 '#hn-vt-modal .hn-pt-show{position:relative;flex:1 1 auto;min-height:0;background:#000;display:flex;align-items:center;justify-content:center}' +
 '#hn-vt-modal .hn-pt-show{overflow:hidden}' +
