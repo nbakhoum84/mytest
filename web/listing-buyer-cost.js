@@ -739,9 +739,21 @@ var d = detailInfo(), u = d && typeof d.link === 'string' ? d.link.trim() : '';
 if (!/^https?:\/\//i.test(u)) return;
 e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
 track('hn_virtual_tour_click', { button_text: 'Lofty Virtual Tour', tour_url: u, listing_url: location.href, utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaign: 'virtual_tour', utm_content: 'lofty_button' });
-openTour(u);
+openTour(u, ptFor(lb));
 }, true);
-function openTour(url) {
+// The listing's photos, for tours with no YouTube video: those play as a Photo tour instead of the agent's tour page (Nader 2026-11-03).
+function ptFor(el) {
+if (DETAIL) {
+var d = detailInfo() || {}, who = [d.agentName, d.agentOrganizationName].filter(Boolean).join(', ');
+return { hnPhotos: (Array.isArray(d.pictureList) ? d.pictureList : []).filter(function (u) { return typeof u === 'string' && /^https?:/.test(u); }), hnFull: 1, hnLink: '', hnCredit: who ? 'Listing courtesy of ' + who : '' };
+}
+var card = el.closest('li.house-grid-item, .house-list-item') || cardOf(el), h = null;
+if (!card) return null;
+for (var vc = card.__vueParentComponent, n = 0; vc && n < 4 && !h; vc = vc.parent, n++) h = vc.props && vc.props.house && typeof vc.props.house === 'object' ? vc.props.house : null;
+var la = card.querySelector('a[href*="/listing-detail/"]');
+return { hnPhotos: photosOf(h || {}, card), hnFull: 0, hnLink: la ? la.href : '', hnCredit: creditOf(h || {}, card) };
+}
+function openTour(url, pt) {
 var m = document.getElementById('hn-vt-modal');
 if (!m) {
 m = document.createElement('div');
@@ -765,7 +777,12 @@ var fr = m.querySelector('iframe'), src = tourSrc(url);
 // Their pages allow reading from our site (CORS *); if the page can't be read or has no YouTube video, the tour page shows as before.
 if (src === url && /^https?:/i.test(url)) {
 fr.src = 'about:blank'; m.hnWant = url;
-ytOf(url, function (id) { if (m.hnWant === url && m.classList.contains('hn-vt-on')) fr.src = id ? 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0' : url; });
+ytOf(url, function (id) {
+if (m.hnWant !== url || !m.classList.contains('hn-vt-on')) return;
+if (id) fr.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
+else if (pt && pt.hnPhotos && pt.hnPhotos.length > 1) { m.hnWant = ''; openPhotos(pt); }
+else fr.src = url;
+});
 } else fr.src = src;
 m.classList.add('hn-vt-on');
 document.documentElement.style.overflow = 'hidden';
@@ -1282,7 +1299,8 @@ tourAfterSignup('', ptData, function () { if (vt.hnMls && !vt.hnPhotos.length) f
 return;
 }
 track('hn_virtual_tour_click', vtData);
-tourAfterSignup(vt.getAttribute('data-hn-vt'), vtData);
+var vtPt = ptFor(vt);
+tourAfterSignup(vt.getAttribute('data-hn-vt'), vtData, function (u) { openTour(u, vtPt); });
 return;
 }
 var el = e.target && e.target.closest && e.target.closest('.hn-bcp,.hn-bcp-btn,.hn-bcp-hint');
