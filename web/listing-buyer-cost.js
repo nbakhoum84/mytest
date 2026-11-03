@@ -367,7 +367,7 @@ addButton(el, price);
 // CMHC premium under 20% down (its 7% PST is paid in cash at closing), and the Buyer Cost app's default closing costs (BC property
 // transfer tax, legal $1,800, inspection $500 on resale, appraisal $400, insurance $1,500, 5% GST on new builds).
 // Est./mo: the same settings as the site's own (Lofty) mortgage calculator: 20% down, 4%, 30 years, compounded monthly (Nader, 2026-10-24).
-var EST = { rate: 4, years: 30, downPct: 20 };
+var EST = { rate: 4.44, years: 30, downPct: 20 }; // current bank 5-year fixed (Ratehub/wowa, Nov 3 2026), same as the Mortgage form
 function ptt(p) {
 var band = function (from, to, rate) { return Math.max(0, Math.min(p, to) - from) * rate; };
 return band(0, 2e5, 0.01) + band(2e5, 2e6, 0.02) + band(2e6, Infinity, 0.03) + band(3e6, Infinity, 0.02);
@@ -739,9 +739,43 @@ var d = detailInfo(), u = d && typeof d.link === 'string' ? d.link.trim() : '';
 if (!/^https?:\/\//i.test(u)) return;
 e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
 track('hn_virtual_tour_click', { button_text: 'Lofty Virtual Tour', tour_url: u, listing_url: location.href, utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaign: 'virtual_tour', utm_content: 'lofty_button' });
-openTour(u);
+openTour(u, ptFor(lb));
 }, true);
-function openTour(url) {
+// The listing's photos, for tours with no YouTube video: those play as a Photo tour instead of the agent's tour page (Nader 2026-11-03).
+function ptFor(el) {
+if (DETAIL) {
+var d = detailInfo() || {}, who = [d.agentName, d.agentOrganizationName].filter(Boolean).join(', ');
+return { hnPhotos: (Array.isArray(d.pictureList) ? d.pictureList : []).filter(function (u) { return typeof u === 'string' && /^https?:/.test(u); }), hnFull: 1, hnLink: '', hnCredit: who ? 'Listing courtesy of ' + who : '' };
+}
+var card = el.closest('li.house-grid-item, .house-list-item') || cardOf(el), h = null;
+if (!card) return null;
+for (var vc = card.__vueParentComponent, n = 0; vc && n < 4 && !h; vc = vc.parent, n++) h = vc.props && vc.props.house && typeof vc.props.house === 'object' ? vc.props.house : null;
+var la = card.querySelector('a[href*="/listing-detail/"]');
+return { hnPhotos: photosOf(h || {}, card), hnFull: 0, hnLink: la ? la.href : '', hnCredit: creditOf(h || {}, card) };
+}
+// The YouTube video's title line names the listing agent: a black bar covers it, and the "Open it here" link (agent's tour page) is hidden (Nader 2026-11-03).
+function ytHide(m, on) {
+var c = m.querySelector('.hn-yt-cover');
+if (!c) { c = document.createElement('div'); c.className = 'hn-yt-cover'; var f = m.querySelector('iframe'); f.parentNode.insertBefore(c, f); }
+c.style.display = on ? 'block' : 'none';
+m.querySelector('.hn-vt-new').style.visibility = on ? 'hidden' : '';
+}
+// Lofty's photo gallery has its own Virtual Tour tab (the agent's tour page in a frame): it plays only the YouTube video too.
+function galleryTours() {
+[].forEach.call(document.querySelectorAll('.video-content iframe'), function (f) {
+var u = f.getAttribute('src') || '';
+if (f.hnYt || !/^https?:/i.test(u) || /youtube|vimeo|about:blank/i.test(u)) return;
+f.hnYt = 1;
+ytOf(u, function (id) {
+if (!id) return;
+f.src = 'https://www.youtube.com/embed/' + id + '?rel=0';
+var w = f.parentElement; w.classList.add('hn-yt-wrap');
+if (!w.querySelector('.hn-yt-cover')) { var c = document.createElement('div'); c.className = 'hn-yt-cover'; c.style.display = 'block'; w.insertBefore(c, f); }
+});
+});
+}
+document.addEventListener('click', function () { if (!DETAIL) return; for (var i = 1; i <= 6; i++) setTimeout(galleryTours, i * 500); }, true);
+function openTour(url, pt) {
 var m = document.getElementById('hn-vt-modal');
 if (!m) {
 m = document.createElement('div');
@@ -765,8 +799,14 @@ var fr = m.querySelector('iframe'), src = tourSrc(url);
 // Their pages allow reading from our site (CORS *); if the page can't be read or has no YouTube video, the tour page shows as before.
 if (src === url && /^https?:/i.test(url)) {
 fr.src = 'about:blank'; m.hnWant = url;
-ytOf(url, function (id) { if (m.hnWant === url && m.classList.contains('hn-vt-on')) fr.src = id ? 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0' : url; });
+ytOf(url, function (id) {
+if (m.hnWant !== url || !m.classList.contains('hn-vt-on')) return;
+if (id) { fr.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0'; ytHide(m, true); }
+else if (pt && pt.hnPhotos && pt.hnPhotos.length > 1) { m.hnWant = ''; openPhotos(pt); }
+else fr.src = url;
+});
 } else fr.src = src;
+ytHide(m, /youtube\.com\/embed\//.test(fr.src));
 m.classList.add('hn-vt-on');
 document.documentElement.style.overflow = 'hidden';
 }
@@ -1282,7 +1322,8 @@ tourAfterSignup('', ptData, function () { if (vt.hnMls && !vt.hnPhotos.length) f
 return;
 }
 track('hn_virtual_tour_click', vtData);
-tourAfterSignup(vt.getAttribute('data-hn-vt'), vtData);
+var vtPt = ptFor(vt);
+tourAfterSignup(vt.getAttribute('data-hn-vt'), vtData, function (u) { openTour(u, vtPt); });
 return;
 }
 var el = e.target && e.target.closest && e.target.closest('.hn-bcp,.hn-bcp-btn,.hn-bcp-hint');
@@ -1374,6 +1415,10 @@ style.textContent =
 '#hn-vt-modal .hn-vt-bar{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 18px;border-bottom:1px solid #e6e2d9;background:#f4f2ee;color:#111;font-family:inherit;font-size:15px}' +
 '#hn-vt-modal .hn-vt-new{flex:1;text-align:right;color:#555;font-size:13px;text-decoration:underline}' +
 '#hn-vt-modal .hn-vt-x{border:0;background:none;font-size:28px;line-height:1;padding:0 6px;cursor:pointer;color:#111}' +
+'.hn-yt-wrap>.hn-yt-cover{position:absolute;left:0;right:0;top:0;height:64px;background:#000;z-index:2;pointer-events:none}' +
+'#hn-vt-modal .hn-yt-cover{display:none;position:relative;height:0;flex:0 0 0;z-index:2;pointer-events:none}' +
+'#hn-vt-modal .hn-yt-cover::before{content:"";position:absolute;left:0;right:0;top:0;height:64px;background:#000}' +
+'.hn-yt-wrap{position:relative!important}' +
 '#hn-vt-modal iframe{flex:1 1 auto;min-height:0;width:100%;border:0;background:#000}' +
 '#hn-vt-modal .hn-pt-show{position:relative;flex:1 1 auto;min-height:0;background:#000;display:flex;align-items:center;justify-content:center}' +
 '#hn-vt-modal .hn-pt-show{overflow:hidden}' +
