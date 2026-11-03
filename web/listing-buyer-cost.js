@@ -719,6 +719,28 @@ if (m) return 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1&rel=0';
 var v = u.match(/^https?:\/\/(?:player\.)?vimeo\.com\/(?:video\/)?(\d+)/i);
 return v ? 'https://player.vimeo.com/video/' + v[1] + '?autoplay=1' : u;
 }
+var ytCache = {};
+function ytOf(url, cb) {
+if (url in ytCache) return cb(ytCache[url]);
+var done = false, fin = function (id) { if (done) return; done = true; ytCache[url] = id; cb(id); };
+setTimeout(function () { fin(''); }, 5000);
+try {
+fetch(url, { credentials: 'omit' }).then(function (r) { return r.ok ? r.text() : ''; }).then(function (t) {
+var y = /(?:youtube(?:-nocookie)?\.com\/(?:embed\/|watch\?(?:[^"'<>]*&(?:amp;)?)?v=|shorts\/)|youtu\.be\/)([\w-]{11})/i.exec(t || '');
+fin(y ? y[1] : '');
+}).catch(function () { fin(''); });
+} catch (e) { fin(''); }
+}
+// Lofty's own Virtual Tour button on the listing page opens our window too, so it plays the same YouTube video (Nader 2026-11-02).
+document.addEventListener('click', function (e) {
+var lb = e.target && e.target.closest && e.target.closest('span.btn-item.virtual-tour');
+if (!lb || !DETAIL) return;
+var d = detailInfo(), u = d && typeof d.link === 'string' ? d.link.trim() : '';
+if (!/^https?:\/\//i.test(u)) return;
+e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+track('hn_virtual_tour_click', { button_text: 'Lofty Virtual Tour', tour_url: u, listing_url: location.href, utm_source: 'home-nader.com', utm_medium: 'listing_button', utm_campaign: 'virtual_tour', utm_content: 'lofty_button' });
+openTour(u);
+}, true);
 function openTour(url) {
 var m = document.getElementById('hn-vt-modal');
 if (!m) {
@@ -738,7 +760,13 @@ m.querySelector('.hn-vt-new').style.visibility = '';
 m.querySelector('iframe').style.display = '';
 var ps = m.querySelector('.hn-pt-show');
 if (ps) ps.style.display = 'none';
-m.querySelector('iframe').src = tourSrc(url);
+var fr = m.querySelector('iframe'), src = tourSrc(url);
+// Tour sites that hold a YouTube video (e.g. tours.homelifewhiterock.ca, Nader 2026-11-02): play only that YouTube video.
+// Their pages allow reading from our site (CORS *); if the page can't be read or has no YouTube video, the tour page shows as before.
+if (src === url && /^https?:/i.test(url)) {
+fr.src = 'about:blank'; m.hnWant = url;
+ytOf(url, function (id) { if (m.hnWant === url && m.classList.contains('hn-vt-on')) fr.src = id ? 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0' : url; });
+} else fr.src = src;
 m.classList.add('hn-vt-on');
 document.documentElement.style.overflow = 'hidden';
 }
