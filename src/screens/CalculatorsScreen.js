@@ -92,7 +92,7 @@ function PaymentCalc() {
   const [down, setDown] = useState('20');
   const [mode, setMode] = useState('%');
   const [years, setYears] = useState(25);
-  const [rate, setRate] = useState('4.5');
+  const [rate, setRate] = useState('4.44');
   const [tax, setTax] = useState('3600');
   const [taxMode, setTaxMode] = useState('$');
   const [ins, setIns] = useState('1200');
@@ -106,6 +106,7 @@ function PaymentCalc() {
   const taxMonthly = (taxMode === '%' ? (p * num(tax)) / 100 : num(tax)) / 12;
   const total = pi + taxMonthly + num(ins) / 12 + num(hoa);
   const interest = pi * years * 12 - loan;
+  const stress = Math.max(num(rate) + AFFORD.stressAdd, AFFORD.stressFloor);
 
   return (
     <View>
@@ -128,6 +129,8 @@ function PaymentCalc() {
         ['Home insurance', money(num(ins) / 12)],
         ['Condo / HOA fees', money(num(hoa))],
         ['Total per month', money(total), true],
+        ['Stress test rate (to qualify)', `${stress.toFixed(2)}%`],
+        ['Principal & interest at stress test rate', money(pmt(loan, stress, years))],
         [`Total over ${years} years`, money(total * years * 12), true],
       ]} />
       <TouchableOpacity style={styles.linkBtn} onPress={() => setShowSched(!showSched)}>
@@ -148,10 +151,10 @@ function PaymentCalc() {
 
 function AffordCalc({ goTo }) {
   const [income, setIncome] = useState('150000');
-  const [down, setDown] = useState('150000');
+  const [down, setDown] = useState('240000'); // same as the Payment calculator: 20% of $1,200,000
   const [debts, setDebts] = useState('500');
   const [years, setYears] = useState(25);
-  const [rate, setRate] = useState('4.5');
+  const [rate, setRate] = useState('4.44');
   const [taxRate, setTaxRate] = useState('0.3');
   const [ins, setIns] = useState('1200');
   const [hoa, setHoa] = useState('0');
