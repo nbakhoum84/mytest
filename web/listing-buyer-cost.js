@@ -367,7 +367,7 @@ addButton(el, price);
 // CMHC premium under 20% down (its 7% PST is paid in cash at closing), and the Buyer Cost app's default closing costs (BC property
 // transfer tax, legal $1,800, inspection $500 on resale, appraisal $400, insurance $1,500, 5% GST on new builds).
 // Est./mo: the same settings as the site's own (Lofty) mortgage calculator: 20% down, 4%, 30 years, compounded monthly (Nader, 2026-10-24).
-var EST = { rate: 4, years: 30, downPct: 20 };
+var EST = { rate: 4.44, years: 30, downPct: 20 }; // current bank 5-year fixed (Ratehub/wowa, Nov 3 2026), same as the Mortgage form
 function ptt(p) {
 var band = function (from, to, rate) { return Math.max(0, Math.min(p, to) - from) * rate; };
 return band(0, 2e5, 0.01) + band(2e5, 2e6, 0.02) + band(2e6, Infinity, 0.03) + band(3e6, Infinity, 0.02);

@@ -43,6 +43,7 @@
 </head>
 <body>
 <main>
+<div class="hn-brand" style="display:flex;align-items:center;gap:10px;margin:0 0 12px"><img src="https://nbakhoum84.github.io/mytest/img/nb-logo.jpg" alt="Nader Bakhoum, eXp Realty" width="44" height="44" style="border-radius:50%"><a href="https://home-nader.com" target="_blank" rel="noopener" style="color:inherit;font-weight:600;text-decoration:none">home-nader.com</a></div>
   <section id="pay">
     <h1>Mortgage payment</h1>
     <p class="note"><strong>Disclaimer:</strong> These numbers are estimates only, not a quote or financial, legal or tax advice. Actual costs, rates and payments will vary. Confirm with your lender, lawyer and accountant.</p>
@@ -54,7 +55,7 @@
     <label for="p-down">Down payment</label>
     <div class="inline"><input id="p-down" type="text" inputmode="decimal" value="20"><div class="chips" id="p-mode"><button data-v="%" class="on">%</button><button data-v="$">$</button></div></div>
     <p class="note" id="p-min"></p>
-    <label for="p-rate">Interest rate (%)</label><input id="p-rate" type="text" inputmode="decimal" value="4">
+    <label for="p-rate">Interest rate (%)</label><input id="p-rate" type="text" inputmode="decimal" value="4.44">
     <label for="p-years">Amortization (years)</label><input id="p-years" type="text" inputmode="numeric" value="30">
     <label>Payment frequency</label><div class="chips" id="p-freq"></div>
     <div id="p-out"></div>
@@ -65,7 +66,7 @@
     <label for="a-income">Household income per year</label><input id="a-income" type="text" inputmode="numeric" value="150000">
     <label for="a-down">Down payment ($)</label><input id="a-down" type="text" inputmode="numeric" value="100000">
     <label for="a-debts">Monthly debt payments (car, loans, cards)</label><input id="a-debts" type="text" inputmode="numeric" value="500">
-    <label for="a-rate">Interest rate (%)</label><input id="a-rate" type="text" inputmode="decimal" value="4.5">
+    <label for="a-rate">Interest rate (%)</label><input id="a-rate" type="text" inputmode="decimal" value="4.44">
     <label for="a-years">Amortization (years)</label><input id="a-years" type="text" inputmode="numeric" value="25">
     <label for="a-tax">Property tax (% of price per year)</label><input id="a-tax" type="text" inputmode="decimal" value="0.3">
     <label for="a-heat">Heating per month</label><input id="a-heat" type="text" inputmode="numeric" value="100">
@@ -113,6 +114,7 @@
     <p class="note">BC Assessment writes addresses as unit-street city, e.g. 804-1342 JOHNSTON RD WHITE ROCK. Units in new projects may not be listed until BC Assessment adds them.</p>
   </section>
 </main>
+<p class="hn-copy" style="text-align:center;font-size:12px;color:#777;margin:16px 0 8px">&copy; 2026 Nader Bakhoum, eXp Realty &middot; home-nader.com. All rights reserved. No part of this calculator may be copied or reused without written permission.</p>
 <div class="contact"><a href="tel:+16046127228">Call Nader</a><a href="sms:+16046127228">Text Nader</a></div>
 <nav><button data-tab="pay" class="on">Payment</button><button data-tab="afford">Afford</button><button data-tab="cmhc">CMHC</button><button data-tab="tax">Tax</button><button data-tab="rates">Banks Rates</button><button data-tab="bca">BC Assessment</button></nav>
 <script src="../commercial-cost/costs.js?v=4"></script>
@@ -139,6 +141,9 @@ let taxCity = '', closingCash = 0, commercialLoan = false;
 // Show prices as $1,234,567 while typing.
 const fmtPrice = (id) => { const n = $(id).value.replace(/[^0-9]/g, ''); $(id).value = n ? '$' + (+n).toLocaleString('en-CA') : ''; };
 for (const id of ['p-price', 'c-price', 't-price']) $(id).addEventListener('input', () => fmtPrice(id));
+const stressRate = () => Math.max(v('p-rate') + AFFORD.stressAdd, AFFORD.stressFloor);
+// Afford tab uses the same down payment as the Payment tab until the visitor types their own (Nader 2026-11-03).
+let aDownOwn = false;
 function pay() {
   const p = v('p-price'), d = downInDollars(p, v('p-down'), picked('p-mode')), freq = picked('p-freq');
   $('p-min').textContent = commercialLoan ? `Minimum down for a commercial mortgage (25%): ${money(p * 0.25)}` : `Minimum down for this price: ${money(minimumDown(p))}`;
@@ -149,11 +154,15 @@ function pay() {
     // Property transfer tax on the price above (Nader, 2026-10-24). Commercial: none when "Business only" is ticked.
     row('Property transfer tax', money(commercialLoan && window.CommercialCosts ? ($('p-biz').checked ? 0 : CommercialCosts.ptt(p)) : propertyTransferTax(p))) +
     (closingCash ? row('Closing costs (cash, Buyer Cost)', money(closingCash)) + row('Cash Needed to Close (Down Payment + Closing Costs)', money(d + closingCash + ins.premium * 0.07), true) : '') + row(`${FREQUENCIES[freq].label} payment`, money(r.amount), true) +
+    // Stress test (Nader 2026-11-03): lenders qualify at the higher of the rate + 2% or 5.25%. Insured/uninsured home loans only.
+    (commercialLoan ? '' : row('Stress test rate (to qualify)', `${stressRate().toFixed(2)}%`) + row(`${FREQUENCIES[freq].label} payment at stress test rate`, money(mortgagePayment({ price: p, down: d, ratePct: stressRate(), years: v('p-years'), frequency: freq }).amount))) +
     (taxCity ? row(`Property tax in ${taxCity} (${CITY_TAX[taxCity]}%/yr, est.)`, `${money((p * CITY_TAX[taxCity]) / 100 / 12)}/mo`) : '') +
     row('Balance after 5-year term', money(r.termBalance)) + row('Total interest', money(r.totalInterest)) +
     row('Paid off in', `${r.payoffYears.toFixed(1)} years`) + (ins.message ? `<p class="note">${ins.message}</p>` : '');
 }
-function afford() {
+function afford(e) {
+  if (e && e.target && e.target.id === $('a-down').id) aDownOwn = true;
+  if (!aDownOwn) $('a-down').value = Math.round(downInDollars(v('p-price'), v('p-down'), picked('p-mode')));
   const a = affordability({ income: v('a-income'), down: v('a-down'), debts: v('a-debts'), years: v('a-years'), ratePct: v('a-rate'), taxRatePct: v('a-tax'), heat: v('a-heat'), hoa: v('a-strata') });
   $('a-out').innerHTML = row('Maximum home price', money(a.price), true) + row('Mortgage amount', money(a.loan)) +
     row('Monthly mortgage payment', money(a.payment)) + row('Monthly housing cost', money(a.total)) +
@@ -182,12 +191,13 @@ for (const [sec, fn] of [['pay', pay], ['afford', afford], ['cmhc', cmhc], ['tax
   $(sec).addEventListener('input', fn);
   fn();
 }
+$('pay').addEventListener('input', () => afford());
 // Switching the down payment between % and $ converts the amount already entered.
 const convert = (pre) => () => {
   const p = v(pre + '-price'), d = v(pre + '-down');
   $(pre + '-down').value = picked(pre + '-mode') === '$' ? Math.round((p * d) / 100) : p ? +((d / p) * 100).toFixed(2) : 0;
 };
-chips('p-mode', () => { convert('p')(); pay(); }); chips('p-freq', pay); chips('c-mode', () => { convert('c')(); cmhc(); });
+chips('p-mode', () => { convert('p')(); pay(); afford(); }); chips('p-freq', pay); chips('c-mode', () => { convert('c')(); cmhc(); });
 document.querySelector('nav').onclick = (e) => {
   const b = e.target.closest('button'); if (!b) return;
   document.querySelectorAll('nav button').forEach((x) => x.classList.toggle('on', x === b));
@@ -274,7 +284,7 @@ $('b-go').addEventListener('click', () => {
     if (city) $('p-min').insertAdjacentHTML('beforebegin', `<p class="note">Listing in ${city}, BC</p>`);
     const key = Object.keys(CITY_TAX).find((c) => c.toLowerCase() === city.toLowerCase());
     if (key) { taxCity = key; $('a-tax').value = CITY_TAX[key]; afford(); }
-    pay(); cmhc(); tax();
+    pay(); cmhc(); tax(); afford();
   }
 }
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
