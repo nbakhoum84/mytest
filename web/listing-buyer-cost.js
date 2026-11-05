@@ -1687,7 +1687,7 @@ COMMERCIAL = window.hnBuyerCostMode === 'commercial' || /commercial/.test(path);
 APP = 'https://nbakhoum84.github.io/mytest/' + (COMMERCIAL ? 'commercial-cost/' : 'my-home-cost/');
 if (/sold/.test(path) || (/detail/.test(path) && !DETAIL)) return false;
 // Area landing pages (/area-<city>, e.g. /area-south-surrey) have a Listings section of cards: same buttons (Nader 2026-11-01).
-LISTING_PAGE = DETAIL || COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)|^\/area-/.test(path);
+LISTING_PAGE = DETAIL || COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)|^\/area-|^\/neighborhood\/\d+\/[a-z-]+\/?$/.test(path);
 return true;
 }
 if (route()) {
