@@ -697,7 +697,7 @@ var pics = url || !h ? [] : photosOf(h, cards[i]);
 var kind = url ? 'vt' : pics.length > 1 ? 'pt' : '';
 // Featured neighborhood pages use a different Lofty card template: there is no .hn-bcp-mtg anchor.
 // Add the tour button inside that page's own card details only; leave standard listing-card placement untouched.
-if (/^\\/neighborhood\\//.test(path)) {
+if (/^\/neighborhood\//.test(path)) {
 if (!kind) { if (b) b.remove(); continue; }
 if (b && b.getAttribute('data-hn-type') !== kind) { b.remove(); b = null; }
 if (!b) {
