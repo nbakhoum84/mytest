@@ -785,7 +785,7 @@ m.innerHTML = '<div class="hn-vt-box" role="dialog" aria-modal="true" aria-label
 '<iframe title="Virtual Tour" allow="autoplay; fullscreen; xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen></iframe></div>';
 document.body.appendChild(m);
 m.addEventListener('click', function (e) {
-if (e.target === m || e.target.closest('.hn-vt-x')) { ptMusic(false); m.classList.remove('hn-vt-on'); m.querySelector('iframe').src = 'about:blank'; document.documentElement.style.overflow = ''; }
+if (e.target === m || (e.target.closest && e.target.closest('.hn-vt-x'))) { ptMusic(false); if (ptTimer) clearInterval(ptTimer); ptTimer = null; m.hnWant = ''; m.classList.remove('hn-vt-on'); m.querySelector('iframe').src = 'about:blank'; document.documentElement.style.overflow = ''; m.remove(); }
 });
 }
 m.querySelector('.hn-vt-new').href = url;
