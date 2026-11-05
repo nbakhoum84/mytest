@@ -797,6 +797,9 @@ if (ps) ps.style.display = 'none';
 var fr = m.querySelector('iframe'), src = tourSrc(url);
 // Tour sites that hold a YouTube video (e.g. tours.homelifewhiterock.ca, Nader 2026-11-02): play only that YouTube video.
 // Their pages allow reading from our site (CORS *); if the page can't be read or has no YouTube video, the tour page shows as before.
+// Mark the modal open before ytOf(): cached YouTube IDs invoke the callback synchronously.
+m.classList.add('hn-vt-on');
+document.documentElement.style.overflow = 'hidden';
 if (src === url && /^https?:/i.test(url)) {
 fr.src = 'about:blank'; m.hnWant = url;
 ytOf(url, function (id) {
@@ -806,9 +809,7 @@ else if (pt && pt.hnPhotos && pt.hnPhotos.length > 1) { m.hnWant = ''; openPhoto
 else fr.src = url;
 });
 } else fr.src = src;
-ytHide(m, /youtube\.com\/embed\//.test(fr.src));
-m.classList.add('hn-vt-on');
-document.documentElement.style.overflow = 'hidden';
+ytHide(m, /youtube\\.com\\/embed\\//.test(fr.src));
 }
 // Photo tour: the listing's photos one after another (4s each, arrows or swipe to move), in the same window as the Virtual Tour.
 var ptTimer = null;
