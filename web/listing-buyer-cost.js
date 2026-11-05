@@ -1686,8 +1686,9 @@ DETAIL = /^\/listing-detail\//.test(path);
 COMMERCIAL = window.hnBuyerCostMode === 'commercial' || /commercial/.test(path);
 APP = 'https://nbakhoum84.github.io/mytest/' + (COMMERCIAL ? 'commercial-cost/' : 'my-home-cost/');
 if (/sold/.test(path) || (/detail/.test(path) && !DETAIL)) return false;
-// Area landing pages (/area-<city>, e.g. /area-south-surrey) have a Listings section of cards: same buttons (Nader 2026-11-01).
-LISTING_PAGE = DETAIL || COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)|^\/area-/.test(path);
+// Area landing pages (/area-<city>) and featured-neighborhood pages (/neighborhood/<id>/<slug>, e.g. Abbotsford) contain listing cards: show the same buttons there too.
+// This only expands the eligible page routes; the existing listing-card and listing-detail button code below is unchanged.
+LISTING_PAGE = DETAIL || COMMERCIAL || /listing|pre-?sale|new-?(home|build|construction|development)|^\/area-|^\/neighborhood\/\d+\/[a-z-]+\/?$/.test(path);
 return true;
 }
 if (route()) {
