@@ -695,6 +695,24 @@ var b = cards[i].querySelector('.hn-vt-btn');
 // stays within normal listing display under the REALTOR.ca / MLS feed terms; deliberately not called "Virtual Tour").
 var pics = url || !h ? [] : photosOf(h, cards[i]);
 var kind = url ? 'vt' : pics.length > 1 ? 'pt' : '';
+// Featured neighborhood pages use a different Lofty card template: there is no .hn-bcp-mtg anchor.
+// Add the tour button inside that page's own card details only; leave standard listing-card placement untouched.
+if (/^\\/neighborhood\\//.test(path)) {
+if (!kind) { if (b) b.remove(); continue; }
+if (b && b.getAttribute('data-hn-type') !== kind) { b.remove(); b = null; }
+if (!b) {
+b = document.createElement('button');
+b.type = 'button';
+b.className = 'hn-vt-btn';
+b.setAttribute('data-hn-type', kind);
+b.innerHTML = kind === 'vt' ? CUBE + '<span>Virtual Tour</span>' : CAM + '<span>Photo tour</span>';
+}
+if (kind === 'pt') { if (!b.hnFull) b.hnPhotos = pics; b.hnCredit = creditOf(h || {}, cards[i]); var nla = cards[i].querySelector('a[href*="/listing-detail/"]'); b.hnLink = nla ? nla.href : ''; }
+b.setAttribute('data-hn-vt', url);
+var host = cards[i].querySelector('.detail') || cards[i].querySelector('.house-info') || cards[i];
+if (b.parentElement !== host) host.appendChild(b);
+continue;
+}
 if (!kind || !mtg || (b && b.getAttribute('data-hn-type') !== kind)) { if (b) b.remove(); b = null; }
 if (!kind || !mtg) continue;
 if (!b) {
