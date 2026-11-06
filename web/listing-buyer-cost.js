@@ -483,7 +483,7 @@ var gap = below - (bar.getBoundingClientRect().top + scrollY);
 if (bar.hnBaseMt == null) bar.hnBaseMt = parseFloat(getComputedStyle(bar).marginTop) || 0;
 var added = (parseFloat(getComputedStyle(bar).marginTop) || 0) - bar.hnBaseMt, need = gap + added;
 if (need > 0) { if (Math.abs(need + 8 - added) > 1) { bar.setAttribute('data-hn-clear', ''); bar.style.setProperty('margin-top', (bar.hnBaseMt + need + 8) + 'px', 'important'); } }
-else if (added > 0) bar.style.removeProperty('margin-top');
+else if (added > 0) { bar.style.removeProperty('margin-top'); setTimeout(clearHeader, 50); }
 }
 var clearing = false;
 addEventListener('scroll', function () {
