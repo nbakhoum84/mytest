@@ -391,8 +391,18 @@ return { buyer: 'Cash to close \u2248 ' + short(e.cash), mortgage: 'Est. $' + Ma
 function addButton(el, price) {
 var card = cardOf(el);
 if (!card) return;
-var oldRow = card.querySelector('.hn-bcp-row');
+// Only reuse a row that belongs to this price: its own row, or a leftover row whose price element is gone (the site reused
+// the card). A card whose photo hasn't loaded yet can resolve to the whole results list, and the first row found there
+// belongs to another listing; relabelling it showed one card's estimate on another (Nov 6 2026).
+var oldRow = el._hnRow && el._hnRow.isConnected ? el._hnRow : null;
+if (!oldRow) {
+var rows = card.querySelectorAll('.hn-bcp-row');
+for (var r = 0; r < rows.length && !oldRow; r++) if (!rows[r]._hnEl || rows[r]._hnEl === el || !rows[r]._hnEl.isConnected) oldRow = rows[r];
+// Every row here belongs to another listing's price: leave them alone and add nothing (same as before for this case).
+if (!oldRow && rows.length) return;
+}
 if (oldRow) {
+oldRow._hnEl = el; el._hnRow = oldRow;
 var olds = oldRow.querySelectorAll('.hn-bcp-btn'), lb = labels(price, isNew(el));
 for (var o = 0; o < olds.length; o++) {
 olds[o].setAttribute('data-hn-price', price);
@@ -407,6 +417,7 @@ return;
 // "Buyer cost" and "Mortgage" sit side by side in one row (Commercial pages too); the mortgage calculator starts from the same price.
 var b = document.createElement('div'), lb = labels(price, isNew(el));
 b.className = 'hn-bcp-row';
+b._hnEl = el; el._hnRow = b;
 // Under each button: "Click here for more information" (Nader, 2026-10-24); clicking it opens that button's calculator.
 var hint = function (kind) { return '<div class="hn-bcp-hint" data-hn-kind="' + kind + '" data-hn-price="' + price + '"><u>Click here</u> for more information</div>'; };
 b.innerHTML = '<div class="hn-bcp-col"><button type="button" class="hn-bcp-btn" data-hn-kind="buyer" data-hn-price="' + price + '" aria-label="Buyer cost for $' + price.toLocaleString('en-CA') + '">' + lb.buyer + '</button>' + hint('buyer') + '</div>' +
@@ -528,8 +539,8 @@ if (fresh) { done[d].setAttribute('data-hn-price', fresh); addButton(done[d], fr
 var dc = cardOf(done[d]);
 done[d].classList.remove('hn-bcp');
 done[d].removeAttribute('data-hn-price');
-var dr = dc && dc.querySelector('.hn-bcp-row');
-if (dr && !dc.querySelector('.hn-bcp')) dr.remove();
+var dr = done[d]._hnRow && done[d]._hnRow.isConnected ? done[d]._hnRow : dc && dc.querySelector('.hn-bcp-row');
+if (dr && (dr._hnEl === done[d] || !dc || !dc.querySelector('.hn-bcp'))) dr.remove();
 }
 var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
 acceptNode: function (n) { return n.nodeValue.indexOf('$') >= 0 || (DETAIL && BARE.test(n.nodeValue)) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; }
@@ -1336,7 +1347,7 @@ var el = e.target && e.target.closest && e.target.closest('.hn-bcp,.hn-bcp-btn,.
 if (!el) return;
 // Use the price the card shows right now, not the one stored when the button was added.
 var card = cardOf(el.classList.contains('hn-bcp') ? el : el.parentElement);
-var shown = card && card.querySelector('.hn-bcp');
+var own = el.closest('.hn-bcp-row'), shown = own && own._hnEl && own._hnEl.isConnected ? own._hnEl : el.classList.contains('hn-bcp') ? el : card && card.querySelector('.hn-bcp');
 var prices = shown ? parsePrices(priceText(shown)) : [];
 var price = prices[0] || +el.getAttribute('data-hn-price');
 if (!price) return;
