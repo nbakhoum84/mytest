@@ -452,7 +452,8 @@ return null;
 }
 function clearHeader() {
 var head = fixedTop(document.elementFromPoint(innerWidth / 2, 2));
-if (!head || head.offsetWidth < innerWidth * 0.8 || head.closest('#hn-bcp-modal')) return;
+// A full-screen window (Lofty's photo viewer, our tour window, the sign-up form) is not the menu (Nader 2026-11-06: white gap after closing one).
+if (!head || head.offsetWidth < innerWidth * 0.8 || head.offsetHeight > innerHeight * 0.4 || head.closest('#hn-bcp-modal,#hn-vt-modal') || document.body.classList.contains('overflow-hidden')) return;
 var below = Math.round(head.getBoundingClientRect().bottom);
 var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null), n, prev = null;
 while ((n = w.nextNode())) if (/^\s*(<|‹)?\s*prev\s*$/i.test(n.nodeValue) && !head.contains(n) && shown(n.parentElement)) { prev = n.parentElement; break; }
@@ -478,7 +479,11 @@ return;
 // A text span can't be pushed down (margins don't move inline text), so start from the block holding it, e.g. the address heading.
 for (bar = prev; bar.parentElement && bar.parentElement !== document.body && (bar.offsetWidth < innerWidth * 0.6 || /^inline/.test(getComputedStyle(bar).display)); bar = bar.parentElement);
 var gap = below - (bar.getBoundingClientRect().top + scrollY);
-if (gap > 0) { bar.setAttribute('data-hn-clear', ''); bar.style.setProperty('margin-top', (parseFloat(getComputedStyle(bar).marginTop) + gap + 8) + 'px', 'important'); }
+// Worked out from the block's own margin each time, so it never adds up and a leftover gap shrinks back.
+if (bar.hnBaseMt == null) bar.hnBaseMt = parseFloat(getComputedStyle(bar).marginTop) || 0;
+var added = (parseFloat(getComputedStyle(bar).marginTop) || 0) - bar.hnBaseMt, need = gap + added;
+if (need > 0) { if (Math.abs(need + 8 - added) > 1) { bar.setAttribute('data-hn-clear', ''); bar.style.setProperty('margin-top', (bar.hnBaseMt + need + 8) + 'px', 'important'); } }
+else if (added > 0) { bar.style.removeProperty('margin-top'); setTimeout(clearHeader, 50); }
 }
 var clearing = false;
 addEventListener('scroll', function () {
@@ -490,6 +495,7 @@ requestAnimationFrame(function () { clearing = false; clearHeader(); });
 var clearTries = 0;
 setInterval(function () { if (DETAIL && active && clearTries++ < 30) clearHeader(); }, 500);
 addEventListener('resize', function () { if (DETAIL && active) clearHeader(); });
+addEventListener('click', function () { if (DETAIL && active) setTimeout(clearHeader, 600); }, true);
 
 // Nader asked to drop the Ratehub mortgage payment calculator from single listing pages.
 // Hide its frame, and the wrapper around it as long as the wrapper holds nothing else but Ratehub's title.
